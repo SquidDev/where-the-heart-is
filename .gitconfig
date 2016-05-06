@@ -1,0 +1,19 @@
+[user]
+    name = SquidDev
+    email = bonzoweb@hotmail.co.uk
+[core]
+	editor = vim
+    whitespace = off
+    excludesfile = ~/.gitignore
+[advice]
+    statusuoption = false
+[color]
+    ui = true
+[push]
+    default = current
+[alias]
+	unstage = reset HEAD --
+	discard = "checkout -- "
+	giff = diff HEAD
+[credential]
+	helper = cache
