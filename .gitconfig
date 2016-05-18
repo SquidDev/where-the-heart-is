@@ -1,19 +1,36 @@
 [user]
-    name = SquidDev
-    email = bonzoweb@hotmail.co.uk
-[core]
-	editor = vim
-    whitespace = off
-    excludesfile = ~/.gitignore
-[advice]
-    statusuoption = false
-[color]
-    ui = true
+	email = bonzoweb@hotmail.co.uk
+	name = SquidDev
 [push]
-    default = current
-[alias]
-	unstage = reset HEAD --
-	discard = "checkout -- "
-	giff = diff HEAD
+	default = current
 [credential]
 	helper = cache
+[alias]
+	graph = log --decorate --oneline --graph
+	gr = log --decorate --oneline --graph
+        giff = diff HEAD
+	unstage = reset -q HEAD --
+	discard = checkout --
+	branches = branch -a
+	tags = tag
+	stashes = stash list
+	plot = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all 
+[core]
+	autocrlf = input
+	pager = diff-so-fancy | less --tabs=1,5 -R
+[color]
+	ui = always
+[color "diff"]
+	meta = yellow bold
+	commit = green bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+	whitespace = red reverse
+[color "diff-highlight"]
+	oldNormal = red bold
+	oldHighlight = "red bold 52"
+	newNormal = "green bold"
+	newHighlight = "green bold 22"
+[color "status"]
+	untracked = cyan
