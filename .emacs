@@ -9,8 +9,8 @@
 
 (add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
 (setq my-packages
-  '(base16 el-get flycheck helm lua-mode markdown-mode multiple-cursors neotree))
-(el-get 'sync)
+  '(base16 el-get flycheck helm lua-mode markdown-mode multiple-cursors neotree magit))
+(el-get 'sync my-packages)
 
 ; Whitespace highlighting
 (require 'whitespace)
@@ -76,8 +76,10 @@
   (dolist (window (window-at-side-list))
     (quit-window nil window)))
 
+; General key bindings
 (global-set-key (kbd "C-c q") #'quit-bottom-side-windows)
 (global-set-key (kbd "C-\\") 'neotree-toggle)
+(global-set-key (kbd "C-l") 'kill-whole-line)
 
 ; Helm Mode
 (global-set-key (kbd "C-c h") 'helm-command-prefix)
@@ -87,7 +89,6 @@
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
-(define-key helm-map (kbd "C-z")  'helm-select-action) ; list actions using C-z
 (global-set-key (kbd "C-x C-b") 'helm-buffers-list)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 
