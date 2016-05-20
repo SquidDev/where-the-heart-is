@@ -1,31 +1,39 @@
-(add-to-list 'load-path "~/.emacs.d/el-get/el-get")
+(require 'package)
 
-(unless (require 'el-get nil 'noerror)
-  (with-current-buffer
-      (url-retrieve-synchronously
-       "https://raw.githubusercontent.com/dimitri/el-get/master/el-get-install.el")
-    (goto-char (point-max))
-    (eval-print-last-sexp)))
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
-(add-to-list 'el-get-recipe-path "~/.emacs.d/el-get-user/recipes")
-(setq my-packages
-  '(base16 el-get flycheck helm lua-mode markdown-mode multiple-cursors neotree magit))
-(el-get 'sync my-packages)
+(package-initialize)
 
-; Whitespace highlighting
-(require 'whitespace)
+(defvar package-list)
+(setq package-list '(
+  ; Nice themes
+  base16-theme
+  ; Linter
+  flycheck
+  ; Ctrl+P
+  helm
+  ; Various editing modes
+  lua-mode markdown-mode
+  ; Not actually used ATM
+  multiple-cursors
+  ; File browser
+  neotree
+  ; Git Client
+  magit
+  ; Editor config
+  editorconfig))
 
+; fetch the list of packages available
+(unless package-archive-contents (package-refresh-contents))
+
+; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+; Basic Things
 (set-language-environment "UTF-8")
 (fset 'yes-or-no-p 'y-or-n-p)
-
-; Save location
-(setq-default save-place t)
-(setq save-place-file (concat user-emacs-directory ".saved-places"))
-(require 'saveplace)
-
-; Unique buffers
-(setq uniquify-buffer-name-style 'post-forward-angle-brackets)
-(require 'uniquify)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
@@ -33,30 +41,56 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(custom-enabled-themes (quote (base16-summerfruit-light)))
- '(custom-safe-themes (quote ("9e76732c9af8e423236ff8e37dd3b9bc37dacc256e42cc83810fb824eaa529b9" default)))
+ '(custom-safe-themes
+   (quote
+    ("9e76732c9af8e423236ff8e37dd3b9bc37dacc256e42cc83810fb824eaa529b9" default)))
  '(flycheck-keymap-prefix "f")
  '(flycheck-syntax-check-failed-hook nil)
  '(global-whitespace-mode t)
  '(helm-M-x-fuzzy-match t)
+ '(helm-ff-file-name-history-use-recentf t)
+ '(helm-ff-search-library-in-sexp t)
+ '(helm-move-to-line-cycle-in-source t)
+ '(helm-scroll-amount 8)
+ '(helm-split-window-in-side-p t)
  '(inhibit-startup-screen t)
  '(next-line-add-newlines nil)
  '(require-final-newline t)
  '(ring-bell-function (quote ignore) t)
- '(whitespace-style (quote (face tabs trailing spaces indentation empty tab-mark space-mark))))
+ '(save-place-file (concat user-emacs-directory ".saved-places"))
+ '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
+ '(whitespace-style
+   (quote
+    (face tabs trailing spaces indentation empty tab-mark space-mark))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(font-lock-comment-delimiter-face ((t (:foreground "#707070"))))
+ '(font-lock-comment-face ((t (:foreground "#909090"))))
  '(helm-ff-directory ((t (:foreground "#707070" :weight bold))))
  '(helm-selection ((t (:background "#B0B0B0" :underline nil))))
  '(highlight ((t (:background "#202020" :foreground "#B0B0B0"))))
  '(region ((t (:background "#B0B0B0"))))
- '(sp-pair-overlay-face ((t (:inherit highlight :underline t))))
  '(whitespace-hspace ((t (:foreground "#B0B0B0" :background nil))))
  '(whitespace-indentation ((t (:foreground "#B0B0B0" :background nil))))
  '(whitespace-space ((t (:foreground "#B0B0B0" :background nil))))
  '(whitespace-tab ((t (:foreground "#B0B0B0" :background nil)))))
+
+; Whitespace highlighting
+(require 'whitespace)
+
+; Save location
+(setq-default save-place t)
+(require 'saveplace)
+
+; Unique buffers
+(require 'uniquify)
+
+; Editor config
+(require 'editorconfig)
+(editorconfig-mode 1)
 
 ; Flycheck config
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -82,6 +116,12 @@
 (global-set-key (kbd "C-l") 'kill-whole-line)
 
 ; Helm Mode
+(require 'helm)
+(require 'helm-config)
+
+(helm-mode 1)
+(helm-autoresize-mode 1)
+
 (global-set-key (kbd "C-c h") 'helm-command-prefix)
 (global-unset-key (kbd "C-x c"))
 
@@ -92,13 +132,6 @@
 (global-set-key (kbd "C-x C-b") 'helm-buffers-list)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 
-(setq helm-split-window-in-side-p      t ; open helm buffer inside current window, not occupy whole other window
- helm-move-to-line-cycle-in-source     t ; move to end or beginning of source when reaching top or bottom of source.
- helm-ff-search-library-in-sexp        t ; search for library in `require' and `declare-function' sexp.
- helm-scroll-amount                    8 ; scroll 8 lines other window using M-<next>/M-<prior>
- helm-ff-file-name-history-use-recentf t)
-(helm-mode 1)
-(helm-autoresize-mode 1)
-
 ; General
 (show-paren-mode 1)
+(defalias 'repl 'ielm)
