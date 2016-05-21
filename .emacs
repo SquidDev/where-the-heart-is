@@ -40,6 +40,11 @@
 (set-language-environment "UTF-8")
 (fset 'yes-or-no-p 'y-or-n-p)
 
+(defun relative-line-numbers-custom-format (offset)
+  "The default formatting function.
+Return the absolute value of OFFSET, converted to string."
+  (format "%2d\u2502" (abs offset)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -60,6 +65,8 @@
  '(helm-split-window-in-side-p t)
  '(inhibit-startup-screen t)
  '(next-line-add-newlines nil)
+ '(relative-line-numbers-format (quote relative-line-numbers-custom-format))
+ '(relative-line-numbers-max-count 0)
  '(require-final-newline t)
  '(ring-bell-function (quote ignore) t)
  '(save-place-file (concat user-emacs-directory ".saved-places"))
@@ -77,6 +84,7 @@
  '(helm-ff-directory ((t (:foreground "#707070" :weight bold))))
  '(helm-selection ((t (:background "#B0B0B0" :underline nil))))
  '(highlight ((t (:background "#202020" :foreground "#B0B0B0"))))
+ '(linum ((t (:inherit default :foreground "#505050" :background nil))))
  '(region ((t (:background "#B0B0B0"))))
  '(whitespace-hspace ((t (:foreground "#B0B0B0" :background nil))))
  '(whitespace-indentation ((t (:foreground "#B0B0B0" :background nil))))
@@ -101,20 +109,8 @@
 (require 'evil)
 (evil-mode 1)
 
-; Ctrl+Arrows
-;; (defun ignore-error-wrapper (fn)
-;;   "Funtion return new function that ignore errors.
-;;   The function wraps a function with `ignore-errors' macro."
-;;   (lexical-let ((fn fn))
-;;     (lambda ()
-;;       (interactive)
-;;       (ignore-errors
-;;          (funcall fn)))))
-
-;; (global-set-key (kbd "C-<left>") (ignore-error-wrapper 'windmove-left))
-;; (global-set-key (kbd "C-<right>") (ignore-error-wrapper 'windmove-right))
-;; (global-set-key (kbd "C-<up>") (ignore-error-wrapper 'windmove-up))
-;; (global-set-key (kbd "C-<down>") (ignore-error-wrapper 'windmove-down))
+(require 'relative-line-numbers)
+(global-relative-line-numbers-mode)
 
 ; Flycheck config
 (add-hook 'after-init-hook #'global-flycheck-mode)
