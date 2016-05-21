@@ -1,3 +1,4 @@
+(eval-when-compile (require 'cl))
 (require 'package)
 
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
@@ -20,6 +21,10 @@
   neotree
   ; Git Client
   magit
+  ; Better undo
+  undo-tree
+  ; 'Better' keybindings
+  evil
   ; Editor config
   editorconfig))
 
@@ -91,6 +96,25 @@
 ; Editor config
 (require 'editorconfig)
 (editorconfig-mode 1)
+
+; Evil
+(require 'evil)
+(evil-mode 1)
+
+; Ctrl+Arrows
+;; (defun ignore-error-wrapper (fn)
+;;   "Funtion return new function that ignore errors.
+;;   The function wraps a function with `ignore-errors' macro."
+;;   (lexical-let ((fn fn))
+;;     (lambda ()
+;;       (interactive)
+;;       (ignore-errors
+;;          (funcall fn)))))
+
+;; (global-set-key (kbd "C-<left>") (ignore-error-wrapper 'windmove-left))
+;; (global-set-key (kbd "C-<right>") (ignore-error-wrapper 'windmove-right))
+;; (global-set-key (kbd "C-<up>") (ignore-error-wrapper 'windmove-up))
+;; (global-set-key (kbd "C-<down>") (ignore-error-wrapper 'windmove-down))
 
 ; Flycheck config
 (add-hook 'after-init-hook #'global-flycheck-mode)
