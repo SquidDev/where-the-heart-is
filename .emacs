@@ -1,3 +1,7 @@
+;; (add-to-list 'load-path "/home/bonzo/benchmark-init-el")
+;; (require 'benchmark-init-loaddefs)
+;; (benchmark-init/activate)
+
 (eval-when-compile (require 'cl))
 (require 'package)
 
@@ -41,8 +45,7 @@
 (fset 'yes-or-no-p 'y-or-n-p)
 
 (defun relative-line-numbers-custom-format (offset)
-  "The default formatting function.
-Return the absolute value of OFFSET, converted to string."
+  "Custom formatting function for relative line numbers. Space for 2 numbers then a line"
   (format "%2d\u2502" (abs offset)))
 
 (custom-set-variables
@@ -54,8 +57,10 @@ Return the absolute value of OFFSET, converted to string."
  '(custom-safe-themes
    (quote
     ("9e76732c9af8e423236ff8e37dd3b9bc37dacc256e42cc83810fb824eaa529b9" default)))
+ '(editorconfig-mode t)
  '(flycheck-keymap-prefix "f")
  '(flycheck-syntax-check-failed-hook nil)
+ '(global-relative-line-numbers-mode t)
  '(global-whitespace-mode t)
  '(helm-M-x-fuzzy-match t)
  '(helm-ff-file-name-history-use-recentf t)
@@ -92,7 +97,7 @@ Return the absolute value of OFFSET, converted to string."
  '(whitespace-tab ((t (:foreground "#B0B0B0" :background nil)))))
 
 ; Whitespace highlighting
-(require 'whitespace)
+(autoload 'global-whitespace-mode "whitespace" "Toggle whitespace visualization." t)
 
 ; Save location
 (setq-default save-place t)
@@ -101,16 +106,12 @@ Return the absolute value of OFFSET, converted to string."
 ; Unique buffers
 (require 'uniquify)
 
-; Editor config
-(require 'editorconfig)
-(editorconfig-mode 1)
+(autoload 'editorconfig-mode "editorconfig" "Toggle EditorConfig feature." t)
+(autoload 'relative-line-numbers-mode "relative-line-numbers" "Toggle Relative Line Numbers on or off." t)
 
-; Evil
+; Evil doesn't seem to work with autoload
 (require 'evil)
-(evil-mode 1)
-
-(require 'relative-line-numbers)
-(global-relative-line-numbers-mode)
+(evil-mode t)
 
 ; Flycheck config
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -135,8 +136,14 @@ Return the absolute value of OFFSET, converted to string."
 (global-set-key (kbd "C-\\") 'neotree-toggle)
 (global-set-key (kbd "C-l") 'kill-whole-line)
 
+(add-hook 'neotree-mode-hook
+  (lambda ()
+    (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
+    (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
+    (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+    (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
+
 ; Helm Mode
-(require 'helm)
 (require 'helm-config)
 
 (helm-mode 1)
