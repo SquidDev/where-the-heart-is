@@ -129,6 +129,7 @@
 ; Evil doesn't seem to work with autoload
 (require 'evil)
 (evil-mode t)
+(define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
 
 ; Flycheck config
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -191,6 +192,10 @@
 (add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
 (add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mhtml\\'" . web-mode))
+(setq web-mode-engines-alist
+      '(("mason"    . "\\.mhtml\\'")
+       ("blade"  . "\\.blade\\.")))
 
 (setq-default indent-tabs-mode nil)
 (global-set-key (kbd "<select>") 'move-end-of-line)
