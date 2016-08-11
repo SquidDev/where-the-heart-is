@@ -8,13 +8,15 @@
 [alias]
 	graph = log --decorate --oneline --graph
 	gr = log --decorate --oneline --graph
-        giff = diff HEAD
+	giff = diff HEAD
 	unstage = reset -q HEAD --
 	discard = checkout --
+	# throw = !git reset -q HEAD -- $1 && git checkout -- $1
 	branches = branch -a
 	tags = tag
 	stashes = stash list
 	plot = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all 
+	fixup = commit --amend --no-edit --date=now
 [core]
 	autocrlf = input
 	pager = diff-so-fancy | less --tabs=1,5 -R

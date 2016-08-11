@@ -5,6 +5,17 @@
 (eval-when-compile (require 'cl))
 (require 'package)
 
+(setq frame-title-format
+  (concat  "%b - emacs@" (system-name)))
+
+(setq backup-directory-alist
+  `((".*" . ,(concat user-emacs-directory ".backup"))))
+(setq auto-save-file-name-transforms
+  `((".*" ,(concat user-emacs-directory ".backup") t)))
+
+; default to unified diffs
+(setq diff-switches "-u")
+
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
 (package-initialize)
@@ -17,10 +28,14 @@
   flycheck
   ; Ctrl+P
   helm
-  ; Various editing modes
-  lua-mode markdown-mode
+  ; Various editing modes, enable on demand
+  ; lua-mode
+  ; markdown-mode
+  web-mode
+  ; yaml-mode
+
   ; Not actually used ATM
-  multiple-cursors
+  ; multiple-cursors
   ; File browser
   neotree
   ; Git Client
@@ -58,6 +73,7 @@
    (quote
     ("9e76732c9af8e423236ff8e37dd3b9bc37dacc256e42cc83810fb824eaa529b9" default)))
  '(editorconfig-mode t)
+ '(evil-want-fine-undo t)
  '(flycheck-keymap-prefix "f")
  '(flycheck-syntax-check-failed-hook nil)
  '(global-relative-line-numbers-mode t)
@@ -75,6 +91,7 @@
  '(require-final-newline t)
  '(ring-bell-function (quote ignore) t)
  '(save-place-file (concat user-emacs-directory ".saved-places"))
+ '(tab-width 4)
  '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
  '(whitespace-style
    (quote
@@ -115,6 +132,11 @@
 
 ; Flycheck config
 (add-hook 'after-init-hook #'global-flycheck-mode)
+
+(with-eval-after-load 'flycheck
+  (flycheck-add-mode 'html-tidy 'web-mode)
+  (flycheck-add-mode 'php 'web-mode)
+  (flycheck-add-mode 'css-csslint 'web-mode))
 
 (add-to-list 'display-buffer-alist
  `(,(rx bos "*Flycheck errors*" eos)
@@ -159,6 +181,36 @@
 (global-set-key (kbd "C-x C-b") 'helm-buffers-list)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 
-; General
+; Web mode
+(require 'web-mode)
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+
+(setq-default indent-tabs-mode nil)
+(global-set-key (kbd "<select>") 'move-end-of-line)
+
+(xterm-mouse-mode t)
+(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
+(global-set-key (kbd "C-/") 'comment-or-uncomment-region)
+
+(add-to-list 'auto-mode-alist '("\\.gmk\\'" . makefile-mode))
+
 (show-paren-mode 1)
 (defalias 'repl 'ielm)
+
+; Show title in buffer
+(defvar last-buffer "")
+(defun xterm-title-update ()
+  (interactive)
+  (if (string= last-buffer (buffer-name)) nil
+    (setq last-buffer (buffer-name))
+    (send-string-to-terminal (concat "\033]2; " (if buffer-file-name (buffer-file-name) (buffer-name)) " - emacs\007"))))
+
+(add-hook 'post-command-hook 'xterm-title-update)
