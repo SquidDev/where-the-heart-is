@@ -2,7 +2,7 @@
 	email = bonzoweb@hotmail.co.uk
 	name = SquidDev
 [push]
-	default = current
+	default = simple
 [credential]
 	helper = cache
 [alias]
@@ -36,3 +36,5 @@
 	newHighlight = "green bold 22"
 [color "status"]
 	untracked = cyan
+[diff]
+	compactionHeuristic = true

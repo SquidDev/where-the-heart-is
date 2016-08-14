@@ -8,11 +8,6 @@
 (setq frame-title-format
   (concat  "%b - emacs@" (system-name)))
 
-(setq backup-directory-alist
-  `((".*" . ,(concat user-emacs-directory ".backup"))))
-(setq auto-save-file-name-transforms
-  `((".*" ,(concat user-emacs-directory ".backup") t)))
-
 ; default to unified diffs
 (setq diff-switches "-u")
 
@@ -28,11 +23,14 @@
   flycheck
   ; Ctrl+P
   helm
+  ; Autocomplete
+  company
   ; Various editing modes, enable on demand
   ; lua-mode
   ; markdown-mode
   web-mode
   ; yaml-mode
+  ; haskell-mode ghc company-ghc
 
   ; Not actually used ATM
   ; multiple-cursors
@@ -68,6 +66,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backup"))))
  '(custom-enabled-themes (quote (base16-summerfruit-light)))
  '(custom-safe-themes
    (quote
@@ -207,6 +206,19 @@
 
 (add-to-list 'auto-mode-alist '("\\.gmk\\'" . makefile-mode))
 
+; GHC mod
+(autoload 'ghc-init "ghc" "GHC integration" t)
+(autoload 'ghc-debug "ghc" "GHC debugging integration" t)
+(add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+;; (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
+
+; Company
+(require 'company)
+(add-hook 'after-init-hook 'global-company-mode)
+(add-to-list 'company-backends 'company-ghc)
+(custom-set-variables '(company-ghc-show-info t))
+
+; General
 (show-paren-mode 1)
 (defalias 'repl 'ielm)
 
