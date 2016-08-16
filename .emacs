@@ -129,6 +129,8 @@
 (require 'evil)
 (evil-mode t)
 (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
+(delete 'term-mode evil-insert-state-modes)
+(add-to-list 'evil-emacs-state-modes 'term-mode)
 
 ; Flycheck config
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -166,6 +168,7 @@
     (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
 
 ; Helm Mode
+(require 'helm)
 (require 'helm-config)
 
 (helm-mode 1)
@@ -175,6 +178,8 @@
 (global-unset-key (kbd "C-x c"))
 
 (global-set-key (kbd "M-x") 'helm-M-x)
+(eval-after-load 'term '(progn
+  (define-key term-raw-map (kbd "C-c M-x") 'helm-M-x)))
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
 (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
