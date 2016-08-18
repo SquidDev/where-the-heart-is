@@ -224,8 +224,8 @@
 (custom-set-variables '(company-ghc-show-info t))
 
 ; Magit
-(eval-after-load 'magit '(progn
-  (global-set-key (kbd "C-c m") 'magit-status)))
+(autoload 'magit-status "magit" "Magit is awesome" t)
+(global-set-key (kbd "C-c m") 'magit-status)
 
 ; General
 (show-paren-mode 1)
