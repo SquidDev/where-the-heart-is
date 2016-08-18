@@ -223,6 +223,10 @@
 (add-to-list 'company-backends 'company-ghc)
 (custom-set-variables '(company-ghc-show-info t))
 
+; Magit
+(eval-after-load 'magit '(progn
+  (global-set-key (kbd "C-c m") 'magit-status)))
+
 ; General
 (show-paren-mode 1)
 (defalias 'repl 'ielm)
