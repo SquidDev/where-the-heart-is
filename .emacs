@@ -67,6 +67,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backup"))))
+ '(company-ghc-show-info t)
  '(custom-enabled-themes (quote (base16-summerfruit-light)))
  '(custom-safe-themes
    (quote
@@ -83,6 +84,38 @@
  '(helm-move-to-line-cycle-in-source t)
  '(helm-scroll-amount 8)
  '(helm-split-window-in-side-p t)
+ '(ibuffer-saved-filter-groups
+   (quote
+    (("Default"
+      ("Terminals"
+       (used-mode . term-mode))
+      ("Programming"
+       (saved . "programming"))
+      ("Temporary"
+       (name . "\\*.*\\*"))))))
+ '(ibuffer-saved-filters
+   (quote
+    (("gnus"
+      ((or
+        (mode . message-mode)
+        (mode . mail-mode)
+        (mode . gnus-group-mode)
+        (mode . gnus-summary-mode)
+        (mode . gnus-article-mode))))
+     ("programming"
+      ((or
+        (mode . emacs-lisp-mode)
+        (name . "\\*scratch\\*")
+        (mode . inferior-emacs-lisp-mode)
+        (mode . cperl-mode)
+        (mode . c-mode)
+        (mode . perl-mode)
+        (mode . python-mode)
+        (mode . php-mode)
+        (mode . java-mode)
+        (mode . web-mode)
+        (mode . idl-mode)
+        (mode . lisp-mode)))))))
  '(inhibit-startup-screen t)
  '(next-line-add-newlines nil)
  '(relative-line-numbers-format (quote relative-line-numbers-custom-format))
@@ -91,6 +124,7 @@
  '(ring-bell-function (quote ignore) t)
  '(save-place-file (concat user-emacs-directory ".saved-places"))
  '(tab-width 4)
+ '(tramp-default-method "ssh")
  '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
  '(whitespace-style
    (quote
@@ -129,8 +163,11 @@
 (require 'evil)
 (evil-mode t)
 (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
-(delete 'term-mode evil-insert-state-modes)
-(add-to-list 'evil-emacs-state-modes 'term-mode)
+(defun evil-default-emacs-state (mode)
+  (delete mode evil-insert-state-modes)
+  (add-to-list 'evil-emacs-state-modes mode))
+(evil-default-emacs-state 'term-mode)
+(evil-default-emacs-state 'calculator-mode)
 
 ; Flycheck config
 (add-hook 'after-init-hook #'global-flycheck-mode)
@@ -221,7 +258,6 @@
 (require 'company)
 (add-hook 'after-init-hook 'global-company-mode)
 (add-to-list 'company-backends 'company-ghc)
-(custom-set-variables '(company-ghc-show-info t))
 
 ; Magit
 (autoload 'magit-status "magit" "Magit is awesome" t)
@@ -240,3 +276,4 @@
     (send-string-to-terminal (concat "\033]2; " (if buffer-file-name (buffer-file-name) (buffer-name)) " - emacs\007"))))
 
 (add-hook 'post-command-hook 'xterm-title-update)
+(add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
