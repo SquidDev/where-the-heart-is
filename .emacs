@@ -15,14 +15,13 @@
 
 (package-initialize)
 
-(defvar package-list)
-(setq package-list '(
+(defvar package-list '(
   ; Nice themes
   base16-theme
   ; Linter
   flycheck
   ; Ctrl+P
-  helm
+  helm helm-projectile
   ; Autocomplete
   company
   ; Various editing modes, enable on demand
@@ -42,6 +41,8 @@
   undo-tree
   ; 'Better' keybindings
   evil
+  ; A terminal which works with zsh
+  multi-term
   ; Editor config
   editorconfig))
 
@@ -73,6 +74,7 @@
    (quote
     ("9e76732c9af8e423236ff8e37dd3b9bc37dacc256e42cc83810fb824eaa529b9" default)))
  '(editorconfig-mode t)
+ '(evil-toggle-key "")
  '(evil-want-fine-undo t)
  '(flycheck-keymap-prefix "f")
  '(flycheck-syntax-check-failed-hook nil)
@@ -92,7 +94,9 @@
       ("Programming"
        (saved . "programming"))
       ("Temporary"
-       (name . "\\*.*\\*"))))))
+       (or
+        (name . "\\*.*\\*")
+        (name . "\\*magit.*")))))))
  '(ibuffer-saved-filters
    (quote
     (("gnus"
@@ -104,19 +108,22 @@
         (mode . gnus-article-mode))))
      ("programming"
       ((or
-        (mode . emacs-lisp-mode)
-        (name . "\\*scratch\\*")
-        (mode . inferior-emacs-lisp-mode)
-        (mode . cperl-mode)
         (mode . c-mode)
-        (mode . perl-mode)
-        (mode . python-mode)
-        (mode . php-mode)
-        (mode . java-mode)
-        (mode . web-mode)
+        (mode . cperl-mode)
+        (mode . emacs-lisp-mode)
+        (mode . haskell-mode)
         (mode . idl-mode)
-        (mode . lisp-mode)))))))
+        (mode . inferior-emacs-lisp-mode)
+        (mode . java-mode)
+        (mode . javascript-mode)
+        (mode . lisp-mode)
+        (mode . perl-mode)
+        (mode . php-mode)
+        (mode . python-mode)
+        (mode . web-mode)
+        (name . "\\*scratch\\*")))))))
  '(inhibit-startup-screen t)
+ '(multi-term-dedicated-select-after-open-p t)
  '(next-line-add-newlines nil)
  '(relative-line-numbers-format (quote relative-line-numbers-custom-format))
  '(relative-line-numbers-max-count 0)
@@ -207,9 +214,13 @@
 ; Helm Mode
 (require 'helm)
 (require 'helm-config)
+(require 'helm-projectile)
 
 (helm-mode 1)
+; (helm-flx-mode 1)
+; (helm-fuzzier-mode 1)
 (helm-autoresize-mode 1)
+(helm-projectile-on)
 
 (global-set-key (kbd "C-c h") 'helm-command-prefix)
 (global-unset-key (kbd "C-x c"))
@@ -237,6 +248,12 @@
 (setq web-mode-engines-alist
       '(("mason"    . "\\.mhtml\\'")
        ("blade"  . "\\.blade\\.")))
+(defun ac-php-keybindings ()
+    (define-key evil-normal-state-local-map (kbd "gD") 'ac-php-find-symbol-at-point)
+    (define-key evil-normal-state-local-map (kbd "gb") 'ac-php-location-stack-back)
+    (define-key evil-normal-state-local-map (kbd "gh") 'ac-php-show-tip))
+(add-hook 'web-mode-hook 'ac-php-keybindings)
+(add-hook 'php-mode-hook 'ac-php-keybindings)
 
 (setq-default indent-tabs-mode nil)
 (global-set-key (kbd "<select>") 'move-end-of-line)
@@ -259,8 +276,17 @@
 (add-hook 'after-init-hook 'global-company-mode)
 (add-to-list 'company-backends 'company-ghc)
 
+; Company php
+(autoload 'company-ac-php-backend "company-php" "Company php integration" t)
+(add-to-list 'company-backends 'company-ac-php-backend) ; You have to manually patch it to allow web-mode and to run on PHP 5.3
+(projectile-global-mode)
+
 ; Magit
-(autoload 'magit-status "magit" "Magit is awesome" t)
+(autoload 'magit-status "magit" "Show the status of the current Git repository in a buffer.
+With a prefix argument prompt for a repository to be shown.
+With two prefix arguments prompt for an arbitrary directory.
+If that directory isn't the root of an existing repository
+then offer to initialize it as a new repository." t)
 (global-set-key (kbd "C-c m") 'magit-status)
 
 ; General
