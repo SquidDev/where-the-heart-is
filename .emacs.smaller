@@ -1,0 +1,159 @@
+;; (add-to-list 'load-path "/home/bonzo/benchmark-init-el")
+;; (require 'benchmark-init-loaddefs)
+;; (benchmark-init/activate)
+
+(eval-when-compile (require 'cl))
+(require 'package)
+
+(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
+(package-initialize)
+(defvar package-list '(
+  ; Various editing modes, enable on demand
+  ; lua-mode
+  ; markdown-mode
+  ; web-mode
+  ; yaml-mode
+  ; haskell-mode ghc
+  flycheck smex neotree undo-tree evil multi-term editorconfig))
+
+; fetch the list of packages available
+(unless package-archive-contents (package-refresh-contents))
+
+; install the missing packages
+(dolist (package package-list)
+  (unless (package-installed-p package)
+    (package-install package)))
+
+; Basic Things
+(set-language-environment "UTF-8")
+(fset 'yes-or-no-p 'y-or-n-p)
+
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backup"))))
+ '(custom-enabled-themes (quote (base16-summerfruit-light)))
+ '(custom-safe-themes (quote ("4f846a88adbe6f8816074f504a833ee0cfd1f7430de7e43bed8c0f0352c4a87d" default)))
+ '(diff-switches "-u")
+ '(evil-toggle-key "")
+ '(evil-want-fine-undo t)
+ '(global-whitespace-mode t)
+ '(ibuffer-saved-filter-groups (quote (("Default" ("Terminals" (used-mode . term-mode)) ("Programming" (saved . "programming")) ("Temporary" (or (name . "\\*.*\\*") (name . "\\*magit.*")))))))
+ '(ibuffer-saved-filters (quote (("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . c-mode) (mode . cperl-mode) (mode . emacs-lisp-mode) (mode . haskell-mode) (mode . idl-mode) (mode . inferior-emacs-lisp-mode) (mode . java-mode) (mode . javascript-mode) (mode . lisp-mode) (mode . perl-mode) (mode . php-mode) (mode . python-mode) (mode . web-mode) (name . "\\*scratch\\*")))))))
+ '(ido-create-new-buffer (quote never))
+ '(ido-enable-flex-matching t)
+ '(ido-everywhere t)
+ '(ido-ignore-directories (quote ("\\`CVS/" "\\`\\.\\./" "\\`\\./")))
+ '(ido-mode (quote both) nil (ido))
+ '(inhibit-startup-screen t)
+ '(multi-term-dedicated-select-after-open-p t)
+ '(next-line-add-newlines nil)
+ '(projectile-global-mode t)
+ '(require-final-newline t)
+ '(ring-bell-function (quote ignore) t)
+ '(save-place-file (concat user-emacs-directory ".saved-places"))
+ '(tab-width 4)
+ '(tramp-default-method "ssh")
+ '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
+ '(whitespace-style (quote (face tabs trailing spaces indentation empty tab-mark space-mark))))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
+
+; Save location in files
+(setq-default save-place t)
+(require 'saveplace)
+
+; Ensure buffers have unique names
+(require 'uniquify)
+
+(require 'editorconfig)
+(editorconfig-mode 1)
+
+; Evil mode
+(require 'evil)
+(evil-mode t)
+(define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
+(defun evil-default-emacs-state (mode)
+  (delete mode evil-insert-state-modes)
+  (add-to-list 'evil-emacs-state-modes mode))
+(evil-default-emacs-state 'term-mode)
+(evil-default-emacs-state 'calculator-mode)
+
+; Flycheck
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+(add-to-list 'display-buffer-alist
+ `(,(rx bos "*Flycheck errors*" eos)
+  (display-buffer-reuse-window
+  display-buffer-in-side-window)
+  (reusable-frames . visible)
+  (side            . bottom)
+  (window-height   . 0.4)))
+
+; Close side windows
+(defun quit-bottom-side-windows ()
+  "Quit side windows of the current frame."
+  (interactive)
+  (dolist (window (window-at-side-list))
+    (quit-window nil window)))
+
+; General key bindings
+(global-set-key (kbd "C-c q") #'quit-bottom-side-windows)
+(global-set-key (kbd "C-\\") 'neotree-toggle)
+(global-set-key (kbd "C-l") 'kill-whole-line)
+
+(add-hook 'neotree-mode-hook
+  (lambda ()
+    (define-key evil-normal-state-local-map (kbd "TAB") 'neotree-enter)
+    (define-key evil-normal-state-local-map (kbd "SPC") 'neotree-enter)
+    (define-key evil-normal-state-local-map (kbd "q") 'neotree-hide)
+    (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
+
+; Web mode
+(add-to-list 'auto-mode-alist '("\\.phtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.tpl\\.php\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.[agj]sp\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.as[cp]x\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.erb\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.djhtml\\'" . web-mode))
+(add-to-list 'auto-mode-alist '("\\.mhtml\\'" . web-mode))
+
+; PuTTY's end key is broken (or mine is)
+(global-set-key (kbd "<select>") 'move-end-of-line)
+
+; Mouse support
+(xterm-mouse-mode t)
+(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
+(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
+(global-set-key (kbd "C-/") 'comment-or-uncomment-region)
+
+; Show matching parens under curosr
+(show-paren-mode 1)
+
+; I can't remember the REPL name
+(defalias 'repl 'ielm)
+
+; Show title in buffer
+(defvar last-buffer "")
+(defun xterm-title-update ()
+  (interactive)
+  (if (string= last-buffer (buffer-name)) nil
+    (setq last-buffer (buffer-name))
+    (send-string-to-terminal (concat "\033]2; " (if buffer-file-name (buffer-file-name) (buffer-name)) " - emacs\007"))))
+
+(add-hook 'post-command-hook 'xterm-title-update)
+
+; Use default groupings
+(add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
+
+; Use IDO in everything
+(require 'ido)
+(global-set-key (kbd "M-x") 'smex)
