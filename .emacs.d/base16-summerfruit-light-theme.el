@@ -2,7 +2,6 @@
 ;; Scheme: Christopher Corley (http://cscorley.github.io/)
 
 ;;; base16-summerfruit-light-theme.el
-
 ;;; Code:
 
 (deftheme base16-summerfruit-light)
@@ -34,7 +33,7 @@
    `(default ((t (:background ,base07 :foreground ,base02))))
    `(fringe ((t (:background ,base02))))
    `(gui-element ((t (:background ,base03 :foreground ,base06))))
-   `(highlight ((t (:background ,base01))))
+   `(highlight ((t (:background ,base01 :foreground ,base04))))
    `(link ((t (:foreground ,base0D))))
    `(link-visited ((t (:foreground ,base0E))))
    `(minibuffer-prompt ((t (:foreground ,base0D))))
@@ -42,8 +41,8 @@
    `(mode-line-buffer-id ((t (:foreground ,base0E :background nil))))
    `(mode-line-emphasis ((t (:foreground ,base06 :slant italic))))
    `(mode-line-highlight ((t (:foreground ,base0E :box nil :weight bold))))
-   `(mode-line-inactive ((t (:background ,base01 :foreground ,base03 :box nil))))
-   `(region ((t (:background ,base02))))
+   `(mode-line-inactive ((t (:background ,base01 :foreground ,"#909090" :box nil))))
+   `(region ((t (:background ,base04))))
    `(secondary-selection ((t (:background ,base03))))
    `(error ((t (:foreground ,base08 :weight bold))))
    `(warning ((t (:foreground ,base09 :weight bold))))
@@ -53,8 +52,8 @@
 
    ;; Font-lock stuff
    `(font-lock-builtin-face ((t (:foreground ,base0C))))
-   `(font-lock-comment-delimiter-face ((t (:foreground ,base02))))
-   `(font-lock-comment-face ((t (:foreground ,base03))))
+   `(font-lock-comment-delimiter-face ((t (:foreground "#707070"))))
+   `(font-lock-comment-face ((t (:foreground "#909090"))))
    `(font-lock-constant-face ((t (:foreground ,base09))))
    `(font-lock-doc-face ((t (:foreground ,base04))))
    `(font-lock-doc-string-face ((t (:foreground ,base03))))
@@ -145,14 +144,14 @@
 
    `(trailing-whitespace ((t (:background ,base0C :foreground ,base0A))))
    `(whitespace-empty ((t (:foreground ,base08 :background ,base0A))))
-   `(whitespace-hspace ((t (:background ,base04 :foreground ,base04))))
-   `(whitespace-indentation ((t (:background ,base0A :foreground ,base08))))
+   `(whitespace-hspace ((t (:foreground ,base04 :background nil))))
+   `(whitespace-indentation ((t (:foreground ,base04 :background nil))))
    `(whitespace-line ((t (:background ,base01 :foreground ,base0F))))
    `(whitespace-newline ((t (:foreground ,base04))))
-   `(whitespace-space ((t (:background ,base01 :foreground ,base04))))
+   `(whitespace-space ((t (:foreground ,base04 :background nil))))
    `(whitespace-space-after-tab ((t (:background ,base0A :foreground ,base08))))
    `(whitespace-space-before-tab ((t (:background ,base09 :foreground ,base08))))
-   `(whitespace-tab ((t (:background ,base04 :foreground ,base04))))
+   `(whitespace-tab ((t (:foreground ,base04 :background nil))))
    `(whitespace-trailing ((t (:background ,base08 :foreground ,base0A))))
 
    ;; Parenthesis matching (built-in)
