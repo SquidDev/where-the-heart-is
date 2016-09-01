@@ -1,7 +1,4 @@
-;; (add-to-list 'load-path "/home/bonzo/benchmark-init-el")
-;; (require 'benchmark-init-loaddefs)
-;; (benchmark-init/activate)
-
+;; .emacs for older versions of Emacs.
 (eval-when-compile (require 'cl))
 (require 'package)
 
@@ -24,56 +21,18 @@
   (unless (package-installed-p package)
     (package-install package)))
 
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
+
 ; Basic Things
 (set-language-environment "UTF-8")
 (fset 'yes-or-no-p 'y-or-n-p)
+(setq frame-title-format
+  (concat  "%b - emacs@" (system-name)))
 
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backup"))))
- '(custom-enabled-themes (quote (base16-summerfruit-light)))
- '(custom-safe-themes (quote ("4f846a88adbe6f8816074f504a833ee0cfd1f7430de7e43bed8c0f0352c4a87d" default)))
- '(diff-switches "-u")
- '(evil-toggle-key "")
- '(evil-want-fine-undo t)
- '(global-whitespace-mode t)
- '(ibuffer-saved-filter-groups (quote (("Default" ("Terminals" (used-mode . term-mode)) ("Programming" (saved . "programming")) ("Temporary" (or (name . "\\*.*\\*") (name . "\\*magit.*")))))))
- '(ibuffer-saved-filters (quote (("gnus" ((or (mode . message-mode) (mode . mail-mode) (mode . gnus-group-mode) (mode . gnus-summary-mode) (mode . gnus-article-mode)))) ("programming" ((or (mode . c-mode) (mode . cperl-mode) (mode . emacs-lisp-mode) (mode . haskell-mode) (mode . idl-mode) (mode . inferior-emacs-lisp-mode) (mode . java-mode) (mode . javascript-mode) (mode . lisp-mode) (mode . perl-mode) (mode . php-mode) (mode . python-mode) (mode . web-mode) (name . "\\*scratch\\*")))))))
- '(ido-create-new-buffer (quote never))
- '(ido-enable-flex-matching t)
- '(ido-everywhere t)
- '(ido-ignore-directories (quote ("\\`CVS/" "\\`\\.\\./" "\\`\\./")))
- '(ido-mode (quote both) nil (ido))
- '(inhibit-startup-screen t)
- '(multi-term-dedicated-select-after-open-p t)
- '(next-line-add-newlines nil)
- '(projectile-global-mode t)
- '(require-final-newline t)
- '(ring-bell-function (quote ignore) t)
- '(save-place-file (concat user-emacs-directory ".saved-places"))
- '(tab-width 4)
- '(tramp-default-method "ssh")
- '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
- '(whitespace-style (quote (face tabs trailing spaces indentation empty tab-mark space-mark))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- )
-
-; Save location in files
-(setq-default save-place t)
-(require 'saveplace)
-
-; Ensure buffers have unique names
-(require 'uniquify)
-
-(require 'editorconfig)
-(editorconfig-mode 1)
+(defun linum-custom-format (offset)
+  "Custom formatting function for relative line numbers. Space for 2 numbers then a line"
+  (format "%2d\u2502" (abs offset)))
 
 ; Evil mode
 (require 'evil)

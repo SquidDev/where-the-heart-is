@@ -140,7 +140,6 @@
 (add-hook 'web-mode-hook 'ac-php-keybindings)
 (add-hook 'php-mode-hook 'ac-php-keybindings)
 
-(setq-default indent-tabs-mode nil)
 (global-set-key (kbd "<select>") 'move-end-of-line)
 
 (xterm-mouse-mode t)
