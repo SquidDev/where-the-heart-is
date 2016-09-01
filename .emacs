@@ -1,23 +1,11 @@
-;; (add-to-list 'load-path "/home/bonzo/benchmark-init-el")
-;; (require 'benchmark-init-loaddefs)
-;; (benchmark-init/activate)
-
 (eval-when-compile (require 'cl))
 (require 'package)
-
-(setq frame-title-format
-  (concat  "%b - emacs@" (system-name)))
-
-; default to unified diffs
-(setq diff-switches "-u")
-
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 
 (package-initialize)
+; (benchmark-init/activate)
 
 (defvar package-list '(
-  ; Nice themes
-  base16-theme
   ; Linter
   flycheck
   ; Ctrl+P
@@ -54,117 +42,18 @@
   (unless (package-installed-p package)
     (package-install package)))
 
+(setq custom-file "~/.emacs.d/custom.el")
+(load custom-file 'noerror)
+
 ; Basic Things
 (set-language-environment "UTF-8")
 (fset 'yes-or-no-p 'y-or-n-p)
+(setq frame-title-format
+  (concat  "%b - emacs@" (system-name)))
 
-(defun relative-line-numbers-custom-format (offset)
+(defun linum-custom-format (offset)
   "Custom formatting function for relative line numbers. Space for 2 numbers then a line"
   (format "%2d\u2502" (abs offset)))
-
-(custom-set-variables
- ;; custom-set-variables was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backup"))))
- '(company-ghc-show-info t)
- '(custom-enabled-themes (quote (base16-summerfruit-light)))
- '(custom-safe-themes
-   (quote
-    ("9e76732c9af8e423236ff8e37dd3b9bc37dacc256e42cc83810fb824eaa529b9" default)))
- '(editorconfig-mode t)
- '(evil-toggle-key "")
- '(evil-want-fine-undo t)
- '(flycheck-keymap-prefix "f")
- '(flycheck-syntax-check-failed-hook nil)
- '(global-relative-line-numbers-mode t)
- '(global-whitespace-mode t)
- '(helm-M-x-fuzzy-match t)
- '(helm-ff-file-name-history-use-recentf t)
- '(helm-ff-search-library-in-sexp t)
- '(helm-move-to-line-cycle-in-source t)
- '(helm-scroll-amount 8)
- '(helm-split-window-in-side-p t)
- '(ibuffer-saved-filter-groups
-   (quote
-    (("Default"
-      ("Terminals"
-       (used-mode . term-mode))
-      ("Programming"
-       (saved . "programming"))
-      ("Temporary"
-       (or
-        (name . "\\*.*\\*")
-        (name . "\\*magit.*")))))))
- '(ibuffer-saved-filters
-   (quote
-    (("gnus"
-      ((or
-        (mode . message-mode)
-        (mode . mail-mode)
-        (mode . gnus-group-mode)
-        (mode . gnus-summary-mode)
-        (mode . gnus-article-mode))))
-     ("programming"
-      ((or
-        (mode . c-mode)
-        (mode . cperl-mode)
-        (mode . emacs-lisp-mode)
-        (mode . haskell-mode)
-        (mode . idl-mode)
-        (mode . inferior-emacs-lisp-mode)
-        (mode . java-mode)
-        (mode . javascript-mode)
-        (mode . lisp-mode)
-        (mode . perl-mode)
-        (mode . php-mode)
-        (mode . python-mode)
-        (mode . web-mode)
-        (name . "\\*scratch\\*")))))))
- '(inhibit-startup-screen t)
- '(multi-term-dedicated-select-after-open-p t)
- '(next-line-add-newlines nil)
- '(relative-line-numbers-format (quote relative-line-numbers-custom-format))
- '(relative-line-numbers-max-count 0)
- '(require-final-newline t)
- '(ring-bell-function (quote ignore) t)
- '(save-place-file (concat user-emacs-directory ".saved-places"))
- '(tab-width 4)
- '(tramp-default-method "ssh")
- '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
- '(whitespace-style
-   (quote
-    (face tabs trailing spaces indentation empty tab-mark space-mark))))
-(custom-set-faces
- ;; custom-set-faces was added by Custom.
- ;; If you edit it by hand, you could mess it up, so be careful.
- ;; Your init file should contain only one such instance.
- ;; If there is more than one, they won't work right.
- '(font-lock-comment-delimiter-face ((t (:foreground "#707070"))))
- '(font-lock-comment-face ((t (:foreground "#909090"))))
- '(helm-ff-directory ((t (:foreground "#707070" :weight bold))))
- '(helm-selection ((t (:background "#B0B0B0" :underline nil))))
- '(highlight ((t (:background "#202020" :foreground "#B0B0B0"))))
- '(linum ((t (:inherit default :foreground "#505050" :background nil))))
- '(region ((t (:background "#B0B0B0"))))
- '(whitespace-hspace ((t (:foreground "#B0B0B0" :background nil))))
- '(whitespace-indentation ((t (:foreground "#B0B0B0" :background nil))))
- '(whitespace-space ((t (:foreground "#B0B0B0" :background nil))))
- '(whitespace-tab ((t (:foreground "#B0B0B0" :background nil)))))
-
-; Whitespace highlighting
-(autoload 'global-whitespace-mode "whitespace" "Toggle whitespace visualization." t)
-
-; Save location
-(setq-default save-place t)
-(require 'saveplace)
-
-; Unique buffers
-(require 'uniquify)
-
-(autoload 'editorconfig-mode "editorconfig" "Toggle EditorConfig feature." t)
-(autoload 'relative-line-numbers-mode "relative-line-numbers" "Toggle Relative Line Numbers on or off." t)
 
 ; Evil doesn't seem to work with autoload
 (require 'evil)
@@ -177,8 +66,6 @@
 (evil-default-emacs-state 'calculator-mode)
 
 ; Flycheck config
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
 (with-eval-after-load 'flycheck
   (flycheck-add-mode 'html-tidy 'web-mode)
   (flycheck-add-mode 'php 'web-mode)
@@ -217,8 +104,6 @@
 (require 'helm-projectile)
 
 (helm-mode 1)
-; (helm-flx-mode 1)
-; (helm-fuzzier-mode 1)
 (helm-autoresize-mode 1)
 (helm-projectile-on)
 
@@ -230,7 +115,7 @@
   (define-key term-raw-map (kbd "C-c M-x") 'helm-M-x)))
 
 (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; make TAB works in terminal
+(define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; rebind tab to run persistent action
 (global-set-key (kbd "C-x C-b") 'helm-buffers-list)
 (global-set-key (kbd "C-x C-f") 'helm-find-files)
 
@@ -264,6 +149,7 @@
 (global-set-key (kbd "C-/") 'comment-or-uncomment-region)
 
 (add-to-list 'auto-mode-alist '("\\.gmk\\'" . makefile-mode))
+(add-to-list 'auto-mode-alist '("\\blog\\'" . (lambda () (auto-revert-tail-mode t))))
 
 ; GHC mod
 (autoload 'ghc-init "ghc" "GHC integration" t)
@@ -273,21 +159,11 @@
 
 ; Company
 (require 'company)
-(add-hook 'after-init-hook 'global-company-mode)
 (add-to-list 'company-backends 'company-ghc)
 
 ; Company php
 (autoload 'company-ac-php-backend "company-php" "Company php integration" t)
 (add-to-list 'company-backends 'company-ac-php-backend) ; You have to manually patch it to allow web-mode and to run on PHP 5.3
-(projectile-global-mode)
-
-; Magit
-(autoload 'magit-status "magit" "Show the status of the current Git repository in a buffer.
-With a prefix argument prompt for a repository to be shown.
-With two prefix arguments prompt for an arbitrary directory.
-If that directory isn't the root of an existing repository
-then offer to initialize it as a new repository." t)
-(global-set-key (kbd "C-c m") 'magit-status)
 
 ; General
 (show-paren-mode 1)
@@ -303,3 +179,23 @@ then offer to initialize it as a new repository." t)
 
 (add-hook 'post-command-hook 'xterm-title-update)
 (add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
+
+(defvar ssh-term-history nil)
+
+(eval-after-load 'savehist
+  '(add-to-list 'savehist-additional-variables 'ssh-term-history))
+
+(defun ssh-term (args)
+  "Connect to a remote host by SSH."
+  (interactive
+   (list (read-from-minibuffer "ssh " nil nil nil 'ssh-term-history)))
+  (let* ((switches (split-string-and-unquote args))
+         (name (concat "ssh " args))
+         (termbuf (apply 'make-term name "ssh" nil switches)))
+    (set-buffer termbuf)
+    (term-mode)
+    (term-char-mode)
+    (switch-to-buffer termbuf)))
+
+(provide '.emacs)
+;;; .emacs ends here

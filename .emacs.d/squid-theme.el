@@ -1,10 +1,10 @@
-;; Base16 Summerfruit (https://github.com/chriskempson/base16)
+;; SquidTheme: Adaptation of Base16 Summerfruit (https://github.com/chriskempson/base16)
 ;; Scheme: Christopher Corley (http://cscorley.github.io/)
 
-;;; base16-summerfruit-light-theme.el
+;;; squid-theme.el
 ;;; Code:
 
-(deftheme base16-summerfruit-light)
+(deftheme squid)
 
 (let ((base00 "#151515")
       (base01 "#202020")
@@ -24,7 +24,7 @@
       (base0F "#cc6633"))
 
   (custom-theme-set-faces
-   'base16-summerfruit-light
+   'squid
 
    ;; Built-in stuff (Emacs 23)
    `(border ((t (:background ,base03))))
@@ -69,7 +69,7 @@
    `(font-lock-warning-face ((t (:foreground ,base08))))
 
    ;; linum-mode
-   `(linum ((t (:background ,base01 :foreground ,base03))))
+   `(linum ((t (:background nil :foreground ,base03))))
 
    ;; Search
    `(match ((t (:foreground ,base0D :background ,base01 :inverse-video t))))
@@ -79,7 +79,7 @@
    `(evil-search-highlight-persist-highlight-face ((t (:background ,base01 :inherit font-lock-warning-face :inverse-video t))))
 
    ;; Popups
-   `(popup-face ((t (:foreground ,base02 :background ,base05))))	
+   `(popup-face ((t (:foreground ,base02 :background ,base05))))
    `(popup-isearch-match ((t (:foreground ,base07 :background ,base0B))))
    `(popup-scroll-bar-background-face ((t (:background ,base04))))
    `(popup-scroll-bar-foreground-face ((t (:background ,base02))))
@@ -89,7 +89,7 @@
    `(popup-menu-selection-face ((t (:foreground ,base07 :background ,base0C))))
 
    ;; Popups
-   `(popup-face ((t (:foreground ,base02 :background ,base05))))	
+   `(popup-face ((t (:foreground ,base02 :background ,base05))))
    `(popup-isearch-match ((t (:foreground ,base07 :background ,base0B))))
    `(popup-scroll-bar-background-face ((t (:background ,base04))))
    `(popup-scroll-bar-foreground-face ((t (:background ,base02))))
@@ -456,7 +456,7 @@
    `(helm-buffer-saved-out ((t (:foreground ,base0F))))
    `(helm-buffer-size ((t (:foreground ,base09))))
    `(helm-candidate-number ((t (:foreground ,base00 :background ,base09))))
-   `(helm-ff-directory ((t (:foreground ,base04 :background nil :weight bold))))
+   `(helm-ff-directory ((t (:foreground "#707070" :background nil :weight bold))))
    `(helm-ff-executable ((t (:foreground ,base0B))))
    `(helm-ff-file ((t (:foreground ,base0C))))
    `(helm-ff-invalid-symlink ((t (:foreground ,base00 :background ,base08))))
@@ -471,7 +471,7 @@
    `(helm-header ((t (:foreground ,base0A :background ,base00 :underline nil))))
    `(helm-match ((t (:foreground ,base0A))))
    `(helm-moccur-buffer ((t (:foreground ,base0C))))
-   `(helm-selection ((t (:foreground nil :background ,base02 :underline nil))))
+   `(helm-selection ((t (:foreground nil :background ,base04 :underline nil))))
    `(helm-selection-line ((t (:foreground nil :background ,base02))))
    `(helm-separator ((t (:foreground ,base02))))
    `(helm-source-header ((t (:foreground ,base05 :background ,base01 :weight bold))))
@@ -483,7 +483,7 @@
 
 
   (custom-theme-set-variables
-   'base16-summerfruit-light
+   'squid
 
    `(ansi-color-names-vector
      ;; black, base08, base0B, base0A, base0D, magenta, cyan, white
@@ -492,6 +492,6 @@
      ;; black, base08, base0B, base0A, base0D, magenta, cyan, white
      [unspecified ,base00 ,base08 ,base0B ,base0A ,base0D ,base0E ,base0D ,base05])))
 
-(provide-theme 'base16-summerfruit-light)
+(provide-theme 'squid)
 
-;;; base16-summerfruit-light-theme.el ends here
+;;; squid-theme.el ends here
