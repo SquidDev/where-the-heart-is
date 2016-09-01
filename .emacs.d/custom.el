@@ -11,7 +11,7 @@
  '(custom-file "~/.emacs.d/custom.el")
  '(custom-safe-themes
    (quote
-    ("27f7a27816bc143d4c1cc763f12e1f97a5ba284b4c98ffcb42f47a666599965e" default)))
+    ("6b152e87b5d73d3c75b79554732ce75b4c29602863f17af65f3e7af663ca6c82" default)))
  '(diff-switches "-u")
  '(editorconfig-mode t)
  '(evil-toggle-key "")
