@@ -115,4 +115,6 @@
 
 ; Use IDO in everything
 (require 'ido)
+(ido-everywhere t)
+(ido-mode (quote both) nil (ido))
 (global-set-key (kbd "M-x") 'smex)
