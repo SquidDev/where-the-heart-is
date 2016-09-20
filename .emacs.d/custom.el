@@ -1,3 +1,7 @@
+(defun linum-custom-format (offset)
+  "Custom formatting function for relative line numbers. Space for 2 numbers then a line"
+  (format "%2d\u2502" (abs offset)))
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -16,12 +20,19 @@
  '(editorconfig-mode t)
  '(evil-toggle-key "")
  '(evil-want-fine-undo t)
+ '(fill-column 120)
+ '(flycheck-disabled-checkers (quote (haskell-stack-ghc)))
  '(flycheck-keymap-prefix "f")
  '(flycheck-syntax-check-failed-hook nil)
  '(global-company-mode t)
  '(global-flycheck-mode t)
  '(global-relative-line-numbers-mode t)
  '(global-whitespace-mode t)
+ '(haskell-interactive-popup-errors nil)
+ '(haskell-process-auto-import-loaded-modules t)
+ '(haskell-process-log t)
+ '(haskell-process-show-debug-tips nil)
+ '(haskell-process-suggest-remove-import-lines t)
  '(helm-M-x-fuzzy-match t)
  '(helm-ff-file-name-history-use-recentf t)
  '(helm-ff-search-library-in-sexp t)
