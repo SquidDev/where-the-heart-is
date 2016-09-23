@@ -10,3 +10,6 @@ alias xbuild="xbuild /verbosity:quiet /nologo"
 
 # Java development
 alias gradle-clear="jps·|·grep·GradleDaemon·|·sed·'s/·GradleDaemon//g'·|·xargs·-r·kill"
+
+# Haskell
+export PATH="$PATH:$HOME/.cabal/bin"

@@ -17,13 +17,20 @@
     (unless (package-installed-p package)
       (package-install package))))
 
+; Version specific p
+(if (version< emacs-version "24.4")
+  (progn
+    (package-require 'ido 'smex) ; Alternative to helm
+    )
+  (progn
+    (package-require 'helm 'helm-projectile) ; Nicer interactive prompt
+    (package-require 'magit) ; Git integration (requires recent Git and Emacs versions though)
+    ))
+
 ; Core packages
 (package-require 'evil)     ; Better editing
 (package-require 'flycheck) ; Linter
-(package-require 'helm 'helm-projectile) ; Nicer interactive prompt
-; (package-require 'ido 'smex) ; Alternative to helm
 (package-require 'company) ; Autocomplete
-(package-require 'magit) ; Git integration (requires recent Git and Emacs versions though)
 (package-require 'undo-tree)
 (package-require 'fill-column-indicator) ; Useful, but breaks company mode though
 (package-require 'editorconfig)
