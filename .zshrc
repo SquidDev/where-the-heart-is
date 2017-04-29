@@ -5,4 +5,4 @@ plugins=(git)
 source $ZSH/oh-my-zsh.sh
 
 # Main configuration
-source "~/.mainrc"
+source "$HOME/.mainrc"

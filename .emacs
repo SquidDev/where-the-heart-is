@@ -11,7 +11,7 @@
 
 (defvar package-required ())
 (defun package-require (&rest packages)
-  "Install PACKAGE if it is already installed."
+  "Install PACKAGES if they are not already installed."
   (dolist (package packages)
     (add-to-list 'package-required package)
     (unless (package-installed-p package)
@@ -23,6 +23,7 @@
     (package-require 'ido 'smex) ; Alternative to helm
     )
   (progn
+    (package-require 'ido 'smex) ; Alternative to helm
     (package-require 'helm 'helm-projectile) ; Nicer interactive prompt
     (package-require 'magit) ; Git integration (requires recent Git and Emacs versions though)
     ))
@@ -32,6 +33,7 @@
 (package-require 'flycheck) ; Linter
 (package-require 'company) ; Autocomplete
 (package-require 'undo-tree)
+(package-require 'neotree)
 (package-require 'fill-column-indicator) ; Useful, but breaks company mode though
 (package-require 'editorconfig)
 (package-require 'multi-term) ; A terminal which works with zsh
@@ -43,9 +45,12 @@
 (package-require 'yaml-mode)
 (package-require 'haskell-mode 'ghc 'company-ghc)
 
-(defun package-required-p (package) (memq package package-required))
+(defun package-required-p (package)
+  "Check if the specified PACKAGE is loaded."
+  (memq package package-required))
+
 (defmacro exec-after-load (file &rest body)
-  "Execute BODY after FILE is loaded.
+  "Once FILE is loaded, execute BODY.
 FILE is normally a feature name, but it can also be a file name,
 in case that file does not provide any feature."
   (declare (indent 1) (debug t))
@@ -53,7 +58,7 @@ in case that file does not provide any feature."
     (if (package-required-p ,file) (progn ,@body)))))
 
 (defmacro exec-if-load (package &rest body)
-  "Execute BODY if PACKAGE is loaded."
+  "If PACKAGE is loaded, execute BODY."
   (declare (indent 1) (debug t))
   `(if (package-required-p ,package) (progn ,@body)))
 
@@ -121,8 +126,7 @@ in case that file does not provide any feature."
 
   (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
   (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-  (global-set-key (kbd "C-x C-b") 'helm-buffers-list)
-  (global-set-key (kbd "C-x C-f") 'helm-find-files))
+  )
 
 (exec-if-load 'ido
   (require 'ido)
@@ -180,5 +184,15 @@ in case that file does not provide any feature."
 (add-to-list 'auto-mode-alist '("\\blog\\'" . (lambda () (auto-revert-tail-mode t))))
 (add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
 (add-hook 'post-command-hook 'xterm-title-update)
+
+(defadvice show-paren-function (after show-matching-paren-offscreen activate)
+  "If the matching paren is offscreen, show the matching line in the echo area.
+Has no effect if the character before point is not of the syntax class ')'."
+  (interactive)
+  (let* ((cb (char-before (point)))
+         (matching-text (and cb
+                             (char-equal (char-syntax cb) ?\) )
+                             (blink-matching-open))))
+    (when matching-text (message matching-text))))
 
 (provide '.emacs)
