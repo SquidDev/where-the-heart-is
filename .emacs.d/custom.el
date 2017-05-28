@@ -10,7 +10,9 @@
  '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backup"))))
  '(browse-url-browser-function (quote browse-url-text-emacs))
  '(browse-url-generic-program "lynx")
+ '(company-auto-complete t)
  '(company-ghc-show-info t)
+ '(company-idle-delay 0)
  '(custom-enabled-themes (quote (squid)))
  '(custom-file "~/.emacs.d/custom.el")
  '(custom-safe-themes
@@ -87,12 +89,10 @@
  '(ispell-dictionary "en_GB")
  '(ispell-program-name "/usr/bin/aspell")
  '(linum-format (quote linum-custom-format))
+ '(menu-bar-mode nil)
  '(multi-term-dedicated-select-after-open-p t)
  '(next-line-add-newlines nil)
  '(org-todo-keywords (quote ((sequence "TODO(t)" "FEEDBACK(f@)" "DONE(d)"))))
- '(package-selected-packages
-   (quote
-    (ggtags helm-gtags neotree smex company-ghc ghc haskell-mode yaml-mode web-mode markdown-mode lua-mode multi-term editorconfig fill-column-indicator company flycheck evil magit helm-projectile helm)))
  '(projectile-global-mode t)
  '(relative-line-numbers-format (quote linum-custom-format))
  '(relative-line-numbers-max-count 0)
@@ -101,7 +101,9 @@
  '(save-place t nil (saveplace))
  '(save-place-file (concat user-emacs-directory ".saved-places"))
  '(savehist-mode t)
+ '(scroll-bar-mode nil)
  '(tab-width 4)
+ '(tool-bar-mode nil)
  '(tramp-default-method "ssh")
  '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
  '(whitespace-style

@@ -20,30 +20,28 @@
 ; Version specific p
 (if (version< emacs-version "24.4")
   (progn
-    (package-require 'ido 'smex) ; Alternative to helm
     )
   (progn
-    (package-require 'ido 'smex) ; Alternative to helm
-    (package-require 'helm 'helm-projectile) ; Nicer interactive prompt
     (package-require 'magit) ; Git integration (requires recent Git and Emacs versions though)
     ))
 
 ; Core packages
+(package-require 'ido 'ido-ubiquitous 'smex) ; Nicer M-x and co.
 (package-require 'evil)     ; Better editing
 (package-require 'flycheck) ; Linter
 (package-require 'company) ; Autocomplete
 (package-require 'undo-tree)
 (package-require 'neotree)
-(package-require 'fill-column-indicator) ; Useful, but breaks company mode though
 (package-require 'editorconfig)
 (package-require 'multi-term) ; A terminal which works with zsh
+(package-require 'nix-sandbox) ; Required for ghc/hlint to function correctly under nix.
 
 ; Various modes
 (package-require 'lua-mode)
 (package-require 'markdown-mode)
 (package-require 'web-mode)
 (package-require 'yaml-mode)
-(package-require 'haskell-mode 'ghc 'company-ghc)
+(package-require 'haskell-mode 'company-ghci)
 
 (defun package-required-p (package)
   "Check if the specified PACKAGE is loaded."
@@ -92,6 +90,16 @@ in case that file does not provide any feature."
       (reusable-frames . visible)
       (side            . bottom)
       (window-height   . 0.4)))
+  (setq haskell-process-wrapper-function
+    (lambda (args)
+      (if (nix-current-sandbox)
+        (apply 'nix-shell-command (nix-current-sandbox) args)
+        args)))
+  (setq flycheck-command-wrapper-function
+    (lambda (args)
+      (if (nix-current-sandbox)
+        (apply 'nix-shell-command (nix-current-sandbox) args)
+        args)))
 
   (defun quit-bottom-side-windows ()
     "Quit side windows of the current frame."
@@ -109,29 +117,12 @@ in case that file does not provide any feature."
       (define-key evil-normal-state-local-map (kbd "RET") 'neotree-enter)))
   (global-set-key (kbd "C-\\") 'neotree-toggle))
 
-(exec-if-load 'helm
-  (require 'helm)
-  (require 'helm-config)
-  (require 'helm-projectile)
-
-  (helm-mode 1)
-  (helm-autoresize-mode 1)
-  (helm-projectile-on)
-
-  (global-set-key (kbd "C-c h") 'helm-command-prefix)
-  (global-unset-key (kbd "C-x c"))
-
-  (global-set-key (kbd "M-x") 'helm-M-x)
-  (exec-after-load 'term (define-key term-raw-map (kbd "C-c M-x") 'helm-M-x))
-
-  (define-key helm-map (kbd "<tab>") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-  (define-key helm-map (kbd "C-i") 'helm-execute-persistent-action) ; rebind tab to run persistent action
-  )
-
 (exec-if-load 'ido
   (require 'ido)
+  (require 'ido-ubiquitous)
   (ido-everywhere t)
   (ido-mode t)
+  (ido-ubiquitous-mode 1)
   (global-set-key (kbd "M-x") 'smex))
 
 (exec-if-load 'web-mode
@@ -149,7 +140,7 @@ in case that file does not provide any feature."
         '(("mason"    . "\\.mhtml\\'")
           ("blade"  . "\\.blade\\."))))
 
-(exec-if-load 'compnay-php
+(exec-if-load 'company-php
   (defun ac-php-keybindings ()
     (define-key evil-normal-state-local-map (kbd "gD") 'ac-php-find-symbol-at-point)
     (define-key evil-normal-state-local-map (kbd "gb") 'ac-php-location-stack-back)
@@ -158,9 +149,9 @@ in case that file does not provide any feature."
   (add-hook 'php-mode-hook 'ac-php-keybindings))
 
 (exec-after-load 'haskell-mode
-  (add-hook 'haskell-mode-hook (lambda () (ghc-init)))
+  (require 'haskell-mode)
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-  (add-to-list 'company-backends 'company-ghc))
+  (add-to-list 'company-backends 'company-ghci))
 
 (unless (display-graphic-p)
   ; Show title in buffer
