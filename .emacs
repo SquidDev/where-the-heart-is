@@ -26,13 +26,14 @@
     ))
 
 ; Core packages
-(package-require 'ido 'ido-ubiquitous 'smex) ; Nicer M-x and co.
+(package-require 'ido 'ido-ubiquitous 'smex 'flx-ido) ; Nicer M-x and co.
 (package-require 'evil)     ; Better editing
 (package-require 'flycheck) ; Linter
 (package-require 'company) ; Autocomplete
 (package-require 'undo-tree)
 (package-require 'neotree)
 (package-require 'editorconfig)
+(package-require 'projectile) ;; Project management
 (package-require 'multi-term) ; A terminal which works with zsh
 (package-require 'nix-sandbox) ; Required for ghc/hlint to function correctly under nix.
 
@@ -90,16 +91,16 @@ in case that file does not provide any feature."
       (reusable-frames . visible)
       (side            . bottom)
       (window-height   . 0.4)))
-  (setq haskell-process-wrapper-function
-    (lambda (args)
-      (if (nix-current-sandbox)
-        (apply 'nix-shell-command (nix-current-sandbox) args)
-        args)))
   (setq flycheck-command-wrapper-function
     (lambda (args)
       (if (nix-current-sandbox)
         (apply 'nix-shell-command (nix-current-sandbox) args)
         args)))
+  (setq flycheck-executable-find
+    (lambda (cmd)
+      (if (nix-current-sandbox)
+        (nix-executable-find (nix-current-sandbox) cmd)
+        cmd)))
 
   (defun quit-bottom-side-windows ()
     "Quit side windows of the current frame."
@@ -120,9 +121,11 @@ in case that file does not provide any feature."
 (exec-if-load 'ido
   (require 'ido)
   (require 'ido-ubiquitous)
+  (require 'flx-ido)
   (ido-everywhere t)
   (ido-mode t)
   (ido-ubiquitous-mode 1)
+  (flx-ido-mode)
   (global-set-key (kbd "M-x") 'smex))
 
 (exec-if-load 'web-mode
@@ -150,6 +153,13 @@ in case that file does not provide any feature."
 
 (exec-after-load 'haskell-mode
   (require 'haskell-mode)
+  (require 'haskell-interactive-mode)
+  (require 'haskell-process)
+  (setq haskell-process-wrapper-function
+    (lambda (args)
+      (if (nix-current-sandbox)
+        (apply 'nix-shell-command (nix-current-sandbox) args)
+        args)))
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-to-list 'company-backends 'company-ghci))
 
@@ -175,6 +185,8 @@ in case that file does not provide any feature."
 (add-to-list 'auto-mode-alist '("\\blog\\'" . (lambda () (auto-revert-tail-mode t))))
 (add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
 (add-hook 'post-command-hook 'xterm-title-update)
+
+(add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
 (defadvice show-paren-function (after show-matching-paren-offscreen activate)
   "If the matching paren is offscreen, show the matching line in the echo area.

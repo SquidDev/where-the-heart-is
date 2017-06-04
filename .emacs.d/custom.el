@@ -12,7 +12,7 @@
  '(browse-url-generic-program "lynx")
  '(company-auto-complete t)
  '(company-ghc-show-info t)
- '(company-idle-delay 0)
+ '(company-idle-delay 0.3)
  '(custom-enabled-themes (quote (squid)))
  '(custom-file "~/.emacs.d/custom.el")
  '(custom-safe-themes
@@ -84,6 +84,7 @@
  '(ido-create-new-buffer (quote never))
  '(ido-enable-flex-matching t)
  '(ido-ignore-directories (quote ("\\`CVS/" "\\`\\.\\./" "\\`\\./")))
+ '(ido-use-faces nil)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(ispell-dictionary "en_GB")
@@ -114,4 +115,4 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- )
+ '(flx-highlight-face ((t (:inherit ido-first-match)))))
