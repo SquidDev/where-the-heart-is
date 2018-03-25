@@ -9,6 +9,8 @@
 (setq custom-file "~/.emacs.d/custom.el")
 (load custom-file 'noerror)
 
+(setq backup-directory-alist '(("." . "~/.emacs.d/backup")))
+
 (defvar package-required ())
 (defun package-require (&rest packages)
   "Install PACKAGES if they are not already installed."
@@ -26,7 +28,7 @@
     ))
 
 ; Core packages
-(package-require 'ido 'ido-ubiquitous 'smex 'flx-ido) ; Nicer M-x and co.
+(package-require 'ido 'ido-completing-read+ 'smex 'flx-ido) ; Nicer M-x and co.
 (package-require 'evil)     ; Better editing
 (package-require 'flycheck) ; Linter
 (package-require 'company) ; Autocomplete
@@ -43,6 +45,9 @@
 (package-require 'web-mode)
 (package-require 'yaml-mode)
 (package-require 'haskell-mode 'company-ghci)
+(package-require 'irony 'flycheck-irony)
+
+(package-require 'rust-mode 'flycheck-rust 'racer)
 
 (defun package-required-p (package)
   "Check if the specified PACKAGE is loaded."
@@ -72,10 +77,13 @@ in case that file does not provide any feature."
   (require 'evil)
   (evil-mode t)
   (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
-  (defun evil-default-emacs-state (mode)
-    (delete mode evil-insert-state-modes)
-    (add-to-list 'evil-emacs-state-modes mode))
-  (mapc 'evil-default-emacs-state '(term-mode calculator-mode profiler-report-mode)))
+
+  (evil-set-initial-state 'term-mode 'emacs)
+  (evil-set-initial-state 'calculator-mode 'emacs)
+  (evil-set-initial-state 'profiler-report-mode 'emacs)
+  (evil-set-initial-state 'neotree-mode 'emacs)
+
+  (evil-set-initial-state 'git-commit-mode 'normal))
 
 (exec-if-load 'company (require 'company))
 
@@ -120,13 +128,16 @@ in case that file does not provide any feature."
 
 (exec-if-load 'ido
   (require 'ido)
-  (require 'ido-ubiquitous)
+  (require 'ido-completing-read+)
   (require 'flx-ido)
   (ido-everywhere t)
   (ido-mode t)
   (ido-ubiquitous-mode 1)
   (flx-ido-mode)
   (global-set-key (kbd "M-x") 'smex))
+
+(exec-if-load 'lua-mode
+  (add-to-list 'auto-mode-alist '("\\.rockspec\\'" . lua-mode)))
 
 (exec-if-load 'web-mode
   (require 'web-mode)
@@ -163,6 +174,44 @@ in case that file does not provide any feature."
   (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
   (add-to-list 'company-backends 'company-ghci))
 
+(exec-after-load 'rust-mode
+  (add-hook 'flycheck-mode-hook #'flycheck-rust-setup)
+  (add-hook 'rust-mode-hook #'racer-mode)
+  (add-hook 'racer-mode-hook #'eldoc-mode)
+
+  (add-hook 'racer-mode-hook #'company-mode)
+  (require 'rust-mode)
+  (define-key rust-mode-map (kbd "TAB") #'company-indent-or-complete-common)
+  (setq company-tooltip-align-annotations t))
+
+(exec-if-load 'irony
+  (add-hook 'c++-mode-hook 'irony-mode)
+  (add-hook 'c-mode-hook 'irony-mode)
+  (add-hook 'objc-mode-hook 'irony-mode)
+
+  (add-hook 'irony-mode-hook 'irony-cdb-autosetup-compile-options)
+
+  (add-to-list 'auto-mode-alist '("\\.h\\'" . c++-mode))
+  (eval-after-load 'flycheck
+    '(add-hook 'flycheck-mode-hook #'flycheck-irony-setup)))
+
+(add-to-list 'auto-mode-alist '("\\.pddl\\'" . lisp-mode))
+
+(progn
+  (add-to-list 'auto-mode-alist '("\\.ml\\'" . tuareg-mode))
+  (add-to-list 'auto-mode-alist '("\\.mli\\'" . tuareg-mode))
+
+ (push "/home/squid/.opam/4.06.1/share/emacs/site-lisp" load-path)
+ (setq merlin-command "/home/squid/.opam/4.06.1/bin/ocamlmerlin")
+ (autoload 'merlin-mode "merlin" "Merlin mode" t)
+ (autoload 'tuareg-mode "tuareg" "Tuareg mode" t)
+ (add-hook 'tuareg-mode-hook 'merlin-mode)
+ (add-hook 'caml-mode-hook 'merlin-mode)
+
+ (eval-after-load 'company
+   (eval-after-load 'merlin-mode
+     (add-to-list 'company-backends 'merlin-company-backend))))
+
 (unless (display-graphic-p)
   ; Show title in buffer
   (defvar last-buffer "")
@@ -182,7 +231,6 @@ in case that file does not provide any feature."
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 (global-set-key (kbd "C-/") 'comment-or-uncomment-region)
 
-(add-to-list 'auto-mode-alist '("\\blog\\'" . (lambda () (auto-revert-tail-mode t))))
 (add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
 (add-hook 'post-command-hook 'xterm-title-update)
 
@@ -197,5 +245,10 @@ Has no effect if the character before point is not of the syntax class ')'."
                              (char-equal (char-syntax cb) ?\) )
                              (blink-matching-open))))
     (when matching-text (message matching-text))))
+
+(defun align-space (start end)
+  "Repeat alignment using spaces as the delimiter between START and END."
+  (interactive "r")
+  (align-regexp start end "\\(\\s-*\\) " 1 0 t))
 
 (provide '.emacs)

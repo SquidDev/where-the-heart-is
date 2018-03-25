@@ -1,13 +1,12 @@
 (defun linum-custom-format (offset)
   "Custom formatting function for relative line numbers. Space for 2 numbers then a line"
-  (format "%2d\u2502" (abs offset)))
+  (format "%3d\u2502" (abs offset)))
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(backup-directory-alist (quote ((".*" . "~/.emacs.d/backup"))))
  '(browse-url-browser-function (quote browse-url-text-emacs))
  '(browse-url-generic-program "lynx")
  '(company-auto-complete t)
@@ -23,6 +22,8 @@
  '(evil-toggle-key "")
  '(evil-want-fine-undo t)
  '(fill-column 120)
+ '(flycheck-checker-error-threshold 500)
+ '(flycheck-clang-args (quote ("--std=c++17")))
  '(flycheck-disabled-checkers (quote (haskell-stack-ghc)))
  '(flycheck-keymap-prefix "f")
  '(flycheck-syntax-check-failed-hook nil)
@@ -68,17 +69,20 @@
         (mode . cperl-mode)
         (mode . emacs-lisp-mode)
         (mode . haskell-mode)
+        (mode . html-mode)
         (mode . idl-mode)
         (mode . inferior-emacs-lisp-mode)
         (mode . java-mode)
         (mode . javascript-mode)
+        (mode . js-mode)
         (mode . lisp-mode)
         (mode . lua-mode)
+        (mode . markdown-mode)
         (mode . perl-mode)
         (mode . php-mode)
         (mode . python-mode)
+        (mode . scss-mode)
         (mode . web-mode)
-        (mode . html-mode)
         (mode . yaml-mode)
         (name . "\\*scratch\\*")))))))
  '(ido-create-new-buffer (quote never))
@@ -94,7 +98,11 @@
  '(multi-term-dedicated-select-after-open-p t)
  '(next-line-add-newlines nil)
  '(org-todo-keywords (quote ((sequence "TODO(t)" "FEEDBACK(f@)" "DONE(d)"))))
+ '(package-selected-packages
+   (quote
+    (moonscript clang-format irony-mode flycheck-irony irony flycheck-rust ess yaml-mode web-mode tuareg smex racer projectile nix-sandbox neotree multi-term markdown-mode magit lua-mode ido-ubiquitous flycheck flx-ido evil editorconfig company-ghci)))
  '(projectile-global-mode t)
+ '(projectile-mode t nil (projectile))
  '(relative-line-numbers-format (quote linum-custom-format))
  '(relative-line-numbers-max-count 0)
  '(require-final-newline t)
