@@ -1,17 +1,18 @@
-(defun linum-custom-format (offset)
-  "Custom formatting function for relative line numbers. Space for 2 numbers then a line"
-  (format "%3d\u2502" (abs offset)))
-
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(auto-save-default nil)
+ '(backup-directory-alist (quote (("." . "~/.emacs.d/backup"))))
  '(browse-url-browser-function (quote browse-url-text-emacs))
  '(browse-url-generic-program "lynx")
+ '(column-number-mode t)
  '(company-auto-complete t)
  '(company-ghc-show-info t)
  '(company-idle-delay 0.3)
+ '(company-tooltip-align-annotations t)
+ '(current-language-environment "UTF-8")
  '(custom-enabled-themes (quote (squid)))
  '(custom-file "~/.emacs.d/custom.el")
  '(custom-safe-themes
@@ -27,21 +28,12 @@
  '(flycheck-disabled-checkers (quote (haskell-stack-ghc)))
  '(flycheck-keymap-prefix "f")
  '(flycheck-syntax-check-failed-hook nil)
- '(global-company-mode t)
- '(global-flycheck-mode t)
- '(global-relative-line-numbers-mode t)
  '(global-whitespace-mode t)
  '(haskell-interactive-popup-errors nil)
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
  '(haskell-process-show-debug-tips nil)
  '(haskell-process-suggest-remove-import-lines t)
- '(helm-M-x-fuzzy-match t)
- '(helm-ff-file-name-history-use-recentf t)
- '(helm-ff-search-library-in-sexp t)
- '(helm-move-to-line-cycle-in-source t)
- '(helm-scroll-amount 8)
- '(helm-split-window-in-side-p t)
  '(hexl-bits 8)
  '(ibuffer-saved-filter-groups
    (quote
@@ -53,6 +45,7 @@
       ("Temporary"
        (or
         (name . "\\*.*\\*")
+        (name . "magit[^:]*:.*")
         (name . "\\*magit.*")))))))
  '(ibuffer-saved-filters
    (quote
@@ -77,11 +70,14 @@
         (mode . js-mode)
         (mode . lisp-mode)
         (mode . lua-mode)
+        (mode . makefile-mode)
+        (mode . makefile-gmake-mode)
         (mode . markdown-mode)
         (mode . perl-mode)
         (mode . php-mode)
         (mode . python-mode)
         (mode . scss-mode)
+        (mode . typescript-mode)
         (mode . web-mode)
         (mode . yaml-mode)
         (name . "\\*scratch\\*")))))))
@@ -93,31 +89,25 @@
  '(inhibit-startup-screen t)
  '(ispell-dictionary "en_GB")
  '(ispell-program-name "/usr/bin/aspell")
- '(linum-format (quote linum-custom-format))
  '(menu-bar-mode nil)
  '(multi-term-dedicated-select-after-open-p t)
  '(next-line-add-newlines nil)
  '(org-todo-keywords (quote ((sequence "TODO(t)" "FEEDBACK(f@)" "DONE(d)"))))
- '(package-selected-packages
-   (quote
-    (moonscript clang-format irony-mode flycheck-irony irony flycheck-rust ess yaml-mode web-mode tuareg smex racer projectile nix-sandbox neotree multi-term markdown-mode magit lua-mode ido-ubiquitous flycheck flx-ido evil editorconfig company-ghci)))
- '(projectile-global-mode t)
- '(projectile-mode t nil (projectile))
- '(relative-line-numbers-format (quote linum-custom-format))
- '(relative-line-numbers-max-count 0)
+ '(projectile-mode t)
  '(require-final-newline t)
  '(ring-bell-function (quote ignore))
- '(save-place t nil (saveplace))
  '(save-place-file (concat user-emacs-directory ".saved-places"))
  '(savehist-mode t)
  '(scroll-bar-mode nil)
+ '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
  '(tramp-default-method "ssh")
  '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
  '(whitespace-style
    (quote
-    (face tabs trailing spaces indentation empty tab-mark space-mark))))
+    (face tabs trailing spaces indentation empty tab-mark space-mark)))
+ '(xterm-mouse-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
