@@ -1,15 +1,15 @@
-;; -*- lexical-binding: t -*-
-
-;; Load our custom file as soon as possible. This ensures our theme other
-;; appearance options are set up straight away.
-(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
-(load custom-file t)
+; -*- lexical-binding: t -*-
 
 ;; Setup package.el and get everything else running.
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
 (package-initialize)
 (unless package-archive-contents (package-refresh-contents))
+
+;; Load our custom file as soon as possible. This ensures our theme other
+;; appearance options are set up straight away.
+(setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+(load custom-file t)
 
 (setq package-selected-packages '())
 
@@ -25,6 +25,8 @@
     evil
     company
     flycheck
+    projectile
+    powerline
 
     ;; Various language modes
     ;; haskell
@@ -39,20 +41,17 @@
     nil))
 
 (defmacro defmodule (module &rest body)
-  "Define a module which will only be evaluated when MODULE is in
-   the *enabled-modules* set."
+  "Define a module BODY which will only be evaluated when MODULE is in the *enabled-modules* set."
   `(when (memq ',module *enabled-modules*) ,@body))
 
 (eval-when-compile (require 'cl))
 
 (defun register-extensions (mode &rest exts)
-  "Register a list of extensions to load with a particular mode."
+  "Register a list of extensions EXTS to load with a particular MODE."
   (dolist (ext exts)
-    (message "Reverting `%s'..." ext)
     (add-to-list 'auto-mode-alist `(,(concat "\\" ext "\\'") . ,mode))))
 
-;; Some core packages we'd like everywhere thank you very much
-(package-require 'magit 'editorconfig 'projectile)
+(package-require 'magit 'editorconfig 'which-key)
 
 (defmodule ido
   (package-require 'ido-completing-read+ 'smex 'flx-ido)
@@ -65,6 +64,12 @@
 
   (global-set-key (kbd "M-x") 'smex)
   (global-set-key (kbd "M-X") 'smex-major-mode-commands))
+
+(defmodule company
+  (package-require 'company)
+  (add-hook 'after-init-hook 'global-company-mode)
+
+  (global-set-key (kbd "TAB") 'company-indent-or-complete-common))
 
 (defmodule evil
   (package-require 'evil 'undo-tree)
@@ -84,16 +89,11 @@
   (dolist (mode '(git-commit-mode))
     (evil-set-initial-state mode 'normal)))
 
-(defmodule company
-  (package-require 'company)
-  (add-hook 'after-init-hook 'global-company-mode)
-
-  (global-set-key (kbd "TAB") 'company-indent-or-complete-common))
-
 (defmodule flycheck
   (package-require 'flycheck 'nix-sandbox)
 
   (add-hook 'after-init-hook 'global-flycheck-mode)
+  (add-to-list 'which-key-replacement-alist '((nil . "^flycheck-") . (nil . "f-")))
 
   ;; Ensure the window is displayed in a sensible place
   (add-to-list 'display-buffer-alist
@@ -112,9 +112,44 @@
             args)))
   (setq flycheck-executable-find
         (lambda (cmd)
-          (if (nix-current-sandbox)
-              (nix-executable-find (nix-current-sandbox) cmd)
-            cmd))))
+              (nix-executable-find (nix-current-sandbox) cmd))))
+
+(defmodule powerline
+  (package-require 'spaceline)
+
+  ;; Ideally we'd just depend on powerline, but this'll do for now.
+  (require 'spaceline)
+  (require 'spaceline-segments)
+  (spaceline-compile 'squid
+    '((evil-state
+       :face highlight-face
+       :priority 100)
+      ((buffer-modified buffer-size buffer-id remote-host)
+       :priority 98)
+      (major-mode :priority 79)
+      (process :when active)
+      ((flycheck-error flycheck-warning flycheck-info)
+       :when active :priority 89)
+      (projectile-root :when active :prority 70)
+      (version-control :when active :priority 78))
+    '((selection-info :priority 95)
+      ((buffer-encoding-abbrev
+        point-position
+        line-column)
+       :separator " | "
+       :priority 96)
+      (global :when active)
+      (buffer-position :priority 99)))
+
+  (setq-default mode-line-format '("%e" (:eval (spaceline-ml-squid)))))
+
+(defmodule projectile
+  (package-require 'projectile)
+  (add-hook 'after-init-hook 'projectile-mode)
+
+  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-") . (nil . "p-"))))
+
+;; Language specific modes
 
 (defmodule haskell
   (package-require 'haskell-mode 'company-ghci 'nix-sandbox)
@@ -157,6 +192,13 @@
    (with-eval-after-load 'merlin-mode
      (add-to-list 'company-backends 'merlin-company-backend))))
 
+(defmodule ruby
+  (package-require 'projectile-rails 'rspec-mode 'robe)
+
+  (add-hook 'ruby-mode-hook 'robe-mode)
+  (with-eval-after-load 'company (add-to-list 'company-backends 'company-robe))
+
+  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-rails-") . (nil . "r-"))))
 
 (defmodule rust
   (package-require 'rust-mode 'flycheck-rust 'racer)
