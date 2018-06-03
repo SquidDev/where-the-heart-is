@@ -30,9 +30,11 @@
 
     ;; Various language modes
     ;; haskell
+    ;; javascript
     ;; lua
     ;; markdown
     ;; ocaml
+    ;; ruby
     ;; rust
     ;; typescript
     ;; web
@@ -171,6 +173,15 @@
   (with-eval-after-load 'company
     (add-to-list 'company-backends 'company-ghci)))
 
+(defmodule javascript
+  (package-require 'js2-mode 'js2-refactor 'rjsx-mode)
+
+  (register-extensions 'js2-mode ".js")
+
+  (add-hook 'js2-mode-hook #'js2-refactor-mode)
+  (with-eval-after-load 'js2-refactor
+    (js2r-add-keybindings-with-prefix "C-c j")))
+
 (defmodule lua
   (package-require 'lua-mode)
   (register-extensions 'lua-mode ".rockspec"))
@@ -221,7 +232,12 @@
 
   (add-hook 'web-mode-hook (lambda ()
                              (when (string-equal "tsx" (file-name-extension buffer-file-name))
-                               (setup-tide-mode)))))
+                               (setup-tide-mode))))
+
+  (with-eval-after-load 'tide
+    (define-key tide-mode-map (kbd "C-c t r") 'tide-rename-symbol)
+    (define-key tide-mode-map (kbd "C-c t i") 'tide-organize-imports)
+    (define-key tide-mode-map (kbd "C-c t d") 'tide-jump-to-definition)))
 
 (defmodule web
   (package-require 'web-mode)
