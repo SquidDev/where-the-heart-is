@@ -27,13 +27,16 @@
     flycheck
     projectile
     powerline
+    term
 
     ;; Various language modes
+    elisp
     ;; haskell
     ;; javascript
     ;; lua
-    ;; markdown
+    markdown
     ;; ocaml
+    ;; rainbow
     ;; ruby
     ;; rust
     ;; typescript
@@ -78,6 +81,12 @@
 
   (evil-mode t)
   (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
+
+  ;; I'm a bad person, but I like mouse keys
+  (define-key evil-window-map [left]  'evil-window-left)
+  (define-key evil-window-map [right] 'evil-window-right)
+  (define-key evil-window-map [up]    'evil-window-up)
+  (define-key evil-window-map [down]  'evil-window-down)
 
   ;; Change a couple of modes to use Emacs keybindings instead
   (dolist (mode '(term-mode
@@ -146,12 +155,36 @@
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-squid)))))
 
 (defmodule projectile
-  (package-require 'projectile)
+  (package-require 'projectile 'multi-term 'ripgrep)
+  ;; While ripgrep and multi-term aren't strictly needed, this is the only
+  ;; module which really depends on them.
   (add-hook 'after-init-hook 'projectile-mode)
 
-  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-") . (nil . "p-"))))
+  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-") . (nil . "p-")))
+
+  (with-eval-after-load 'projectile
+    (defun projectile-run-multi-term ()
+      "Invoke `multi-term' in the project's root."
+      (interactive)
+      (projectile-with-default-dir (projectile-project-root) (multi-term)))
+
+    (define-key projectile-command-map (kbd "x m") #'projectile-run-multi-term)))
+
+(defmodule term
+  (package-require 'eterm-256color)
+  (add-hook 'term-mode-hook #'eterm-256color-mode)
+
+  (add-hook 'term-mode-hook (lambda ()
+    ;; Always send C-r to the term. I never use it in Emacs after all.
+    (define-key term-raw-map (kbd "C-r") 'term-send-raw))))
 
 ;; Language specific modes
+
+(defmodule elisp
+  (with-eval-after-load 'elisp-mode
+    ;; Add keybindings to execute code
+    (define-key emacs-lisp-mode-map (kbd "C-c C-r") 'eval-region)
+    (define-key emacs-lisp-mode-map (kbd "C-c C-l") 'eval-buffer)))
 
 (defmodule haskell
   (package-require 'haskell-mode 'company-ghci 'nix-sandbox)
@@ -203,13 +236,29 @@
    (with-eval-after-load 'merlin-mode
      (add-to-list 'company-backends 'merlin-company-backend))))
 
+(defmodule rainbow
+  (package-require 'rainbow-mode)
+  (global-set-key (kbd "C-c m r") 'rainbow-mode))
+
 (defmodule ruby
   (package-require 'projectile-rails 'rspec-mode 'robe)
 
   (add-hook 'ruby-mode-hook 'robe-mode)
   (with-eval-after-load 'company (add-to-list 'company-backends 'company-robe))
 
-  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-rails-") . (nil . "r-"))))
+  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-rails-") . (nil . "r-")))
+  (add-to-list 'which-key-replacement-alist '((nil . "^rspec-") . (nil . "r-")))
+
+  (with-eval-after-load 'hideshow
+    (add-to-list 'hs-special-modes-alist
+                 `(ruby-mode
+                   ,(rx (or "def" "class" "module" "do" "{" "[")) ; Block start
+                   ,(rx (or "}" "]" "end"))                       ; Block end
+                   ,(rx (or "#" "=begin"))                        ; Comment start
+                   ruby-forward-sexp nil)))
+
+  (with-eval-after-load 'robe
+    (define-key robe-mode-map (kbd "C-c C-j") 'robe-jump)))
 
 (defmodule rust
   (package-require 'rust-mode 'flycheck-rust 'racer)
@@ -237,11 +286,13 @@
   (with-eval-after-load 'tide
     (define-key tide-mode-map (kbd "C-c t r") 'tide-rename-symbol)
     (define-key tide-mode-map (kbd "C-c t i") 'tide-organize-imports)
-    (define-key tide-mode-map (kbd "C-c t d") 'tide-jump-to-definition)))
+    (define-key tide-mode-map (kbd "C-c C-j") 'tide-jump-to-definition)))
 
 (defmodule web
   (package-require 'web-mode)
   (register-extensions 'web-mode ".php" ".erb" ".tsx" ".html")
+
+  (add-to-list 'which-key-replacement-alist '((nil . "^web-mode-") . (nil . "w-")))
 
   ;; Ensure flycheck runs on our files
   (with-eval-after-load 'flycheck
@@ -252,7 +303,6 @@
 
 (defmodule yaml
   (package-require 'yaml-mode))
-
 
 (defadvice dired-find-file (around dired-subst-directory activate)
   "Replace current buffer if file is a directory."
@@ -282,8 +332,16 @@
 (global-set-key (kbd "<mouse-4>") 'scroll-down-line)
 (global-set-key (kbd "<mouse-5>") 'scroll-up-line)
 
+;; Silly keybindings for silly operating systems
+(global-set-key (kbd "<home>") 'move-beginning-of-line)
+(global-set-key (kbd "<end>") 'move-end-of-line)
+(global-set-key (kbd "<next>") 'evil-scroll-page-down)
+(global-set-key (kbd "<prior>") 'evil-scroll-page-up)
+
+;; Switch to the default group when launching ibuffer
 (add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
 
+;; Flyspell on all code
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
 (save-place-mode t)
