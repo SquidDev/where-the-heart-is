@@ -89,7 +89,7 @@
    `(secondary-selection ((t (:background ,highlight :foreground ,default))))
    `(isearch ((t (:background ,orange-light :foreground ,highlight))))
    `(lazy-highlight ((t (:background ,grey-dark :foreground ,orange-light))))
-   `(hl-line ((t (:background ,hl-line :underline unspecified :inherit nil))))
+   `(hl-line ((t (:background ,hl-line :underline unspecified :inherit unspecified))))
    `(shadow ((t (:foreground ,comment))))
 
    `(match ((t (:background ,background-green))))
@@ -105,6 +105,9 @@
    `(font-lock-type-face ((t (:foreground ,blue))))
    `(font-lock-variable-name-face ((t (:foreground ,blue))))
    `(font-lock-warning-face ((t (:foreground ,red :weight bold :background ,background-red))))
+
+   ;; Markdown
+   `(markdown-code-face ((t (:inherit unspecified))))
 
    ;; Mode line faces
    `(mode-line ((t (:background ,background-blue :height 0.9 :foreground ,blue))))
@@ -131,13 +134,13 @@
    `(escape-glyph ((t (:foreground ,blue :weight bold))))
 
    ;; linum
-   `(linum ((t (:foreground ,comment :background ,background))))
+   `(linum ((t (:foreground ,bright-background-blue :background ,background))))
    ;; from hlinum
-   `(linum-highlight-face ((t (:foreground ,blue ,background ,background-blue))))
+   `(linum-highlight-face ((t (:foreground ,bright-background-blue :background ,background))))
 
    ;; native line numbers (emacs 26)
-   `(line-number ((t (:foreground ,comment :background ,background-darker))))
-   `(line-number-current-line ((t (:foreground ,blue :background ,background-darker))))
+   `(line-number ((t (:foreground ,bright-background-blue :background ,background))))
+   `(line-number-current-line ((t (:foreground ,blue :background ,background))))
 
    ;; eshell
    `(eshell-prompt ((t (:foreground ,blue :background ,background :weight bold))))
@@ -246,11 +249,11 @@
    `(magit-signature-bad ((t (:foreground ,red))))
    `(magit-signature-good ((t (:foreground ,blue))))
 
-   `(magit-blame-heading ((t (:foreground ,green :background ,background-green :box 1))))
+   `(magit-blame-heading ((t (:foreground ,blue :background ,background-darker :box (:line-width 1 :color ,bright-background-blue)))))
 
    `(git-commit-summary ((t (:weight bold))))
 
-   `(magit-tag ((t (:foreground ,purple :weight bold :box 1 :background "#202020"))))
+   `(magit-tag ((t (:foreground ,purple :box 1 :background "#202020"))))
    `(magit-sequence-part ((t (:foreground ,orange :weight bold))))
    `(magit-sequence-head ((t (:foreground ,green :weight bold))))
 
@@ -516,6 +519,9 @@
    `(markup-reference-face ((t (:inherit link))))
    `(markup-complex-replacement-face ((t (:background ,background-green))))
    `(markup-secondary-text-face ((t (:foreground ,comment))))
+
+   ;; Ruby
+   `(projectile-rails-keyword-face ((t (:inherit font-lock-keyword-face))))
    )
 
   (custom-theme-set-variables

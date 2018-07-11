@@ -22,11 +22,12 @@
 
 (defconst *enabled-modules*
   '(ido
-    evil
     company
+    evil
     flycheck
-    projectile
+    magit
     powerline
+    projectile
     term
 
     ;; Various language modes
@@ -56,7 +57,7 @@
   (dolist (ext exts)
     (add-to-list 'auto-mode-alist `(,(concat "\\" ext "\\'") . ,mode))))
 
-(package-require 'magit 'editorconfig 'which-key)
+(package-require 'editorconfig 'which-key)
 
 (defmodule ido
   (package-require 'ido-completing-read+ 'smex 'flx-ido)
@@ -125,6 +126,17 @@
         (lambda (cmd)
               (nix-executable-find (nix-current-sandbox) cmd))))
 
+(defmodule magit
+  (package-require 'magit)
+
+  (with-eval-after-load 'git-commit
+    (add-hook 'git-commit-mode-hook 'turn-on-orgstruct)
+    (add-hook 'git-commit-mode-hook 'turn-on-orgstruct++)
+    (add-hook 'git-commit-mode-hook (lambda ()
+      (setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] "
+            paragraph-separate "$"
+            fill-column 72)))))
+
 (defmodule powerline
   (package-require 'spaceline)
 
@@ -166,7 +178,9 @@
     (defun projectile-run-multi-term ()
       "Invoke `multi-term' in the project's root."
       (interactive)
-      (projectile-with-default-dir (projectile-project-root) (multi-term)))
+      (projectile-with-default-dir (projectile-project-root)
+        (let ((multi-term-buffer-name (concat multi-term-buffer-name "-" (projectile-project-name))))
+          (multi-term))))
 
     (define-key projectile-command-map (kbd "x m") #'projectile-run-multi-term)))
 
@@ -244,6 +258,7 @@
   (package-require 'projectile-rails 'rspec-mode 'robe)
 
   (add-hook 'ruby-mode-hook 'robe-mode)
+  (add-hook 'ruby-mode-hook 'hs-minor-mode)
   (with-eval-after-load 'company (add-to-list 'company-backends 'company-robe))
 
   (add-to-list 'which-key-replacement-alist '((nil . "^projectile-rails-") . (nil . "r-")))
@@ -257,8 +272,12 @@
                    ,(rx (or "#" "=begin"))                        ; Comment start
                    ruby-forward-sexp nil)))
 
+
   (with-eval-after-load 'robe
-    (define-key robe-mode-map (kbd "C-c C-j") 'robe-jump)))
+    (evil-make-overriding-map robe-mode-map 'normal)
+    (evil-define-key 'normal robe-mode-map
+      "gd" 'robe-jump
+      "K"  'robe-doc)))
 
 (defmodule rust
   (package-require 'rust-mode 'flycheck-rust 'racer)
@@ -338,11 +357,21 @@
 (global-set-key (kbd "<next>") 'evil-scroll-page-down)
 (global-set-key (kbd "<prior>") 'evil-scroll-page-up)
 
+(define-key evil-normal-state-map (kbd "gc") 'whitespace-cleanup)
+
 ;; Switch to the default group when launching ibuffer
 (add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
 
 ;; Flyspell on all code
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
+
+;; Allow q to quit on view mode too
+(with-eval-after-load 'view
+  (evil-make-overriding-map view-mode-map 'normal)
+  (evil-define-key 'normal view-mode-map
+    "q" 'View-quit))
+
+(global-set-key (kbd "C-c m l") 'display-line-numbers-mode)
 
 (save-place-mode t)
 
