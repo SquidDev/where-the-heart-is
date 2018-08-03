@@ -17,6 +17,7 @@
  '(display-line-numbers-current-absolute t)
  '(display-line-numbers-type (quote relative))
  '(editorconfig-mode t)
+ '(eterm-256color-disable-bold nil)
  '(evil-want-fine-undo t)
  '(explicit-shell-file-name "zsh")
  '(fill-column 120)
@@ -24,6 +25,7 @@
  '(flycheck-clang-args (quote ("--std=c++17")))
  '(flycheck-disabled-checkers (quote (haskell-stack-ghc ruby-reek)))
  '(flycheck-syntax-check-failed-hook nil)
+ '(flyspell-large-region 0)
  '(git-commit-setup-hook
    (quote
     (git-commit-save-message git-commit-setup-changelog-support git-commit-turn-on-auto-fill git-commit-turn-on-flyspell git-commit-propertize-diff with-editor-usage-message)))
@@ -68,6 +70,7 @@
         (mode . java-mode)
         (mode . javascript-mode)
         (mode . js-mode)
+        (mode . js2-mode)
         (mode . lisp-mode)
         (mode . lua-mode)
         (mode . makefile-gmake-mode)
@@ -94,7 +97,8 @@
  '(multi-term-dedicated-select-after-open-p t)
  '(next-line-add-newlines nil)
  '(ns-command-modifier (quote meta))
- '(org-todo-keywords (quote ((sequence "TODO(t)" "FEEDBACK(f@)" "DONE(d)"))))
+ '(org-agenda-window-setup (quote current-window))
+ '(org-tags-column -120)
  '(projectile-rails-global-mode t)
  '(require-final-newline t)
  '(ring-bell-function (quote ignore))

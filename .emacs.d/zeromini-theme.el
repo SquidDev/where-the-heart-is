@@ -291,7 +291,8 @@
 
    ;; js2-mode
    `(js2-function-param ((t (:foreground ,blue))))
-   `(js2-error ((t (:foreground ,red))))
+   `(js2-error ((t (:underline (:color ,red :style wave)))))
+   `(js2-warning ((t (:underline (:color ,orange :style wave)))))
    `(js2-jsdoc-html-tag-name ((t (:foreground ,peach))))
    `(js2-jsdoc-html-tag-delimiter ((t (:foreground ,peach))))
 
@@ -299,7 +300,7 @@
    `(flycheck-fringe-error ((t (:foreground ,red :weight bold))))
    `(flycheck-fringe-warning ((t (:foreground ,orange :weight bold))))
    `(flycheck-fringe-info ((t (:foreground ,green :weight bold))))
-   `(flycheck-warning ((t (:underline (:color ,red :style wave)))))
+   `(flycheck-warning ((t (:underline (:color ,orange :style wave)))))
    `(flycheck-error ((t (:underline (:color ,red :style wave)))))
    `(flycheck-info ((t (:underline (:color ,green :style wave)))))
 

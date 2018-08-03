@@ -1,5 +1,3 @@
-; -*- lexical-binding: t -*-
-
 ;; Setup package.el and get everything else running.
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
@@ -35,8 +33,9 @@
     ;; haskell
     ;; javascript
     ;; lua
-    markdown
+    ;; markdown
     ;; ocaml
+    org
     ;; rainbow
     ;; ruby
     ;; rust
@@ -82,6 +81,8 @@
 
   (evil-mode t)
   (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
+
+  (define-key evil-normal-state-map (kbd "gc") 'whitespace-cleanup)
 
   ;; I'm a bad person, but I like mouse keys
   (define-key evil-window-map [left]  'evil-window-left)
@@ -135,7 +136,15 @@
     (add-hook 'git-commit-mode-hook (lambda ()
       (setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] "
             paragraph-separate "$"
-            fill-column 72)))))
+            fill-column 72))))
+
+  (with-eval-after-load 'evil
+    ;; Switch to Emacs mode when entering blame (and revert when
+    ;; leaving): means we can actually use all the key-bindings.
+    (add-hook 'magit-blame-mode-hook (lambda ()
+      (if magit-blame-mode
+        (evil-emacs-state)
+        (evil-exit-emacs-state))))))
 
 (defmodule powerline
   (package-require 'spaceline)
@@ -150,7 +159,7 @@
       ((buffer-modified buffer-size buffer-id remote-host)
        :priority 98)
       (major-mode :priority 79)
-      (process :when active)
+      (process)
       ((flycheck-error flycheck-warning flycheck-info)
        :when active :priority 89)
       (projectile-root :when active :prority 70)
@@ -179,6 +188,7 @@
       "Invoke `multi-term' in the project's root."
       (interactive)
       (projectile-with-default-dir (projectile-project-root)
+        (require 'multi-term)
         (let ((multi-term-buffer-name (concat multi-term-buffer-name "-" (projectile-project-name))))
           (multi-term))))
 
@@ -226,6 +236,12 @@
   (register-extensions 'js2-mode ".js")
 
   (add-hook 'js2-mode-hook #'js2-refactor-mode)
+
+  (with-eval-after-load 'js2-mode
+    (evil-make-overriding-map js2-mode-map 'normal)
+    (evil-define-key 'normal js2-mode-map
+      "gd" 'js2-jump-to-definition))
+
   (with-eval-after-load 'js2-refactor
     (js2r-add-keybindings-with-prefix "C-c j")))
 
@@ -249,6 +265,12 @@
  (with-eval-after-load 'company
    (with-eval-after-load 'merlin-mode
      (add-to-list 'company-backends 'merlin-company-backend))))
+
+(defmodule org
+  (defun org-agenda-all ()
+    (interactive)
+    (org-agenda nil "n"))
+  (global-set-key (kbd "C-c m a") 'org-agenda-all))
 
 (defmodule rainbow
   (package-require 'rainbow-mode)
@@ -303,9 +325,12 @@
                                (setup-tide-mode))))
 
   (with-eval-after-load 'tide
+    (evil-make-overriding-map tide-mode-map 'normal)
+    (evil-define-key 'normal tide-mode-map
+      "gd" 'tide-jump-to-definition)
+
     (define-key tide-mode-map (kbd "C-c t r") 'tide-rename-symbol)
-    (define-key tide-mode-map (kbd "C-c t i") 'tide-organize-imports)
-    (define-key tide-mode-map (kbd "C-c C-j") 'tide-jump-to-definition)))
+    (define-key tide-mode-map (kbd "C-c t i") 'tide-organize-imports)))
 
 (defmodule web
   (package-require 'web-mode)
@@ -356,8 +381,6 @@
 (global-set-key (kbd "<end>") 'move-end-of-line)
 (global-set-key (kbd "<next>") 'evil-scroll-page-down)
 (global-set-key (kbd "<prior>") 'evil-scroll-page-up)
-
-(define-key evil-normal-state-map (kbd "gc") 'whitespace-cleanup)
 
 ;; Switch to the default group when launching ibuffer
 (add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
