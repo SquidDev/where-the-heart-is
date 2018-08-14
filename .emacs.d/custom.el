@@ -79,6 +79,7 @@
         (mode . perl-mode)
         (mode . php-mode)
         (mode . python-mode)
+        (mode . rjsx-mode)
         (mode . ruby-mode)
         (mode . scss-mode)
         (mode . typescript-mode)

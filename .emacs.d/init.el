@@ -23,6 +23,7 @@
     company
     evil
     flycheck
+    git-gutter
     magit
     powerline
     projectile
@@ -127,6 +128,10 @@
         (lambda (cmd)
               (nix-executable-find (nix-current-sandbox) cmd))))
 
+(defmodule git-gutter
+  (package-require 'git-gutter)
+  (global-set-key (kbd "C-c m g") 'git-gutter-mode))
+
 (defmodule magit
   (package-require 'magit)
 
@@ -176,10 +181,18 @@
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-squid)))))
 
 (defmodule projectile
-  (package-require 'projectile 'multi-term 'ripgrep)
   ;; While ripgrep and multi-term aren't strictly needed, this is the only
   ;; module which really depends on them.
-  (add-hook 'after-init-hook 'projectile-mode)
+  (package-require 'projectile 'multi-term 'ripgrep)
+
+  (add-hook 'after-init-hook (lambda ()
+    (projectile-mode)
+    ;; Yes, I'm a heathen. But this is more sane than C-c C-p.
+    ;;
+    ;; Technically projectile-keymap-prefix does this. It doesn't appear to work
+    ;; for me though, so we'll go this route.
+    (define-key projectile-mode-map (kbd "C-c C-p") nil)
+    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)))
 
   (add-to-list 'which-key-replacement-alist '((nil . "^projectile-") . (nil . "p-")))
 
@@ -233,7 +246,7 @@
 (defmodule javascript
   (package-require 'js2-mode 'js2-refactor 'rjsx-mode)
 
-  (register-extensions 'js2-mode ".js")
+  (register-extensions 'rjsx-mode ".js" ".jsx")
 
   (add-hook 'js2-mode-hook #'js2-refactor-mode)
 

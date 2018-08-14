@@ -417,9 +417,9 @@
    `(diff-hl-delete ((t (:foreground ,bright-background-red :background ,bright-background-red))))
    `(diff-hl-insert ((t (:foreground ,bright-background-green :background ,bright-background-green))))
 
-   `(git-gutter:added ((t (:foreground ,green :background ,background-green))))
-   `(git-gutter:deleted ((t (:foreground ,red :background ,background-red))))
-   `(git-gutter:modified ((t (:foreground ,purple :background ,background-purple))))
+   `(git-gutter:added ((t (:foreground ,background-green :background ,background-green))))
+   `(git-gutter:deleted ((t (:foreground ,background-red :background ,background-red))))
+   `(git-gutter:modified ((t (:foreground ,background-purple :background ,background-purple))))
    `(git-gutter:separator ((t (:background ,background-orange))))
    `(git-gutter:unchanged ((t (:background ,background-orange))))
 
