@@ -81,9 +81,10 @@
   (package-require 'evil 'undo-tree)
 
   (evil-mode t)
-  (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
 
+  (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
   (define-key evil-normal-state-map (kbd "gc") 'whitespace-cleanup)
+  (define-key evil-normal-state-map (kbd "g C-g") 'count-words)
 
   ;; I'm a bad person, but I like mouse keys
   (define-key evil-window-map [left]  'evil-window-left)
@@ -263,7 +264,8 @@
   (register-extensions 'lua-mode ".rockspec"))
 
 (defmodule markdown
-  (package-require 'markdown-mode))
+  (package-require 'markdown-mode)
+  (add-hook 'markdown-mode-hook 'flyspell-mode))
 
 (defmodule ocaml
   (register-extensions 'tuareg-mode ".ml" ".mli")
@@ -283,7 +285,9 @@
   (defun org-agenda-all ()
     (interactive)
     (org-agenda nil "n"))
-  (global-set-key (kbd "C-c m a") 'org-agenda-all))
+  (global-set-key (kbd "C-c m a") 'org-agenda-all)
+
+  (add-hook 'org-mode-hook 'flyspell-mode))
 
 (defmodule rainbow
   (package-require 'rainbow-mode)

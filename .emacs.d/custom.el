@@ -94,6 +94,8 @@
  '(inhibit-startup-screen t)
  '(ispell-dictionary "en_GB")
  '(ispell-program-name "hunspell")
+ '(markdown-asymmetric-header t)
+ '(markdown-command "kramdown")
  '(menu-bar-mode nil)
  '(multi-term-dedicated-select-after-open-p t)
  '(next-line-add-newlines nil)
@@ -118,6 +120,7 @@
  '(whitespace-style
    (quote
     (face trailing tabs spaces empty indentation space-mark tab-mark)))
+ '(window-divider-default-right-width 1)
  '(xterm-mouse-mode t))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.

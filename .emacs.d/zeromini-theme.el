@@ -108,6 +108,9 @@
 
    ;; Markdown
    `(markdown-code-face ((t (:inherit unspecified))))
+   `(markdown-header-face-1 ((t (:inherit markdown-header-face :height 1.3))))
+   `(markdown-header-face-2 ((t (:inherit markdown-header-face :height 1.2))))
+   `(markdown-header-face-3 ((t (:inherit markdown-header-face :height 1.1))))
 
    ;; Mode line faces
    `(mode-line ((t (:background ,background-blue :height 0.9 :foreground ,blue))))
@@ -122,6 +125,11 @@
    ;; powerline
    `(powerline-active1 ((t (:height 0.9 :foreground ,blue :background ,background-darker))))
    `(powerline-active2 ((t (:height 0.9 :foreground ,blue :background ,background-lighter))))
+
+
+   `(window-divider ((t (:foreground ,background-lighter))))
+   `(window-divider-first-pixel ((t (:foreground ,background-lighter))))
+   `(window-divider-last-pixel ((t (:foreground ,background-lighter))))
 
    ;; mml
    `(message-mml-face ((t (:foreground ,comment))))
