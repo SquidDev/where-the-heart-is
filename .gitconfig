@@ -4,7 +4,7 @@
 [push]
 	default = simple
 [credential]
-	helper = cache
+	helper = store
 [alias]
 	graph = log --decorate --oneline --graph
 	gr = log --decorate --oneline --graph
@@ -15,11 +15,11 @@
 	branches = branch -a
 	tags = tag
 	stashes = stash list
-	plot = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all 
+	plot = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
+	plota = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
 	fixup = commit --amend --no-edit --date=now
 [core]
 	autocrlf = input
-	pager = diff-so-fancy | less --tabs=1,5 -R
 [color]
 	ui = auto
 [color "diff"]
@@ -38,3 +38,6 @@
 	untracked = cyan
 [diff]
 	compactionHeuristic = true
+[pager]
+	status = false
+	branch = false

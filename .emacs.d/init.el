@@ -28,6 +28,7 @@
     powerline
     projectile
     term
+    ;: vterm
 
     ;; Various language modes
     elisp
@@ -97,6 +98,7 @@
                   calculator-mode
                   profiler-report-mode
                   neotree-mode
+                  vterm-mode
                   image-mode))
     (evil-set-initial-state mode 'emacs))
 
@@ -117,17 +119,7 @@
                   display-buffer-in-side-window)
                  (side            . bottom)
                  (reusable-frames . visible)
-                 (window-height   . 0.33)))
-
-  ;; Patch flycheck to work with nix
-  (setq flycheck-command-wrapper-function
-        (lambda (args)
-          (if (nix-current-sandbox)
-              (apply 'nix-shell-command (nix-current-sandbox) args)
-            args)))
-  (setq flycheck-executable-find
-        (lambda (cmd)
-              (nix-executable-find (nix-current-sandbox) cmd))))
+                 (window-height   . 0.33))))
 
 (defmodule git-gutter
   (package-require 'git-gutter)
@@ -209,12 +201,21 @@
     (define-key projectile-command-map (kbd "x m") #'projectile-run-multi-term)))
 
 (defmodule term
-  (package-require 'eterm-256color)
+  (package-require 'eterm-256color 'multi-term)
   (add-hook 'term-mode-hook #'eterm-256color-mode)
+
+  (global-set-key (kbd "C-#") 'multi-term-dedicated-toggle)
 
   (add-hook 'term-mode-hook (lambda ()
     ;; Always send C-r to the term. I never use it in Emacs after all.
     (define-key term-raw-map (kbd "C-r") 'term-send-raw))))
+
+(defmodule vterm
+  (add-to-list 'load-path "~/.emacs.d/emacs-libvterm")
+  (let (vterm-install) (require 'vterm))
+
+  (define-key vterm-mode-map (kbd "C-u") #'vterm--self-insert)
+  )
 
 ;; Language specific modes
 
@@ -225,24 +226,14 @@
     (define-key emacs-lisp-mode-map (kbd "C-c C-l") 'eval-buffer)))
 
 (defmodule haskell
-  (package-require 'haskell-mode 'company-ghci 'nix-sandbox)
+  (package-require 'haskell-mode 'intero))
+  ;; I've previously tried ghc-mod and company-ghci, but they're not
+  ;; fantastic and seem to have some serious memory leak issues.
 
-  (with-eval-after-load 'haskell-mode
-    (require 'haskell-mode)
-    (require 'haskell-interactive-mode)
-    (require 'haskell-process))
-
-  ;; Patch haskell-mode to work with nix
-  (setq haskell-process-wrapper-function
-    (lambda (args)
-      (if (nix-current-sandbox)
-        (apply 'nix-shell-command (nix-current-sandbox) args)
-        args)))
-
-  (add-hook 'haskell-mode-hook 'interactive-haskell-mode)
-
-  (with-eval-after-load 'company
-    (add-to-list 'company-backends 'company-ghci)))
+  ;; (with-eval-after-load 'intero
+  ;;   (evil-make-overriding-map intero-mode-map 'normal)
+  ;;   (evil-define-key 'normal intero-mode-map
+  ;;     "gd" 'intero-goto-definition)))
 
 (defmodule javascript
   (package-require 'js2-mode 'js2-refactor 'rjsx-mode)
@@ -268,14 +259,25 @@
   (add-hook 'markdown-mode-hook 'flyspell-mode))
 
 (defmodule ocaml
+  (package-require 'reason-mode) ; Also requires tuareg from opam
   (register-extensions 'tuareg-mode ".ml" ".mli")
 
  (push "~/.opam/4.06.1/share/emacs/site-lisp" load-path)
  (setq merlin-command "~/.opam/4.06.1/bin/ocamlmerlin")
+
  (autoload 'merlin-mode "merlin" "Merlin mode" t)
  (autoload 'tuareg-mode "tuareg" "Tuareg mode" t)
  (add-hook 'tuareg-mode-hook 'merlin-mode)
  (add-hook 'caml-mode-hook 'merlin-mode)
+ (add-hook 'reason-mode-hook 'merlin-mode)
+ (add-hook 'reason-mode-hook (lambda () (add-hook 'before-save-hook 'refmt-before-save)))
+
+ (with-eval-after-load 'projectile
+  (dolist (ext '(("ml" . ("mli"))
+                 ("mli" . ("ml"))
+                 ("re" . ("rei"))
+                 ("rei" . ("re"))))
+   (add-to-list 'projectile-other-file-alist ext)))
 
  (with-eval-after-load 'company
    (with-eval-after-load 'merlin-mode
@@ -327,6 +329,7 @@
 
 (defmodule typescript
   (package-require 'tide)
+
   (defun setup-tide-mode ()
     (interactive)
     (tide-setup)
@@ -351,9 +354,13 @@
 
 (defmodule web
   (package-require 'web-mode)
-  (register-extensions 'web-mode ".php" ".erb" ".tsx" ".html")
+  (register-extensions 'web-mode ".php" ".erb" ".tsx" ".html" ".jinja2")
 
   (add-to-list 'which-key-replacement-alist '((nil . "^web-mode-") . (nil . "w-")))
+
+  (setq web-mode-engines-alist
+        '(("django"    . "\\.jinja2\\'")
+          ))
 
   ;; Ensure flycheck runs on our files
   (with-eval-after-load 'flycheck

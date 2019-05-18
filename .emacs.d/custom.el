@@ -23,7 +23,7 @@
  '(fill-column 120)
  '(flycheck-checker-error-threshold 500)
  '(flycheck-clang-args (quote ("--std=c++17")))
- '(flycheck-disabled-checkers (quote (haskell-stack-ghc ruby-reek)))
+ '(flycheck-disabled-checkers (quote (ruby-reek)))
  '(flycheck-syntax-check-failed-hook nil)
  '(flyspell-large-region 0)
  '(git-commit-setup-hook
@@ -35,6 +35,8 @@
  '(haskell-process-log t)
  '(haskell-process-show-debug-tips nil)
  '(haskell-process-suggest-remove-import-lines t)
+ '(haskell-process-type (quote cabal-new-repl))
+ '(haskell-process-wrapper-function (quote identity))
  '(hexl-bits 8)
  '(htmlize-html-major-mode (quote mhtml-mode))
  '(ibuffer-saved-filter-groups
@@ -92,8 +94,8 @@
  '(ido-use-faces nil)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
+ '(intero-global-mode t nil (intero))
  '(ispell-dictionary "en_GB")
- '(ispell-program-name "hunspell")
  '(markdown-asymmetric-header t)
  '(markdown-command "kramdown")
  '(menu-bar-mode nil)
@@ -117,6 +119,7 @@
  '(tramp-default-method "ssh" nil (tramp))
  '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
  '(which-key-mode t)
+ '(whitespace-global-modes (quote (not vterm-mode)))
  '(whitespace-style
    (quote
     (face trailing tabs spaces empty indentation space-mark tab-mark)))
