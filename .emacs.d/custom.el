@@ -30,6 +30,9 @@
    (quote
     (git-commit-save-message git-commit-setup-changelog-support git-commit-turn-on-auto-fill git-commit-turn-on-flyspell git-commit-propertize-diff with-editor-usage-message)))
  '(global-whitespace-mode t)
+ '(haskell-compile-cabal-build-alt-command
+   "cd %s && cabal clean -s && cabal new-build --ghc-option=-ferror-spans")
+ '(haskell-compile-cabal-build-command "cd %s && cabal new-build --ghc-option=-ferror-spans")
  '(haskell-interactive-popup-errors nil)
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
@@ -109,7 +112,11 @@
  '(ring-bell-function (quote ignore))
  '(rspec-use-spring-when-possible nil)
  '(ruby-insert-encoding-magic-comment nil)
- '(safe-local-variable-values (quote ((frozen-string-literal . true) (encoding . utf-8))))
+ '(safe-local-variable-values
+   (quote
+    ((org-tag-column . 80)
+     (frozen-string-literal . true)
+     (encoding . utf-8))))
  '(save-place-file (concat user-emacs-directory ".saved-places"))
  '(savehist-mode t)
  '(scroll-bar-mode nil)

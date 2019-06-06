@@ -28,7 +28,7 @@
     powerline
     projectile
     term
-    ;: vterm
+    ;; vterm
 
     ;; Various language modes
     elisp
@@ -272,12 +272,22 @@
  (add-hook 'reason-mode-hook 'merlin-mode)
  (add-hook 'reason-mode-hook (lambda () (add-hook 'before-save-hook 'refmt-before-save)))
 
+ (defun ocaml-format-region (start end)
+  "Formats the currently selected region. Note, this must be a toplevel term"
+  (interactive "r")
+  (shell-command-on-region start end (format "ocamlformat --name=%s -" buffer-file-name) nil t))
+
  (with-eval-after-load 'projectile
   (dolist (ext '(("ml" . ("mli"))
                  ("mli" . ("ml"))
                  ("re" . ("rei"))
                  ("rei" . ("re"))))
    (add-to-list 'projectile-other-file-alist ext)))
+
+  (with-eval-after-load 'merlin
+    (evil-make-overriding-map merlin-mode-map 'normal)
+    (evil-define-key 'normal merlin-mode-map
+      "gd" 'merlin-locate))
 
  (with-eval-after-load 'company
    (with-eval-after-load 'merlin-mode
