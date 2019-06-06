@@ -1,0 +1,31 @@
+URxvt.background:  #282c34
+URxvt.color0:      #abb2bf
+URxvt.color1:      #ff6c6b
+URxvt.color2:      #98be65
+URxvt.color3:      #da8548
+URxvt.color4:      #61afef
+URxvt.color5:      #c678dd
+URxvt.color6:      #1f5582
+URxvt.color7:      #cccccc
+! TODO: Fix this!
+URxvt.color8:      #abb2bf
+URxvt.color9:      #ff6c6b
+URxvt.color10:     #98be65
+URxvt.color11:     #da8548
+URxvt.color12:     #61afef
+URxvt.color13:     #c678dd
+URxvt.color14:     #1f5582
+URxvt.color15:     #cccccc
+
+URxvt.colorBD:     White
+URxvt.colorBDMode: true
+URxvt.colorUL:     #da8548
+URxvt.colorULMode: true
+URxvt.cursorColor: #abb2b5
+URxvt.foreground:  #abb2b5
+URxvt.font:        xft:DejaVuSansMono:size=9
+URxvt.letterSpace: 0
+URxvt.scrollBar:   false
+
+Emacs.font:        DejaVu Sans Mono
+Emacs.default.attributeHeight: 94

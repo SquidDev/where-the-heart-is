@@ -1,3 +1,5 @@
+;; -*- lexical-binding:true -*-
+
 ;; Setup package.el and get everything else running.
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
@@ -22,6 +24,7 @@
   '(ido
     company
     evil
+    ;; exwm
     flycheck
     git-gutter
     magit
@@ -96,6 +99,7 @@
   ;; Change a couple of modes to use Emacs keybindings instead
   (dolist (mode '(term-mode
                   calculator-mode
+                  exwm-mode
                   profiler-report-mode
                   neotree-mode
                   vterm-mode
@@ -106,8 +110,86 @@
   (dolist (mode '(git-commit-mode))
     (evil-set-initial-state mode 'normal)))
 
+(defmodule exwm
+  (package-require 'exwm)
+  (require 'exwm)
+  (require 'exwm-config)
+
+  (exwm-config-ido)
+
+  ;; Default to char-mode. In theory this is a good idea, but in reality it causes far
+  ;; too many issues.
+  ;; (setq exwm-manage-configurations '((t char-mode t)))
+
+  ;; Rename buffer to the current class name
+  (add-hook 'exwm-update-class-hook
+            (lambda ()
+              (exwm-workspace-rename-buffer exwm-class-name)))
+
+  (add-hook 'exwm-update-title-hook
+            (lambda ()
+              (exwm-workspace-rename-buffer exwm-title)))
+
+  (defun exwm--make-workspace-switcher (prefix)
+    "Generate an iterator which switches to the given workspace."
+    (lambda (i)
+      `(,(kbd (format "%s-%d" prefix i)) .
+        (lambda ()
+          (interactive)
+          (exwm-workspace-switch-create ,(- i 1))))))
+
+  (defun exwm--start-program (command)
+    "Start an X-windows program"
+    (interactive (list (read-shell-command "$ ")))
+    (start-process-shell-command command nil command))
+
+  (setq exwm-input-global-keys
+        `(
+          ;; M-x still does what it does everywhere.
+          (,(kbd "M-x") . smex)
+          ;; And redirect s-x to C-x
+          (,(kbd "s-x") . ,(key-binding (kbd "C-x")))
+          (,(kbd "C-M-x") . ,(key-binding (kbd "C-x")))
+
+          ;; Bind "s-r" to exit char-mode and fullscreen mode.
+          (,(kbd "s-r") . exwm-reset)
+          (,(kbd "C-M-r") . exwm-reset)
+          ;; Bind "s-r" to exit char-mode and fullscreen mode.
+          (,(kbd "s-c") . exwm-input-release-keyboard)
+          (,(kbd "C-M-c") . exwm-input-release-keyboard)
+          ;; Bind "s-w" to switch workspace interactively.
+          (,(kbd "s-w") . exwm-workspace-switch)
+          (,(kbd "C-M-w") . exwm-workspace-switch)
+
+          ;; Arrow keys for navigation. Yes, I should probably have these
+          ;; as Vim-style hjlk.
+          (,(kbd "<s-right>") . evil-window-right) (,(kbd "<C-M-right>") . evil-window-right)
+          (,(kbd "<s-left>") . evil-window-left) (,(kbd "<C-M-left>") . evil-window-left)
+          (,(kbd "<s-up>") . evil-window-up) (,(kbd "<C-M-up>") . evil-window-up)
+          (,(kbd "<s-down>") . evil-window-down) (,(kbd "<C-M-down>") . evil-window-down)
+
+          ;; Bind "s-1" to "s-4" to switch to a workspace by its index.
+          ,@(mapcar (exwm--make-workspace-switcher "s") (number-sequence 1 4))
+          ,@(mapcar (exwm--make-workspace-switcher "C-M") (number-sequence 1 4))
+
+          ;; Bind "s-7" to launch applications
+          (,(kbd "s-7") . exwm--start-program)
+          (,(kbd "C-M-7") . exwm--start-program)
+
+          ;; Bind "s-<f2>" to "slock", a simple X display locker.
+          (,(kbd "s-l") . (lambda ()
+              (interactive)
+              (start-process "" nil "/usr/bin/xscreensaver")))))
+
+  ;; To add a key binding only available in line-mode, simply define it in
+  ;; `exwm-mode-map'.  The following example shortens 'C-c q' to 'C-q'.
+  (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
+
+  (display-time)
+  (exwm-enable))
+
 (defmodule flycheck
-  (package-require 'flycheck 'nix-sandbox)
+  (package-require 'flycheck)
 
   (add-hook 'after-init-hook 'global-flycheck-mode)
   (add-to-list 'which-key-replacement-alist '((nil . "^flycheck-") . (nil . "f-")))
