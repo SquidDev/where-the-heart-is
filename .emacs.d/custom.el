@@ -114,7 +114,8 @@
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
    (quote
-    ((org-tag-column . 80)
+    ((lexical-binding . true)
+     (org-tag-column . 80)
      (frozen-string-literal . true)
      (encoding . utf-8))))
  '(save-place-file (concat user-emacs-directory ".saved-places"))

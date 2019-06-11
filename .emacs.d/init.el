@@ -31,7 +31,6 @@
     powerline
     projectile
     term
-    ;; vterm
 
     ;; Various language modes
     elisp
@@ -88,6 +87,7 @@
 
   (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
   (define-key evil-normal-state-map (kbd "gc") 'whitespace-cleanup)
+  (define-key evil-normal-state-map (kbd "gr") 'revert-buffer)
   (define-key evil-normal-state-map (kbd "g C-g") 'count-words)
 
   ;; I'm a bad person, but I like mouse keys
@@ -154,9 +154,12 @@
           ;; Bind "s-r" to exit char-mode and fullscreen mode.
           (,(kbd "s-r") . exwm-reset)
           (,(kbd "C-M-r") . exwm-reset)
-          ;; Bind "s-r" to exit char-mode and fullscreen mode.
+          ;; Bind "s-c" to enter char mode
           (,(kbd "s-c") . exwm-input-release-keyboard)
           (,(kbd "C-M-c") . exwm-input-release-keyboard)
+          ;; Bind "s-]" to exit recursive edit
+          (,(kbd "s-]") . abort-recursive-edit)
+          (,(kbd "C-M-]") . abort-recursive-edit)
           ;; Bind "s-w" to switch workspace interactively.
           (,(kbd "s-w") . exwm-workspace-switch)
           (,(kbd "C-M-w") . exwm-workspace-switch)
@@ -181,9 +184,12 @@
               (interactive)
               (start-process "" nil "/usr/bin/xscreensaver")))))
 
-  ;; To add a key binding only available in line-mode, simply define it in
-  ;; `exwm-mode-map'.  The following example shortens 'C-c q' to 'C-q'.
-  (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
+  ;; Use C-q to pass through the next character event
+  (define-key exwm-mode-map (kbd "C-q") #'exwm-input-send-next-key)
+  ;; A couple of useful keybindings. Who needs C-u anyway?
+  (setq exwm-input-simulation-keys
+        `((,(kbd "C-c C-C") . ,(kbd "C-c"))
+          (,(kbd "C-u") . ,(kbd "C-u"))))
 
   (display-time)
   (exwm-enable))
@@ -292,13 +298,6 @@
     ;; Always send C-r to the term. I never use it in Emacs after all.
     (define-key term-raw-map (kbd "C-r") 'term-send-raw))))
 
-(defmodule vterm
-  (add-to-list 'load-path "~/.emacs.d/emacs-libvterm")
-  (let (vterm-install) (require 'vterm))
-
-  (define-key vterm-mode-map (kbd "C-u") #'vterm--self-insert)
-  )
-
 ;; Language specific modes
 
 (defmodule elisp
@@ -349,6 +348,7 @@
 
  (autoload 'merlin-mode "merlin" "Merlin mode" t)
  (autoload 'tuareg-mode "tuareg" "Tuareg mode" t)
+ (autoload 'ocamlformat "ocamlformat" "Formats OCaml files." t)
  (add-hook 'tuareg-mode-hook 'merlin-mode)
  (add-hook 'caml-mode-hook 'merlin-mode)
  (add-hook 'reason-mode-hook 'merlin-mode)
