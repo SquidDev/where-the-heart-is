@@ -72,3 +72,17 @@ set __fish_git_prompt_color_stagedstate       (_hex "#5fff00")
 set __fish_git_prompt_color_branch            (_hex "#61afef")
 set __fish_git_prompt_color_untrackedfiles    (_hex "#d7ff00")
 set __fish_git_prompt_color_upstream          (_hex "#ff00d7")
+
+# Path
+set fish_user_paths $HOME/.local/bin
+
+# Configuration
+set -gx EDITOR "vim"
+set -gx VISUAL "vim"
+
+# opam configuration
+source $HOME/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
+
+# Make the path unique again, so it's a tad cleaner. Ideally we'd use string
+# join "\n", but fish doesn't like that.
+set -gx PATH (string join0 $PATH | tr '\0' '\n' | awk '!_[$0]++')
