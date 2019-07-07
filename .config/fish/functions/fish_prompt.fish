@@ -1,3 +1,33 @@
+function __sq_find_root --description "Finds a directory with a specific file."
+    set -l name $argv[1]
+
+    set -l root
+    set -l dir (pwd -P)
+    while test $dir != "/"
+        if test -f $dir'/'$name
+            echo $dir
+            return 0
+        end
+
+        set dir (string replace -r '[^/]*/?$' '' $dir)
+    end
+
+    return 1
+end
+
+function __sq_opam_prompt --description "Prints the current opam switch"
+    if not command -sq opam
+        return
+    end
+
+    set -l root (__sq_find_root "dune-project")
+    or return 0
+
+    set_color $__sq_prompt_opam_color
+    printf ' (🐫%s)' (command opam "switch" show)
+    set_color normal
+end
+
 function fish_prompt --description 'Write out the prompt'
     set -l last_status $status
 
@@ -21,6 +51,7 @@ function fish_prompt --description 'Write out the prompt'
     echo -n (prompt_pwd)
     set_color normal
 
+    printf '%s' (__sq_opam_prompt)
     printf '%s ' (__fish_vcs_prompt)
 
     set_color $fish_color_dot

@@ -73,12 +73,18 @@ set __fish_git_prompt_color_branch            (_hex "#61afef")
 set __fish_git_prompt_color_untrackedfiles    (_hex "#d7ff00")
 set __fish_git_prompt_color_upstream          (_hex "#ff00d7")
 
+set __sq_prompt_opam_color                    (_hex "#f18903")
+
 # Path
 set fish_user_paths $HOME/.local/bin
 
 # Configuration
 set -gx EDITOR "vim"
 set -gx VISUAL "vim"
+
+# Reexport the manpath. MANPATH=":foo" doesn't work on fish, as the first
+# item is dropped.
+set -gx MANPATH (manpath -g)
 
 # opam configuration
 source $HOME/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
