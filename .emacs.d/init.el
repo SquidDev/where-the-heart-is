@@ -24,7 +24,7 @@
   '(ido
     company
     evil
-    ;; exwm
+    exwm
     flycheck
     git-gutter
     magit
@@ -34,18 +34,18 @@
 
     ;; Various language modes
     elisp
-    ;; haskell
-    ;; javascript
-    ;; lua
-    ;; markdown
-    ;; ocaml
+    haskell
+    javascript
+    lua
+    markdown
+    ocaml
     org
-    ;; rainbow
-    ;; ruby
-    ;; rust
-    ;; typescript
-    ;; web
-    ;; yaml
+    rainbow
+    ruby
+    rust
+    typescript
+    web
+    yaml
 
     nil))
 
@@ -99,6 +99,7 @@
   ;; Change a couple of modes to use Emacs keybindings instead
   (dolist (mode '(term-mode
                   calculator-mode
+                  diff-mode
                   exwm-mode
                   profiler-report-mode
                   neotree-mode
@@ -154,11 +155,10 @@
           ;; Bind "s-r" to exit char-mode and fullscreen mode.
           (,(kbd "s-r") . exwm-reset)
           (,(kbd "C-M-r") . exwm-reset)
-          ;; Bind "s-c" to enter char mode
+          ;; Bind "s-d" to enter char mode
           (,(kbd "s-c") . exwm-input-release-keyboard)
           (,(kbd "C-M-c") . exwm-input-release-keyboard)
           ;; Bind "s-]" to exit recursive edit
-          (,(kbd "s-]") . abort-recursive-edit)
           (,(kbd "C-M-]") . abort-recursive-edit)
           ;; Bind "s-w" to switch workspace interactively.
           (,(kbd "s-w") . exwm-workspace-switch)
@@ -343,11 +343,10 @@
   (package-require 'reason-mode) ; Also requires tuareg from opam
   (register-extensions 'tuareg-mode ".ml" ".mli")
 
- (push "~/.opam/4.06.1/share/emacs/site-lisp" load-path)
- (setq merlin-command "~/.opam/4.06.1/bin/ocamlmerlin")
+;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
+(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
- (autoload 'merlin-mode "merlin" "Merlin mode" t)
- (autoload 'tuareg-mode "tuareg" "Tuareg mode" t)
  (autoload 'ocamlformat "ocamlformat" "Formats OCaml files." t)
  (add-hook 'tuareg-mode-hook 'merlin-mode)
  (add-hook 'caml-mode-hook 'merlin-mode)
@@ -532,5 +531,8 @@
   "Repeat alignment using spaces as the delimiter between START and END."
   (interactive "r")
   (align-regexp start end "\\(\\s-*\\) " 1 0 t))
+
+(when (member "Segoe UI Symbol" (font-family-list))
+  (set-fontset-font t 'unicode "Segoe UI Symbol" nil 'prepend))
 
 (provide 'init)
