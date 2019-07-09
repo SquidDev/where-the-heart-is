@@ -10,6 +10,7 @@ end
 # General fish configuration
 set fish_greeting     ""
 set fish_key_bindings "fish_default_key_bindings"
+set fish_emoji_width  2
 
 # Prompt colours
 set fish_color_cwd               (_hex "#87d7ff")
