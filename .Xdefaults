@@ -23,7 +23,8 @@ URxvt.colorUL:     #da8548
 URxvt.colorULMode: true
 URxvt.cursorColor: #abb2b5
 URxvt.foreground:  #abb2b5
-URxvt.font:        xft:DejaVuSansMono:size=9
+URxvt.font:        xft:DejaVuSansMono:size=9,\
+                   xft:Segoe UI Symbol:style=Regular
 URxvt.letterSpace: 0
 URxvt.scrollBar:   false
 
