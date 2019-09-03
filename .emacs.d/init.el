@@ -503,6 +503,10 @@
 ;; Flyspell on all code
 (add-hook 'prog-mode-hook 'flyspell-prog-mode)
 
+;; Whitespace on all code and text
+(add-hook 'prog-mode-hook 'whitespace-mode)
+(add-hook 'text-mode-hook 'whitespace-mode)
+
 ;; Allow q to quit on view mode too
 (with-eval-after-load 'view
   (evil-make-overriding-map view-mode-map 'normal)

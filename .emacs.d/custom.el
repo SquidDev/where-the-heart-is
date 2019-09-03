@@ -29,7 +29,6 @@
  '(git-commit-setup-hook
    (quote
     (git-commit-save-message git-commit-setup-changelog-support git-commit-turn-on-auto-fill git-commit-turn-on-flyspell git-commit-propertize-diff with-editor-usage-message)))
- '(global-whitespace-mode t)
  '(haskell-compile-cabal-build-alt-command
    "cd %s && cabal clean -s && cabal new-build --ghc-option=-ferror-spans")
  '(haskell-compile-cabal-build-command "cd %s && cabal new-build --ghc-option=-ferror-spans")
