@@ -102,6 +102,8 @@
  '(ns-command-modifier 'meta)
  '(org-agenda-window-setup 'current-window)
  '(org-tags-column -120)
+ '(package-selected-packages
+   '(reason-mode markdown-mode lua-mode rjsx-mode js2-refactor js2-mode ripgrep projectile spaceline magit orgalist git-gutter flycheck evil company flx-ido smex ido-completing-read+ undo-tree which-key editorconfig use-package))
  '(projectile-rails-global-mode t)
  '(require-final-newline t)
  '(ring-bell-function 'ignore)

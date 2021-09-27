@@ -15,9 +15,10 @@
 	plot = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
 	plota = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
 	fixup = commit --amend --no-edit --date=now
+	update = fetch --all --prune --multiple
 
 	# https://www.erikschierboom.com/2020/02/17/cleaning-up-local-git-branches-deleted-on-a-remote/
-	gone = !"git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D"
+	gone = !"git update && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D"
 [core]
 	autocrlf = input
 	pager = less -+X -FR
@@ -45,12 +46,19 @@
 	branch = false
 [pull]
 	rebase = true
+[fetch]
+	parallel = 0
 {{#if git_send_email}}
 [sendemail]
 	smtpencryption = tls
 	smtpserver = squiddev.cc
 	smtpserverport = 465
 	smtpuser = {{ git_send_email }}
+{{/if}}
+
+{{#if git_gpg}}
+[commit]
+	gpgsign = true
 {{/if}}
 
 {{#if git_includes}}

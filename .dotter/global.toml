@@ -6,6 +6,9 @@ depends = ["alacritty", "emacs", "fish", "git", "tmux"]
 [alacritty.files]
 "packages/alacritty" = "~/.config/alacritty"
 
+[alacritty.variables]
+alacritty_shell = ""
+
 [albert.files]
 "packages/albert/albert.conf" = "~/.config/albert/albert.conf"
 "packages/albert/mpris-state" = "~/.local/share/albert/org.albert.extension.python/modules/mpris-state"
@@ -27,6 +30,7 @@ albert_extensions = []
 
 [git.variables]
 git_includes = []
+git_gpg = false
 
 [tmux.files]
 "packages/tmux/tmux.conf" = "~/.config/tmux/tmux.conf"

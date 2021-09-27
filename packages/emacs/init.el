@@ -13,7 +13,7 @@
 
 (setq use-package-compute-statistics t)
 
-(require 'bind-key)
+; (require 'bind-key)
 (eval-when-compile
   (unless (package-installed-p 'use-package)
     (package-install 'use-package))
@@ -25,27 +25,14 @@
 (defconst squid/*enabled-modules*
   '(
     ; exwm
-    flycheck
-    git-gutter
-    magit
-    powerline
-    projectile
-    term
 
     ;; Various language modes
-    elisp
     ; haskell
     javascript
-    ; lua
-    markdown
     ocaml
-    org
-    rainbow
-    ruby
     ; rust
     typescript
     web
-    yaml
 
     nil))
 
@@ -348,7 +335,7 @@
 (register-extensions 'tuareg-mode ".ml" ".mli")
 
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-(require 'opam-user-setup (expand-file-name "opam-user-setup.el" user-emacs-directory))
+;; (require 'opam-user-setup (expand-file-name "opam-user-setup.el" user-emacs-directory))
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
  (autoload 'ocamlformat "ocamlformat" "Formats OCaml files." t)

@@ -9,3 +9,7 @@ fi
 
 tic -x -o ~/.terminfo/ ~/.config/tmux/tmux-24bit.terminfo
 {{/if}}
+
+{{#if dotter.packages.albert}}
+albert restart
+{{/if}}
