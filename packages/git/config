@@ -1,25 +1,27 @@
 [user]
-	email = bonzoweb@hotmail.co.uk
-	name = SquidDev
+	name = Jonathan Coates
+{{#if git_email}}
+	email = {{git_email}}
+{{/if}}
 [push]
 	default = simple
 [credential]
 	helper = store
 [alias]
 	graph = log --decorate --oneline --graph
-	gr = log --decorate --oneline --graph
 	giff = diff HEAD
 	unstage = reset -q HEAD --
 	discard = checkout --
-	# throw = !git reset -q HEAD -- $1 && git checkout -- $1
-	branches = branch -a
-	tags = tag
-	stashes = stash list
 	plot = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)'
 	plota = log --graph --abbrev-commit --decorate --date=relative --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(bold yellow)%d%C(reset)' --all
 	fixup = commit --amend --no-edit --date=now
+
+	# https://www.erikschierboom.com/2020/02/17/cleaning-up-local-git-branches-deleted-on-a-remote/
+	gone = !"git fetch -p && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D"
 [core]
 	autocrlf = input
+	pager = less -+X -FR
+	sshCommand = ssh -o ControlMaster=auto -o ControlPath=~/.ssh/sockets/%r@%h-%p -o ControlPersist=600
 [color]
 	ui = auto
 [color "diff"]
@@ -41,3 +43,19 @@
 [pager]
 	status = false
 	branch = false
+[pull]
+	rebase = true
+{{#if git_send_email}}
+[sendemail]
+	smtpencryption = tls
+	smtpserver = squiddev.cc
+	smtpserverport = 465
+	smtpuser = {{ git_send_email }}
+{{/if}}
+
+{{#if git_includes}}
+[include]
+{{#each git_includes}}
+	path = {{this}}
+{{/each}}
+{{/if}}

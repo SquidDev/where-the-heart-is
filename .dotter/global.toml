@@ -1,0 +1,33 @@
+[helpers]
+
+[default]
+depends = ["alacritty", "emacs", "fish", "git", "tmux"]
+
+[alacritty.files]
+"packages/alacritty" = "~/.config/alacritty"
+
+[albert.files]
+"packages/albert/albert.conf" = "~/.config/albert/albert.conf"
+"packages/albert/mpris-state" = "~/.local/share/albert/org.albert.extension.python/modules/mpris-state"
+"packages/albert/unicode_emoji2" = "~/.local/share/albert/org.albert.extension.python/modules/unicode_emoji2"
+
+[albert.variables]
+albert_extensions = []
+
+[emacs.files]
+"packages/emacs/init.el" = "~/.config/emacs/init.el"
+"packages/emacs/custom.el" = "~/.config/emacs/custom.el"
+"packages/emacs/zeromini-theme.el" = "~/.config/emacs/zeromini-theme.el"
+
+[fish.files]
+"packages/fish" = "~/.config/fish"
+
+[git.files]
+"packages/git/config" = "~/.config/git/config"
+
+[git.variables]
+git_includes = []
+
+[tmux.files]
+"packages/tmux/tmux.conf" = "~/.config/tmux/tmux.conf"
+"packages/tmux/tmux-24bit.terminfo" = "~/.config/tmux/tmux-24bit.terminfo"

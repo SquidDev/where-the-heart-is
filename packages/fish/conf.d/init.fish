@@ -77,7 +77,7 @@ set __fish_git_prompt_color_upstream          (_hex "#ff00d7")
 set __sq_prompt_opam_color                    (_hex "#f18903")
 
 # Path
-set fish_user_paths $HOME/.local/bin
+set fish_user_paths $HOME/.local/bin $HOME/.local/share/cargo/bin /var/lib/snapd/snap/bin
 
 # Configuration
 set -gx EDITOR "vim"
@@ -88,7 +88,9 @@ set -gx VISUAL "vim"
 set -gx MANPATH (manpath -g)
 
 # opam configuration
-source $HOME/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
+if test -f $HOME/.opam/opam-init/init.fish
+    source $HOME/.opam/opam-init/init.fish > /dev/null 2> /dev/null; or true
+end
 
 # Make the path unique again, so it's a tad cleaner. Ideally we'd use string
 # join "\n", but fish doesn't like that.

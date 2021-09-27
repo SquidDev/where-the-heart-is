@@ -1,4 +1,4 @@
-*~
+/.dotter/cache*
+/.dotter/local.toml
 
-secret.*
-*.pyc
+/bin

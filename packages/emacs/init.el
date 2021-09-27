@@ -11,20 +11,20 @@
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (load custom-file t)
 
-(setq package-selected-packages '())
+(setq use-package-compute-statistics t)
 
-(defun package-require (&rest packages)
-  "Install PACKAGES if they are not already installed."
-  (dolist (package packages)
-    (add-to-list 'package-selected-packages package)
-    (unless (package-installed-p package)
-      (package-install package))))
+(require 'bind-key)
+(eval-when-compile
+  (unless (package-installed-p 'use-package)
+    (package-install 'use-package))
 
-(defconst *enabled-modules*
-  '(ido
-    company
-    evil
-    exwm
+  (require 'use-package-ensure)
+  (setq use-package-always-ensure t))
+
+
+(defconst squid/*enabled-modules*
+  '(
+    ; exwm
     flycheck
     git-gutter
     magit
@@ -34,69 +34,77 @@
 
     ;; Various language modes
     elisp
-    haskell
+    ; haskell
     javascript
-    lua
+    ; lua
     markdown
     ocaml
     org
     rainbow
     ruby
-    rust
+    ; rust
     typescript
     web
     yaml
 
     nil))
 
-(defmacro defmodule (module &rest body)
-  "Define a module BODY which will only be evaluated when MODULE is in the *enabled-modules* set."
-  `(when (memq ',module *enabled-modules*) ,@body))
+(defun squid/enabled? (module)
+  "Determine if a MODULE is installed."
+  (memq module squid/*enabled-modules*))
 
-(eval-when-compile (require 'cl))
+(defmacro squid/defmodule (module &rest body)
+  "Define a module BODY which will only be evaluated when MODULE is in the *enabled-modules* set."
+  `(when (squid/enabled? ',module) ,@body))
+(setq package-selected-packages '())
+
+(defun squid/package-require (&rest packages)
+  "Install PACKAGES if they are not already installed."
+  (dolist (package packages)
+    (add-to-list 'package-selected-packages package)
+    (unless (package-installed-p package)
+      (package-install package))))
+
+(use-package editorconfig)
+(use-package which-key)
+(use-package undo-tree
+  :init (global-undo-tree-mode))
+
+;; Setup ido and related works
+(use-package ido
+  :config
+  (ido-mode t)
+  (ido-everywhere t))
+
+(use-package ido-completing-read+
+  :after ido
+  :config
+  (ido-ubiquitous-mode 1))
+
+(use-package smex
+  :after ido
+  :bind (("M-x" . smex)
+         ("M-X" . smex-major-mode-commands)))
+
+(use-package flx-ido
+  :after ido
+  :config
+  (flx-ido-mode))
+
 
 (defun register-extensions (mode &rest exts)
   "Register a list of extensions EXTS to load with a particular MODE."
   (dolist (ext exts)
     (add-to-list 'auto-mode-alist `(,(concat "\\" ext "\\'") . ,mode))))
 
-(package-require 'editorconfig 'which-key)
+(use-package company
+  :hook (after-init . global-company-mode))
 
-(defmodule ido
-  (package-require 'ido-completing-read+ 'smex 'flx-ido)
-
-  (ido-mode t)
-  (ido-everywhere t)
-  (ido-ubiquitous-mode 1)
-
-  (flx-ido-mode)
-
-  (global-set-key (kbd "M-x") 'smex)
-  (global-set-key (kbd "M-X") 'smex-major-mode-commands))
-
-(defmodule company
-  (package-require 'company)
-  (add-hook 'after-init-hook 'global-company-mode)
-
-  (global-set-key (kbd "TAB") 'company-indent-or-complete-common))
-
-(defmodule evil
-  (package-require 'evil 'undo-tree)
-
+(use-package evil
+  :defer nil
+  :config
   (evil-mode t)
 
-  (define-key evil-insert-state-map (kbd "C-x TAB") 'indent-relative)
-  (define-key evil-normal-state-map (kbd "gc") 'whitespace-cleanup)
-  (define-key evil-normal-state-map (kbd "gr") 'revert-buffer)
-  (define-key evil-normal-state-map (kbd "g C-g") 'count-words)
-
-  ;; I'm a bad person, but I like mouse keys
-  (define-key evil-window-map [left]  'evil-window-left)
-  (define-key evil-window-map [right] 'evil-window-right)
-  (define-key evil-window-map [up]    'evil-window-up)
-  (define-key evil-window-map [down]  'evil-window-down)
-
-  ;; Change a couple of modes to use Emacs keybindings instead
   (dolist (mode '(term-mode
                   calculator-mode
                   diff-mode
@@ -109,12 +117,25 @@
 
   ;; Change a couple of modes to use Vim keybindings
   (dolist (mode '(git-commit-mode))
-    (evil-set-initial-state mode 'normal)))
+    (evil-set-initial-state mode 'normal))
 
-(defmodule exwm
-  (package-require 'exwm)
+  :bind (:map evil-insert-state-map
+         ("C-x <tab>" . indent-relative)
+         :map evil-normal-state-map
+         ("gc" . whitespace-cleanup)
+         ("gr" . revert-buffer)
+         ("g C-g" . count-words)
+         :map evil-window-map
+         ("<left>"  . evil-window-left)
+         ("<right>" . evil-window-right)
+         ("<up>"    . evil-window-up)
+         ("<down>"  . evil-window-down)))
+
+(squid/defmodule exwm
+  (squid/package-require 'exwm)
   (require 'exwm)
   (require 'exwm-config)
+  (require 'exwm-randr)
 
   (exwm-config-ido)
 
@@ -162,7 +183,11 @@
           (,(kbd "C-M-]") . abort-recursive-edit)
           ;; Bind "s-w" to switch workspace interactively.
           (,(kbd "s-w") . exwm-workspace-switch)
-          (,(kbd "C-M-w") . exwm-workspace-switch)
+          (,(kbd "C-M-w") . exwm-workspace-switch )
+
+          (,(kbd "M-SPC") . (lambda ()
+            (interactive)
+            (start-process-shell-command "rofi" nil "rofi -show combi -blocks-wrap ~/.config/rofi/blocks.py")))
 
           ;; Arrow keys for navigation. Yes, I should probably have these
           ;; as Vim-style hjlk.
@@ -182,7 +207,7 @@
           ;; Bind "s-<f2>" to "slock", a simple X display locker.
           (,(kbd "s-l") . (lambda ()
               (interactive)
-              (start-process "" nil "/usr/bin/xscreensaver")))))
+              (start-process-shell-command "lock" nil "lock")))))
 
   ;; Use C-q to pass through the next character event
   (define-key exwm-mode-map (kbd "C-q") #'exwm-input-send-next-key)
@@ -191,14 +216,29 @@
         `((,(kbd "C-c C-C") . ,(kbd "C-c"))
           (,(kbd "C-u") . ,(kbd "C-u"))))
 
+  (setq exwm-workspace-number 2) ; Create a workspace for us and our separate monitor.
+  (setq exwm-randr-workspace-output-plist '(0 "HDMI-1"))
+  (add-hook 'exwm-randr-screen-change-hook
+            (lambda ()
+              (start-process-shell-command
+               "xrandr" nil "xrandr --output eDP-1 --left-of HDMI-1 --auto")))
+
   (display-time)
+  (exwm-randr-enable)
   (exwm-enable))
 
-(defmodule flycheck
-  (package-require 'flycheck)
+(unless (squid/enabled? 'exwm)
+  ; If we've not got exwm, then register our "standard" movement keys globally.
+  (global-set-key (kbd "<C-M-right>") 'evil-window-right)
+  (global-set-key (kbd "<C-M-left>") 'evil-window-left)
+  (global-set-key (kbd "<C-M-up>") 'evil-window-up)
+  (global-set-key (kbd "<C-M-down>") 'evil-window-down))
 
-  (add-hook 'after-init-hook 'global-flycheck-mode)
-  (add-to-list 'which-key-replacement-alist '((nil . "^flycheck-") . (nil . "f-")))
+(use-package flycheck
+  :hook (after-init . global-flycheck-mode)
+  :config
+  (with-eval-after-load 'which-key
+    (add-to-list 'which-key-replacement-alist '((nil . "^flycheck-") . (nil . "f-"))))
 
   ;; Ensure the window is displayed in a sensible place
   (add-to-list 'display-buffer-alist
@@ -209,17 +249,18 @@
                  (reusable-frames . visible)
                  (window-height   . 0.33))))
 
-(defmodule git-gutter
-  (package-require 'git-gutter)
-  (global-set-key (kbd "C-c m g") 'git-gutter-mode))
+(use-package git-gutter
+  :bind ("C-c m g" . git-gutter-mode))
 
-(defmodule magit
-  (package-require 'magit)
+(use-package orgalist
+  :commands orgalist-mode)
 
+(use-package magit
+  :defer t
+  :config
   (with-eval-after-load 'git-commit
-    (add-hook 'git-commit-mode-hook 'turn-on-orgstruct)
-    (add-hook 'git-commit-mode-hook 'turn-on-orgstruct++)
     (add-hook 'git-commit-mode-hook (lambda ()
+      (orgalist-mode t)
       (setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] "
             paragraph-separate "$"
             fill-column 72))))
@@ -232,9 +273,8 @@
         (evil-emacs-state)
         (evil-exit-emacs-state))))))
 
-(defmodule powerline
-  (package-require 'spaceline)
-
+(use-package spaceline
+  :config
   ;; Ideally we'd just depend on powerline, but this'll do for now.
   (require 'spaceline)
   (require 'spaceline-segments)
@@ -261,63 +301,26 @@
 
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-squid)))))
 
-(defmodule projectile
-  ;; While ripgrep and multi-term aren't strictly needed, this is the only
-  ;; module which really depends on them.
-  (package-require 'projectile 'multi-term 'ripgrep)
+(use-package projectile
+  :hook (after-init . projectile-mode)
+  :bind (:map projectile-mode-map
+         ("C-c C-p" . nil)
+         ("C-c p" . projectile-command-map))
+  :config
+  (with-eval-after-load 'which-key
+    (add-to-list 'which-key-replacement-alist '((nil . "^projectile-") . (nil . "p-")))))
 
-  (add-hook 'after-init-hook (lambda ()
-    (projectile-mode)
-    ;; Yes, I'm a heathen. But this is more sane than C-c C-p.
-    ;;
-    ;; Technically projectile-keymap-prefix does this. It doesn't appear to work
-    ;; for me though, so we'll go this route.
-    (define-key projectile-mode-map (kbd "C-c C-p") nil)
-    (define-key projectile-mode-map (kbd "C-c p") 'projectile-command-map)))
-
-  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-") . (nil . "p-")))
-
-  (with-eval-after-load 'projectile
-    (defun projectile-run-multi-term ()
-      "Invoke `multi-term' in the project's root."
-      (interactive)
-      (projectile-with-default-dir (projectile-project-root)
-        (require 'multi-term)
-        (let ((multi-term-buffer-name (concat multi-term-buffer-name "-" (projectile-project-name))))
-          (multi-term))))
-
-    (define-key projectile-command-map (kbd "x m") #'projectile-run-multi-term)))
-
-(defmodule term
-  (package-require 'eterm-256color 'multi-term)
-  (add-hook 'term-mode-hook #'eterm-256color-mode)
-
-  (global-set-key (kbd "C-#") 'multi-term-dedicated-toggle)
-
-  (add-hook 'term-mode-hook (lambda ()
-    ;; Always send C-r to the term. I never use it in Emacs after all.
-    (define-key term-raw-map (kbd "C-r") 'term-send-raw))))
+(use-package ripgrep :defer t)
 
 ;; Language specific modes
 
-(defmodule elisp
-  (with-eval-after-load 'elisp-mode
-    ;; Add keybindings to execute code
-    (define-key emacs-lisp-mode-map (kbd "C-c C-r") 'eval-region)
-    (define-key emacs-lisp-mode-map (kbd "C-c C-l") 'eval-buffer)))
+(with-eval-after-load 'elisp-mode
+  ;; Add keybindings to execute code
+  (define-key emacs-lisp-mode-map (kbd "C-c C-r") 'eval-region)
+  (define-key emacs-lisp-mode-map (kbd "C-c C-l") 'eval-buffer))
 
-(defmodule haskell
-  (package-require 'haskell-mode 'intero))
-  ;; I've previously tried ghc-mod and company-ghci, but they're not
-  ;; fantastic and seem to have some serious memory leak issues.
-
-  ;; (with-eval-after-load 'intero
-  ;;   (evil-make-overriding-map intero-mode-map 'normal)
-  ;;   (evil-define-key 'normal intero-mode-map
-  ;;     "gd" 'intero-goto-definition)))
-
-(defmodule javascript
-  (package-require 'js2-mode 'js2-refactor 'rjsx-mode)
+(squid/defmodule javascript
+  (squid/package-require 'js2-mode 'js2-refactor 'rjsx-mode)
 
   (register-extensions 'rjsx-mode ".js" ".jsx")
 
@@ -331,20 +334,21 @@
   (with-eval-after-load 'js2-refactor
     (js2r-add-keybindings-with-prefix "C-c j")))
 
-(defmodule lua
-  (package-require 'lua-mode)
-  (register-extensions 'lua-mode ".rockspec"))
+(use-package lua-mode
+  :mode "\\.lua\\'" "\\.rockspec\\'")
 
-(defmodule markdown
-  (package-require 'markdown-mode)
-  (add-hook 'markdown-mode-hook 'flyspell-mode))
+(use-package markdown-mode
+  :mode "\\.md\\'"
+  :hook (markdown-mode-hook . flyspell-mode))
 
-(defmodule ocaml
-  (package-require 'reason-mode) ; Also requires tuareg from opam
-  (register-extensions 'tuareg-mode ".ml" ".mli")
+(use-package reason-mode
+  :defer t)
+
+(squid/defmodule ocaml
+(register-extensions 'tuareg-mode ".ml" ".mli")
 
 ;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-(require 'opam-user-setup "~/.emacs.d/opam-user-setup.el")
+(require 'opam-user-setup (expand-file-name "opam-user-setup.el" user-emacs-directory))
 ;; ## end of OPAM user-setup addition for emacs / base ## keep this line
 
  (autoload 'ocamlformat "ocamlformat" "Formats OCaml files." t)
@@ -374,52 +378,14 @@
    (with-eval-after-load 'merlin-mode
      (add-to-list 'company-backends 'merlin-company-backend))))
 
-(defmodule org
-  (defun org-agenda-all ()
-    (interactive)
-    (org-agenda nil "n"))
-  (global-set-key (kbd "C-c m a") 'org-agenda-all)
+(use-package org
+  :hook (org-mode-hook flyspell-mode))
 
-  (add-hook 'org-mode-hook 'flyspell-mode))
+(use-package rainbow-mode
+  :bind ("C-c m r" . rainbow-mode))
 
-(defmodule rainbow
-  (package-require 'rainbow-mode)
-  (global-set-key (kbd "C-c m r") 'rainbow-mode))
-
-(defmodule ruby
-  (package-require 'projectile-rails 'rspec-mode 'robe)
-
-  (add-hook 'ruby-mode-hook 'robe-mode)
-  (add-hook 'ruby-mode-hook 'hs-minor-mode)
-  (with-eval-after-load 'company (add-to-list 'company-backends 'company-robe))
-
-  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-rails-") . (nil . "r-")))
-  (add-to-list 'which-key-replacement-alist '((nil . "^rspec-") . (nil . "r-")))
-
-  (with-eval-after-load 'hideshow
-    (add-to-list 'hs-special-modes-alist
-                 `(ruby-mode
-                   ,(rx (or "def" "class" "module" "do" "{" "[")) ; Block start
-                   ,(rx (or "}" "]" "end"))                       ; Block end
-                   ,(rx (or "#" "=begin"))                        ; Comment start
-                   ruby-forward-sexp nil)))
-
-
-  (with-eval-after-load 'robe
-    (evil-make-overriding-map robe-mode-map 'normal)
-    (evil-define-key 'normal robe-mode-map
-      "gd" 'robe-jump
-      "K"  'robe-doc)))
-
-(defmodule rust
-  (package-require 'rust-mode 'flycheck-rust 'racer)
-
-  (add-hook 'flycheck-mode-hook 'flycheck-rust-setup)
-  (add-hook 'rust-mode-hook 'racer-mode)
-  (add-hook 'racer-mode-hook 'eldoc-mode))
-
-(defmodule typescript
-  (package-require 'tide)
+(squid/defmodule typescript
+  (squid/package-require 'tide)
 
   (defun setup-tide-mode ()
     (interactive)
@@ -443,8 +409,8 @@
     (define-key tide-mode-map (kbd "C-c t r") 'tide-rename-symbol)
     (define-key tide-mode-map (kbd "C-c t i") 'tide-organize-imports)))
 
-(defmodule web
-  (package-require 'web-mode)
+(squid/defmodule web
+  (squid/package-require 'web-mode)
   (register-extensions 'web-mode ".php" ".erb" ".tsx" ".html" ".jinja2")
 
   (add-to-list 'which-key-replacement-alist '((nil . "^web-mode-") . (nil . "w-")))
@@ -460,8 +426,7 @@
     (flycheck-add-mode 'css-csslint 'web-mode)
     (flycheck-add-mode 'typescript-tslint 'web-mode)))
 
-(defmodule yaml
-  (package-require 'yaml-mode))
+(use-package yaml-mode :defer t)
 
 (defadvice dired-find-file (around dired-subst-directory activate)
   "Replace current buffer if file is a directory."

@@ -1,7 +1,0 @@
-# This file contains fish universal variable definitions.
-# VERSION: 3.0
-SETUVAR fish_color_cwd_root:red
-SETUVAR fish_color_host:normal
-SETUVAR fish_color_search_match:bryellow\x1e\x2d\x2dbackground\x3dbrblack
-SETUVAR fish_color_user:brgreen
-SETUVAR fish_key_bindings:fish_default_key_bindings

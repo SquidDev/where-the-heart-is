@@ -4,31 +4,29 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(auto-save-default nil)
- '(backup-directory-alist (quote (("." . "~/.emacs.d/backup"))))
+ '(company-auto-commit t)
  '(company-auto-complete t)
  '(company-ghc-show-info t)
  '(company-idle-delay 0.3)
  '(company-tooltip-align-annotations t)
  '(current-language-environment "UTF-8")
- '(custom-enabled-themes (quote (zeromini)))
- '(custom-file "~/.emacs.d/custom.el")
+ '(custom-enabled-themes '(zeromini))
  '(custom-safe-themes t)
  '(diff-switches "-u")
  '(display-line-numbers-current-absolute t)
- '(display-line-numbers-type (quote relative))
+ '(display-line-numbers-type 'relative)
  '(editorconfig-mode t)
  '(eterm-256color-disable-bold nil)
+ '(evil-undo-system 'undo-tree)
  '(evil-want-fine-undo t)
- '(explicit-shell-file-name "zsh")
  '(fill-column 120)
  '(flycheck-checker-error-threshold 500)
- '(flycheck-clang-args (quote ("--std=c++17")))
- '(flycheck-disabled-checkers (quote (ruby-reek)))
+ '(flycheck-clang-args '("--std=c++17"))
+ '(flycheck-disabled-checkers '(ruby-reek))
  '(flycheck-syntax-check-failed-hook nil)
  '(flyspell-large-region 0)
  '(git-commit-setup-hook
-   (quote
-    (git-commit-save-message git-commit-setup-changelog-support git-commit-turn-on-auto-fill git-commit-turn-on-flyspell git-commit-propertize-diff with-editor-usage-message)))
+   '(git-commit-save-message git-commit-setup-changelog-support git-commit-turn-on-auto-fill git-commit-turn-on-flyspell git-commit-propertize-diff with-editor-usage-message))
  '(haskell-compile-cabal-build-alt-command
    "cd %s && cabal clean -s && cabal new-build --ghc-option=-ferror-spans")
  '(haskell-compile-cabal-build-command "cd %s && cabal new-build --ghc-option=-ferror-spans")
@@ -37,13 +35,12 @@
  '(haskell-process-log t)
  '(haskell-process-show-debug-tips nil)
  '(haskell-process-suggest-remove-import-lines t)
- '(haskell-process-type (quote cabal-new-repl))
- '(haskell-process-wrapper-function (quote identity))
+ '(haskell-process-type 'cabal-new-repl)
+ '(haskell-process-wrapper-function 'identity)
  '(hexl-bits 8)
- '(htmlize-html-major-mode (quote mhtml-mode))
+ '(htmlize-html-major-mode 'mhtml-mode)
  '(ibuffer-saved-filter-groups
-   (quote
-    (("Default"
+   '(("Default"
       ("Terminals"
        (used-mode . term-mode))
       ("Programming"
@@ -52,10 +49,9 @@
        (or
         (name . "\\*.*\\*")
         (name . "magit[^:]*:.*")
-        (name . "\\*magit.*")))))))
+        (name . "\\*magit.*"))))))
  '(ibuffer-saved-filters
-   (quote
-    (("gnus"
+   '(("gnus"
       ((or
         (mode . message-mode)
         (mode . mail-mode)
@@ -89,47 +85,45 @@
         (mode . typescript-mode)
         (mode . web-mode)
         (mode . yaml-mode)
-        (name . "\\*scratch\\*")))))))
- '(ido-create-new-buffer (quote never))
+        (name . "\\*scratch\\*"))))))
+ '(ido-create-new-buffer 'never)
  '(ido-enable-flex-matching t)
- '(ido-ignore-directories (quote ("\\`CVS/" "\\`\\.\\./" "\\`\\./")))
+ '(ido-ignore-directories '("\\`CVS/" "\\`\\.\\./" "\\`\\./"))
  '(ido-use-faces nil)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
- '(intero-global-mode t nil (intero))
  '(ispell-dictionary "en_GB")
+ '(magit-revision-show-gravatars t)
  '(markdown-asymmetric-header t)
  '(markdown-command "kramdown")
  '(menu-bar-mode nil)
  '(multi-term-dedicated-select-after-open-p t)
  '(next-line-add-newlines nil)
- '(ns-command-modifier (quote meta))
- '(org-agenda-window-setup (quote current-window))
+ '(ns-command-modifier 'meta)
+ '(org-agenda-window-setup 'current-window)
  '(org-tags-column -120)
  '(projectile-rails-global-mode t)
  '(require-final-newline t)
- '(ring-bell-function (quote ignore))
+ '(ring-bell-function 'ignore)
  '(rspec-use-spring-when-possible nil)
  '(ruby-insert-encoding-magic-comment nil)
  '(safe-local-variable-values
-   (quote
-    ((lexical-binding . true)
+   '((lexical-binding . true)
      (org-tag-column . 80)
      (frozen-string-literal . true)
-     (encoding . utf-8))))
+     (encoding . utf-8)))
  '(save-place-file (concat user-emacs-directory ".saved-places"))
  '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(tab-width 4)
  '(tool-bar-mode nil)
- '(tramp-default-method "ssh" nil (tramp))
- '(uniquify-buffer-name-style (quote post-forward-angle-brackets) nil (uniquify))
+ '(tramp-default-method "ssh")
+ '(uniquify-buffer-name-style 'post-forward-angle-brackets nil (uniquify))
  '(which-key-mode t)
- '(whitespace-global-modes (quote (not vterm-mode)))
+ '(whitespace-global-modes '(not vterm-mode))
  '(whitespace-style
-   (quote
-    (face trailing tabs spaces empty indentation space-mark tab-mark)))
+   '(face trailing tabs spaces empty indentation space-mark tab-mark))
  '(window-divider-default-right-width 1)
  '(xterm-mouse-mode t))
 (custom-set-faces
