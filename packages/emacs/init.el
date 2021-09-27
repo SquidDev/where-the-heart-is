@@ -426,15 +426,14 @@
     (when (and is-dir (not (eq (current-buffer) orig)))
       (kill-buffer orig))))
 
-(unless (display-graphic-p)
-  ;; Show frame title in terminal window
-  (defvar last-buffer "")
-  (defun xterm-title-update ()
-    (interactive)
-    (if (string= last-buffer (buffer-name)) nil
-      (setq last-buffer (buffer-name))
-      (send-string-to-terminal (concat "\033]2; " (if buffer-file-name (buffer-file-name) (buffer-name)) " - emacs\007"))))
-  (add-hook 'post-command-hook 'xterm-title-update))
+;; Show frame title in terminal window
+(defvar last-buffer "")
+(defun xterm-title-update ()
+  "Update the title of the current terminal window."
+  (unless (or (string= last-buffer (buffer-name)) (display-graphic-p))
+    (setq last-buffer (buffer-name))
+    (send-string-to-terminal (concat "\033]2; " (if buffer-file-name (buffer-file-name) (buffer-name)) " - emacs\007"))))
+(add-hook 'post-command-hook 'xterm-title-update)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq frame-title-format (concat  "%b - emacs@" (system-name)))
@@ -489,7 +488,12 @@
   (interactive "r")
   (align-regexp start end "\\(\\s-*\\) " 1 0 t))
 
-(when (member "Segoe UI Symbol" (font-family-list))
-  (set-fontset-font t 'unicode "Segoe UI Symbol" nil 'prepend))
+;; Emacs client loads child frames in a weird setup where DISPLAY is not
+;; the same as the shell's DISPLAY, meaning xdg-open doesn't do what we'd
+;; expect.
+(add-hook 'after-make-frame-functions
+  (lambda (frame)
+    (when (and (boundp 'x-display-name) (string= x-display-name "wayland-0"))
+      (setenv "DISPLAY" ":0" frame))))
 
 (provide 'init)

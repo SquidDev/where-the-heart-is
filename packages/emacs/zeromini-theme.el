@@ -35,6 +35,7 @@
 (defun true-color-p ()
   "Return non-nil on displays that support 256 colors."
   (or
+   (daemonp)
    (display-graphic-p)
    (= (tty-display-color-cells) 16777216)))
 
