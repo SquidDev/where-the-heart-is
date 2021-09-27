@@ -1,5 +1,8 @@
 ;; -*- lexical-binding:true -*-
 
+;; Useful hooks for startup failures.
+(when nil (setq debug-on-error t) (setq debug-on-quit t))
+
 ;; Setup package.el and get everything else running.
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
@@ -27,10 +30,8 @@
     ; exwm
 
     ;; Various language modes
-    ; haskell
     javascript
     ocaml
-    ; rust
     typescript
     web
 
@@ -366,7 +367,7 @@
      (add-to-list 'company-backends 'merlin-company-backend))))
 
 (use-package org
-  :hook (org-mode-hook flyspell-mode))
+  :hook (org-mode-hook . flyspell-mode))
 
 (use-package rainbow-mode
   :bind ("C-c m r" . rainbow-mode))
