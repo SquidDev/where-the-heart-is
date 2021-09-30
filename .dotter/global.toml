@@ -21,6 +21,7 @@ albert_extensions = []
 "packages/emacs/init.el" = "~/.config/emacs/init.el"
 "packages/emacs/custom.el" = "~/.config/emacs/custom.el"
 "packages/emacs/zeromini-theme.el" = "~/.config/emacs/zeromini-theme.el"
+"packages/emacs/emacsclient.desktop" = "~/.local/share/applications/emacsclient.desktop"
 
 [fish.files]
 "packages/fish" = "~/.config/fish"

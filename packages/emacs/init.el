@@ -23,45 +23,46 @@
   (require 'use-package-ensure)
   (setq use-package-always-ensure t))
 
+(use-package emacs
+  :hook
+  (;; Switch to the default group when launching ibuffer
+   (ibuffer . (lambda() (ibuffer-switch-to-saved-filter-groups "Default"))))
 
-(defconst squid/*enabled-modules*
-  '(
-    ; exwm
+  :bind
+  (("C-c m l" . display-line-numbers-mode)
+   :map emacs-lisp-mode-map
+   ; Add keybindings to execute code
+   ("C-c C-r" . eval-region)
+   ("C-c C-l" . eval-buffer))
 
-    ;; Various language modes
-    javascript
-    ocaml
-    typescript
-    web
+  :init
+  (save-place-mode t)
+  )
 
-    nil))
+(use-package editorconfig
+  :config
+  (editorconfig-mode 1))
 
-(defun squid/enabled? (module)
-  "Determine if a MODULE is installed."
-  (memq module squid/*enabled-modules*))
+(use-package which-key
+  :config
+  (which-key-mode 1)
+  (add-to-list 'which-key-replacement-alist '((nil . "^projectile-") . (nil . "p-")))
+  (add-to-list 'which-key-replacement-alist '((nil . "^flycheck-") . (nil . "f-"))))
 
-(defmacro squid/defmodule (module &rest body)
-  "Define a module BODY which will only be evaluated when MODULE is in the *enabled-modules* set."
-  `(when (squid/enabled? ',module) ,@body))
-(setq package-selected-packages '())
-
-(defun squid/package-require (&rest packages)
-  "Install PACKAGES if they are not already installed."
-  (dolist (package packages)
-    (add-to-list 'package-selected-packages package)
-    (unless (package-installed-p package)
-      (package-install package))))
-
-(use-package editorconfig)
-(use-package which-key)
 (use-package undo-tree
-  :init (global-undo-tree-mode))
+  :config
+  (global-undo-tree-mode))
 
 ;; Setup ido and related works
 (use-package ido
   :config
   (ido-mode t)
-  (ido-everywhere t))
+  (ido-everywhere t)
+  :custom
+  ;; '(ido-ignore-directories '("\\`CVS/" "\\`\\.\\./" "\\`\\./"))
+  ;; (ido-create-new-buffer 'never "Don't create a file if we can't find it!")
+  (ido-enable-flex-matching t)
+  (ido-use-faces nil "We use flx-ido's custom faces instead."))
 
 (use-package ido-completing-read+
   :after ido
@@ -76,21 +77,23 @@
 (use-package flx-ido
   :after ido
   :config
-  (flx-ido-mode))
-
-
-(defun register-extensions (mode &rest exts)
-  "Register a list of extensions EXTS to load with a particular MODE."
-  (dolist (ext exts)
-    (add-to-list 'auto-mode-alist `(,(concat "\\" ext "\\'") . ,mode))))
+  (flx-ido-mode 1))
 
 (use-package company
-  :hook (after-init . global-company-mode))
+  :hook (after-init . global-company-mode)
+  :custom
+  (company-auto-commit t)
+  (company-auto-complete t)
+  (company-idle-delay 0.3)
+  (company-tooltip-align-annotations t))
 
 (use-package evil
-  :defer nil
+  :demand
+  :custom
+  (evil-undo-system 'undo-tree)
+  (evil-want-fine-undo t)
   :config
-  (evil-mode t)
+  (evil-mode 1)
 
   (dolist (mode '(term-mode
                   calculator-mode
@@ -106,127 +109,30 @@
   (dolist (mode '(git-commit-mode))
     (evil-set-initial-state mode 'normal))
 
-  :bind (:map evil-insert-state-map
-         ("C-x <tab>" . indent-relative)
-         :map evil-normal-state-map
-         ("gc" . whitespace-cleanup)
-         ("gr" . revert-buffer)
-         ("g C-g" . count-words)
-         :map evil-window-map
-         ("<left>"  . evil-window-left)
-         ("<right>" . evil-window-right)
-         ("<up>"    . evil-window-up)
-         ("<down>"  . evil-window-down)))
+  ;; Weird key bindings that don't fit anywhere else
+  (evil-define-key 'normal 'view-mode "q" 'View-quit)
 
-(squid/defmodule exwm
-  (squid/package-require 'exwm)
-  (require 'exwm)
-  (require 'exwm-config)
-  (require 'exwm-randr)
+  :bind
+  (("<next>" . evil-scroll-page-down)
+   ("<prior>" . evil-scroll-page-up)
 
-  (exwm-config-ido)
+   :map evil-insert-state-map
+   ("C-x <tab>" . indent-relative)
 
-  ;; Default to char-mode. In theory this is a good idea, but in reality it causes far
-  ;; too many issues.
-  ;; (setq exwm-manage-configurations '((t char-mode t)))
+   :map evil-normal-state-map
+   ("gc" . whitespace-cleanup)
+   ("gr" . revert-buffer)
+   ("g C-g" . count-words)
 
-  ;; Rename buffer to the current class name
-  (add-hook 'exwm-update-class-hook
-            (lambda ()
-              (exwm-workspace-rename-buffer exwm-class-name)))
-
-  (add-hook 'exwm-update-title-hook
-            (lambda ()
-              (exwm-workspace-rename-buffer exwm-title)))
-
-  (defun exwm--make-workspace-switcher (prefix)
-    "Generate an iterator which switches to the given workspace."
-    (lambda (i)
-      `(,(kbd (format "%s-%d" prefix i)) .
-        (lambda ()
-          (interactive)
-          (exwm-workspace-switch-create ,(- i 1))))))
-
-  (defun exwm--start-program (command)
-    "Start an X-windows program"
-    (interactive (list (read-shell-command "$ ")))
-    (start-process-shell-command command nil command))
-
-  (setq exwm-input-global-keys
-        `(
-          ;; M-x still does what it does everywhere.
-          (,(kbd "M-x") . smex)
-          ;; And redirect s-x to C-x
-          (,(kbd "s-x") . ,(key-binding (kbd "C-x")))
-          (,(kbd "C-M-x") . ,(key-binding (kbd "C-x")))
-
-          ;; Bind "s-r" to exit char-mode and fullscreen mode.
-          (,(kbd "s-r") . exwm-reset)
-          (,(kbd "C-M-r") . exwm-reset)
-          ;; Bind "s-d" to enter char mode
-          (,(kbd "s-c") . exwm-input-release-keyboard)
-          (,(kbd "C-M-c") . exwm-input-release-keyboard)
-          ;; Bind "s-]" to exit recursive edit
-          (,(kbd "C-M-]") . abort-recursive-edit)
-          ;; Bind "s-w" to switch workspace interactively.
-          (,(kbd "s-w") . exwm-workspace-switch)
-          (,(kbd "C-M-w") . exwm-workspace-switch )
-
-          (,(kbd "M-SPC") . (lambda ()
-            (interactive)
-            (start-process-shell-command "rofi" nil "rofi -show combi -blocks-wrap ~/.config/rofi/blocks.py")))
-
-          ;; Arrow keys for navigation. Yes, I should probably have these
-          ;; as Vim-style hjlk.
-          (,(kbd "<s-right>") . evil-window-right) (,(kbd "<C-M-right>") . evil-window-right)
-          (,(kbd "<s-left>") . evil-window-left) (,(kbd "<C-M-left>") . evil-window-left)
-          (,(kbd "<s-up>") . evil-window-up) (,(kbd "<C-M-up>") . evil-window-up)
-          (,(kbd "<s-down>") . evil-window-down) (,(kbd "<C-M-down>") . evil-window-down)
-
-          ;; Bind "s-1" to "s-4" to switch to a workspace by its index.
-          ,@(mapcar (exwm--make-workspace-switcher "s") (number-sequence 1 4))
-          ,@(mapcar (exwm--make-workspace-switcher "C-M") (number-sequence 1 4))
-
-          ;; Bind "s-7" to launch applications
-          (,(kbd "s-7") . exwm--start-program)
-          (,(kbd "C-M-7") . exwm--start-program)
-
-          ;; Bind "s-<f2>" to "slock", a simple X display locker.
-          (,(kbd "s-l") . (lambda ()
-              (interactive)
-              (start-process-shell-command "lock" nil "lock")))))
-
-  ;; Use C-q to pass through the next character event
-  (define-key exwm-mode-map (kbd "C-q") #'exwm-input-send-next-key)
-  ;; A couple of useful keybindings. Who needs C-u anyway?
-  (setq exwm-input-simulation-keys
-        `((,(kbd "C-c C-C") . ,(kbd "C-c"))
-          (,(kbd "C-u") . ,(kbd "C-u"))))
-
-  (setq exwm-workspace-number 2) ; Create a workspace for us and our separate monitor.
-  (setq exwm-randr-workspace-output-plist '(0 "HDMI-1"))
-  (add-hook 'exwm-randr-screen-change-hook
-            (lambda ()
-              (start-process-shell-command
-               "xrandr" nil "xrandr --output eDP-1 --left-of HDMI-1 --auto")))
-
-  (display-time)
-  (exwm-randr-enable)
-  (exwm-enable))
-
-(unless (squid/enabled? 'exwm)
-  ; If we've not got exwm, then register our "standard" movement keys globally.
-  (global-set-key (kbd "<C-M-right>") 'evil-window-right)
-  (global-set-key (kbd "<C-M-left>") 'evil-window-left)
-  (global-set-key (kbd "<C-M-up>") 'evil-window-up)
-  (global-set-key (kbd "<C-M-down>") 'evil-window-down))
+   :map evil-window-map
+   ("<left>"  . evil-window-left)
+   ("<right>" . evil-window-right)
+   ("<up>"    . evil-window-up)
+   ("<down>"  . evil-window-down)))
 
 (use-package flycheck
   :hook (after-init . global-flycheck-mode)
   :config
-  (with-eval-after-load 'which-key
-    (add-to-list 'which-key-replacement-alist '((nil . "^flycheck-") . (nil . "f-"))))
-
   ;; Ensure the window is displayed in a sensible place
   (add-to-list 'display-buffer-alist
                `(,(rx bos "*Flycheck errors*" eos)
@@ -240,25 +146,27 @@
   :bind ("C-c m g" . git-gutter-mode))
 
 (use-package orgalist
-  :commands orgalist-mode)
+  :commands orgalist-mode
+  :hook (git-commit-mode . orgalist-mode))
+
+(use-package git-commit
+  :hook
+  ((git-commit-setup . git-commit-turn-on-flyspell)
+   (git-commit-mode . (lambda ()
+     (setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] "
+           paragraph-separate "$"
+           fill-column 72)))))
 
 (use-package magit
-  :defer t
-  :config
-  (with-eval-after-load 'git-commit
-    (add-hook 'git-commit-mode-hook (lambda ()
-      (orgalist-mode t)
-      (setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] "
-            paragraph-separate "$"
-            fill-column 72))))
-
-  (with-eval-after-load 'evil
-    ;; Switch to Emacs mode when entering blame (and revert when
-    ;; leaving): means we can actually use all the key-bindings.
-    (add-hook 'magit-blame-mode-hook (lambda ()
-      (if magit-blame-mode
-        (evil-emacs-state)
-        (evil-exit-emacs-state))))))
+  :custom
+  (magit-revision-show-gravatars t)
+  :hook
+  ;; Switch to Emacs mode when entering blame (and revert when leaving): means
+  ;; we can actually use all the key-bindings.
+  (magit-blame-mode . (lambda ()
+    (if magit-blame-mode
+      (evil-emacs-state)
+      (evil-exit-emacs-state)))))
 
 (use-package spaceline
   :config
@@ -289,134 +197,68 @@
   (setq-default mode-line-format '("%e" (:eval (spaceline-ml-squid)))))
 
 (use-package projectile
-  :hook (after-init . projectile-mode)
+  :init (projectile-mode 1)
   :bind (:map projectile-mode-map
          ("C-c C-p" . nil)
-         ("C-c p" . projectile-command-map))
-  :config
-  (with-eval-after-load 'which-key
-    (add-to-list 'which-key-replacement-alist '((nil . "^projectile-") . (nil . "p-")))))
+         ("C-c p" . projectile-command-map)))
 
-(use-package ripgrep :defer t)
+(use-package ripgrep
+  :commands ripgrep-regexp)
+
+(use-package flyspell
+  :commands flyspell-mode
+  :hook
+  ((prog-mode . flyspell-prog-mode)
+   (markdown-mode . flyspell-mode)
+   (org-mode . flyspell-mode))
+  :custom (flyspell-large-region 0))
+
+(use-package whitespace
+  :hook
+  ;; Whitespace on all code and text
+  ((prog-mode . whitespace-mode)
+   (text-mode . whitespace-mode))
+  :custom
+  (whitespace-style '(face trailing tabs spaces empty indentation space-mark tab-mark)))
 
 ;; Language specific modes
-
-(with-eval-after-load 'elisp-mode
-  ;; Add keybindings to execute code
-  (define-key emacs-lisp-mode-map (kbd "C-c C-r") 'eval-region)
-  (define-key emacs-lisp-mode-map (kbd "C-c C-l") 'eval-buffer))
-
-(squid/defmodule javascript
-  (squid/package-require 'js2-mode 'js2-refactor 'rjsx-mode)
-
-  (register-extensions 'rjsx-mode ".js" ".jsx")
-
-  (add-hook 'js2-mode-hook #'js2-refactor-mode)
-
-  (with-eval-after-load 'js2-mode
-    (evil-make-overriding-map js2-mode-map 'normal)
-    (evil-define-key 'normal js2-mode-map
-      "gd" 'js2-jump-to-definition))
-
-  (with-eval-after-load 'js2-refactor
-    (js2r-add-keybindings-with-prefix "C-c j")))
 
 (use-package lua-mode
   :mode "\\.lua\\'" "\\.rockspec\\'")
 
 (use-package markdown-mode
-  :mode "\\.md\\'"
-  :hook (markdown-mode-hook . flyspell-mode))
+  :mode "\\.md\\'")
 
 (use-package reason-mode
-  :defer t)
-
-(let ((local-config (expand-file-name "local.el" user-emacs-directory)))
-  (when (file-exists-p local-config) (load local-config)))
-
-(squid/defmodule ocaml
-(register-extensions 'tuareg-mode ".ml" ".mli")
-
-;; ## added by OPAM user-setup for emacs / base ## 56ab50dc8996d2bb95e7856a6eddb17b ## you can edit, but keep this line
-;; (require 'opam-user-setup (expand-file-name "opam-user-setup.el" user-emacs-directory))
-;; ## end of OPAM user-setup addition for emacs / base ## keep this line
-
- (autoload 'ocamlformat "ocamlformat" "Formats OCaml files." t)
- (add-hook 'tuareg-mode-hook 'merlin-mode)
- (add-hook 'caml-mode-hook 'merlin-mode)
- (add-hook 'reason-mode-hook 'merlin-mode)
- (add-hook 'reason-mode-hook (lambda () (add-hook 'before-save-hook 'refmt-before-save)))
-
- (defun ocaml-format-region (start end)
-  "Formats the currently selected region. Note, this must be a toplevel term"
-  (interactive "r")
-  (shell-command-on-region start end (format "ocamlformat --name=%s -" buffer-file-name) nil t))
-
- (with-eval-after-load 'projectile
-  (dolist (ext '(("ml" . ("mli"))
-                 ("mli" . ("ml"))
-                 ("re" . ("rei"))
-                 ("rei" . ("re"))))
-   (add-to-list 'projectile-other-file-alist ext)))
-
-  (with-eval-after-load 'merlin
-    (evil-make-overriding-map merlin-mode-map 'normal)
-    (evil-define-key 'normal merlin-mode-map
-      "gd" 'merlin-locate))
-
- (with-eval-after-load 'company
-   (with-eval-after-load 'merlin-mode
-     (add-to-list 'company-backends 'merlin-company-backend))))
+  :mode "\\.re\\'" "\\.rei\\'")
 
 (use-package org
-  :hook (org-mode-hook . flyspell-mode))
+  :demand
+  :mode ("\\.org\\'" . org-mode)
+  :config
+  (require 'org-protocol)
+  :custom
+  (org-directory "~/Documents/org")
+ '(org-agenda-files '("~/Documents/org/todo.org"))
+  (org-agenda-window-setup 'current-window)
+  (org-tags-column -120)
+  (org-capture-templates
+   '(;; Defines a bookmark
+     ("b" "Bookmark" entry
+      (file+headline "bookmarks.org" "Bookmarks")
+      (file "templates/bookmark.org")
+      :jump-to-captured t
+      :empty-lines 1))))
 
 (use-package rainbow-mode
   :bind ("C-c m r" . rainbow-mode))
 
-(squid/defmodule typescript
-  (squid/package-require 'tide)
+(use-package yaml-mode
+  :mode "\\.yml\\'" "\\.yaml\\'")
 
-  (defun setup-tide-mode ()
-    (interactive)
-    (tide-setup)
-    (eldoc-mode +1)
-    (tide-hl-identifier-mode +1))
-
-  ;; Formats the buffer before saving
-  (add-hook 'before-save-hook 'tide-format-before-save)
-  (add-hook 'typescript-mode-hook 'setup-tide-mode)
-
-  (add-hook 'web-mode-hook (lambda ()
-                             (when (string-equal "tsx" (file-name-extension buffer-file-name))
-                               (setup-tide-mode))))
-
-  (with-eval-after-load 'tide
-    (evil-make-overriding-map tide-mode-map 'normal)
-    (evil-define-key 'normal tide-mode-map
-      "gd" 'tide-jump-to-definition)
-
-    (define-key tide-mode-map (kbd "C-c t r") 'tide-rename-symbol)
-    (define-key tide-mode-map (kbd "C-c t i") 'tide-organize-imports)))
-
-(squid/defmodule web
-  (squid/package-require 'web-mode)
-  (register-extensions 'web-mode ".php" ".erb" ".tsx" ".html" ".jinja2")
-
-  (add-to-list 'which-key-replacement-alist '((nil . "^web-mode-") . (nil . "w-")))
-
-  (setq web-mode-engines-alist
-        '(("django"    . "\\.jinja2\\'")
-          ))
-
-  ;; Ensure flycheck runs on our files
-  (with-eval-after-load 'flycheck
-    (flycheck-add-mode 'html-tidy 'web-mode)
-    (flycheck-add-mode 'php 'web-mode)
-    (flycheck-add-mode 'css-csslint 'web-mode)
-    (flycheck-add-mode 'typescript-tslint 'web-mode)))
-
-(use-package yaml-mode :defer t)
+;; And any remaining config
+(let ((local-config (expand-file-name "local.el" user-emacs-directory)))
+  (when (file-exists-p local-config) (load local-config)))
 
 (defadvice dired-find-file (around dired-subst-directory activate)
   "Replace current buffer if file is a directory."
@@ -429,73 +271,50 @@
       (kill-buffer orig))))
 
 ;; Show frame title in terminal window
-(defvar last-buffer "")
-(defun xterm-title-update ()
+(defvar sq/last-buffer "")
+(defun sq/xterm-title-update ()
   "Update the title of the current terminal window."
-  (unless (or (string= last-buffer (buffer-name)) (display-graphic-p))
-    (setq last-buffer (buffer-name))
+  (unless (or (string= sq/last-buffer (buffer-name)) (display-graphic-p))
+    (setq sq/last-buffer (buffer-name))
     (send-string-to-terminal (concat "\033]2; " (if buffer-file-name (buffer-file-name) (buffer-name)) " - emacs\007"))))
-(add-hook 'post-command-hook 'xterm-title-update)
+(add-hook 'post-command-hook 'sq/xterm-title-update)
 
 (fset 'yes-or-no-p 'y-or-n-p)
 (setq frame-title-format (concat  "%b - emacs@" (system-name)))
 
-;; Patch some keybindings to work in the terminal
-(global-set-key (kbd "<select>") 'move-end-of-line)
-(global-set-key (kbd "<mouse-4>") 'scroll-down-line)
-(global-set-key (kbd "<mouse-5>") 'scroll-up-line)
-
-;; Silly keybindings for silly operating systems
-(global-set-key (kbd "<home>") 'move-beginning-of-line)
-(global-set-key (kbd "<end>") 'move-end-of-line)
-(global-set-key (kbd "<next>") 'evil-scroll-page-down)
-(global-set-key (kbd "<prior>") 'evil-scroll-page-up)
-
-;; Switch to the default group when launching ibuffer
-(add-hook 'ibuffer-hook (lambda() (ibuffer-switch-to-saved-filter-groups "Default")))
-
-;; Flyspell on all code
-(add-hook 'prog-mode-hook 'flyspell-prog-mode)
-
-;; Whitespace on all code and text
-(add-hook 'prog-mode-hook 'whitespace-mode)
-(add-hook 'text-mode-hook 'whitespace-mode)
-
-;; Allow q to quit on view mode too
-(with-eval-after-load 'view
-  (evil-make-overriding-map view-mode-map 'normal)
-  (evil-define-key 'normal view-mode-map
-    "q" 'View-quit))
-
-(global-set-key (kbd "C-c m l") 'display-line-numbers-mode)
-
-(save-place-mode t)
-
-(add-to-list 'initial-frame-alist '(fullscreen . maximized))
-(add-to-list 'default-frame-alist '(inhibit-double-buffering . t))
+(add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; Maximize windows by default
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t)) ;; And disable double buffering.
 
 (defadvice show-paren-function (after show-matching-paren-offscreen activate)
   "If the matching paren is offscreen, show the matching line in the echo area.
    Has no effect if the character before point is not of the
    syntax class ')'."
   (interactive)
-  (let* ((cb (char-before (point)))
-         (matching-text (and cb
-                             (char-equal (char-syntax cb) ?\) )
-                             (blink-matching-open))))
-    (when matching-text (message matching-text))))
+  (let* ((cb (char-before (point))))
+    (when (and cb (char-equal (char-syntax cb) ?\)))
+      (blink-matching-open))))
 
-(defun align-space (start end)
+(defun sq/align-space (start end)
   "Repeat alignment using spaces as the delimiter between START and END."
   (interactive "r")
   (align-regexp start end "\\(\\s-*\\) " 1 0 t))
 
-;; Emacs client loads child frames in a weird setup where DISPLAY is not
-;; the same as the shell's DISPLAY, meaning xdg-open doesn't do what we'd
-;; expect.
-(add-hook 'after-make-frame-functions
-  (lambda (frame)
-    (when (and (boundp 'x-display-name) (string= x-display-name "wayland-0"))
-      (setenv "DISPLAY" ":0" frame))))
+(defun sq/org-id ()
+  "Returns the ID property if set or generates and returns a new one if not set.
+   The generated ID is stripped off potential progress indicator
+   cookies and sanitized to get a slug. Furthermore, it is
+   prepended with an ISO date-stamp if none was found before."
+  (interactive)
+  (when (not (org-entry-get nil "CUSTOM_ID"))
+    (let* ((new-id ;; retrieve heading string
+            (thread-last (org-heading-components)
+             (nth 4) ;; Actual string
+             (replace-regexp-in-string "[[][0-9%/]+[]] " "") ;; Progress indicators
+             (replace-regexp-in-string "[^a-zA-Z0-9-]+" "-"))))
+      (when (not (string-match "[12][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]-.+" new-id))
+        ;; only if no ISO date-stamp is found at the beginning of the new id:
+      (setq new-id (concat (format-time-string "%Y-%m-%d-") new-id)))
+      (org-set-property "CUSTOM_ID" new-id)))
+  (kill-new (org-entry-get nil "CUSTOM_ID")))
 
 (provide 'init)
