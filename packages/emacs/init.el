@@ -16,7 +16,6 @@
 
 (setq use-package-compute-statistics t)
 
-; (require 'bind-key)
 (eval-when-compile
   (unless (package-installed-p 'use-package)
     (package-install 'use-package))
@@ -331,6 +330,9 @@
 
 (use-package reason-mode
   :defer t)
+
+(let ((local-config (expand-file-name "local.el" user-emacs-directory)))
+  (when (file-exists-p local-config) (load local-config)))
 
 (squid/defmodule ocaml
 (register-extensions 'tuareg-mode ".ml" ".mli")
