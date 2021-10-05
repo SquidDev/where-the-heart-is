@@ -93,7 +93,7 @@ def initialize() -> None:
     global applications
     for path in DATA_DIRS:
         for child in Path(path, "applications").glob("**/*.desktop"):
-            config = ConfigParser()
+            config = ConfigParser(strict=False)
             config.read(child)
             main_config = config['Desktop Entry']
 
