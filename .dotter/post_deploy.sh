@@ -11,6 +11,11 @@ update-desktop-database ~/.local/share/applications
 xdg-mime default emacsclient.desktop x-scheme-handler/org-protocol
 {{/if}}
 
+{{#if dotter.packages.git}}
+systemctl daemon-reload --user
+systemctl enable --now --user git-sync.timer
+{{/if}}
+
 {{#if dotter.packages.tmux}}
 if tmux info &> /dev/null; then
     tmux source-file ~/.config/tmux/tmux.conf

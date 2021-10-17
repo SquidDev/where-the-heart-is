@@ -1,0 +1,6 @@
+[Unit]
+Description=Automatically does git push and pull on a given repo
+
+[Service]
+Type=oneshot
+ExecStart=%h/.local/share/git/git-sync-all.sh

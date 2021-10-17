@@ -3,6 +3,8 @@
 {{#if git_email}}
 	email = {{git_email}}
 {{/if}}
+[init]
+	defaultBranch = main
 [push]
 	default = simple
 [credential]
