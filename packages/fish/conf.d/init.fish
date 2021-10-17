@@ -77,7 +77,7 @@ set __fish_git_prompt_color_upstream          (_hex "#ff00d7")
 set __sq_prompt_opam_color                    (_hex "#f18903")
 
 # Path
-set fish_user_paths $HOME/.local/bin $HOME/.local/share/cargo/bin /var/lib/snapd/snap/bin
+set fish_user_paths $HOME/.local/bin $HOME/.local/share/cargo/bin /var/lib/snapd/snap/bin $HOME/.local/share/elan/bin/
 
 # Configuration
 set -gx EDITOR "vim"

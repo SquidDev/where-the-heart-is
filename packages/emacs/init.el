@@ -58,6 +58,8 @@
   :config
   (ido-mode t)
   (ido-everywhere t)
+  ; ido uses ido-complete-space by default, which often doesn't do what I want.
+  (define-key ido-common-completion-map (kbd "SPC") 'self-insert-command)
   :custom
   ;; '(ido-ignore-directories '("\\`CVS/" "\\`\\.\\./" "\\`\\./"))
   ;; (ido-create-new-buffer 'never "Don't create a file if we can't find it!")
@@ -88,7 +90,7 @@
   (company-tooltip-align-annotations t))
 
 (use-package evil
-  :demand
+  :demand t
   :custom
   (evil-undo-system 'undo-tree)
   (evil-want-fine-undo t)
@@ -233,22 +235,55 @@
   :mode "\\.re\\'" "\\.rei\\'")
 
 (use-package org
-  :demand
+  :demand t
   :mode ("\\.org\\'" . org-mode)
   :config
   (require 'org-protocol)
+  (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
+  ; org-html checkboxes should be disabled by default.
+  (setf (cdr (assoc 'html org-html-checkbox-types))
+    '((on . "<input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\" />")
+      (off . "<input type=\"checkbox\" disabled=\"disabled\" />")
+      (trans . "<input type=\"checkbox\" disabled\"disabled\" />")))
   :custom
   (org-directory "~/Documents/org")
- '(org-agenda-files '("~/Documents/org/todo.org"))
+  (org-agenda-files '("~/Documents/org/todo.org"))
   (org-agenda-window-setup 'current-window)
   (org-tags-column -120)
-  (org-capture-templates
-   '(;; Defines a bookmark
-     ("b" "Bookmark" entry
-      (file+headline "bookmarks.org" "Bookmarks")
-      (file "templates/bookmark.org")
-      :jump-to-captured t
-      :empty-lines 1))))
+  ; HTML export
+  (org-html-doctype "html5")
+  (org-html-postamble nil)
+  (org-html-style
+    "<style> body { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"; background: #fff; color: #000; }</style>")
+  (org-html-checkbox-type 'html "Export checkboxes as HTML - see above."))
+
+(defun sq/org-roam--insert-timestamp ()
+  (unless (org-entry-get nil "CREATED")
+   (org-entry-put nil "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]"))))
+
+(use-package org-roam
+  :demand t
+  :after (org)
+  :hook
+  (org-roam-capture-new-node . sq/org-roam--insert-timestamp)
+  :init
+  (setq org-roam-v2-ack t)
+  :config
+  (unless (file-directory-p org-roam-directory) (make-directory org-roam-directory))
+  (org-roam-db-autosync-mode)
+  (require 'org-roam-protocol)
+  ; Allow finding roam ids everywhere, not just in the roam directory.
+  (add-hook 'org-open-at-point-functions #'org-roam-open-id-at-point)
+  :custom
+  (org-roam-directory "~/Documents/org/roam")
+  (org-roam-capture-templates
+   '(("d" "default" plain "%?"
+     :target (file+head "%<%Y%m%d>-${slug}.org" "#+title: ${title}\n#+filetags: %^G")
+     :unnarrowed t)))
+  (org-roam-capture-ref-templates
+   '(("r" "ref" plain "${body}%?"
+     :target (file+head "%<%Y%m%d>-${slug}.org" "#+title: ${title}\n#+filetags: %^G")
+     :unnarrowed t))))
 
 (use-package rainbow-mode
   :bind ("C-c m r" . rainbow-mode))
@@ -298,23 +333,5 @@
   "Repeat alignment using spaces as the delimiter between START and END."
   (interactive "r")
   (align-regexp start end "\\(\\s-*\\) " 1 0 t))
-
-(defun sq/org-id ()
-  "Returns the ID property if set or generates and returns a new one if not set.
-   The generated ID is stripped off potential progress indicator
-   cookies and sanitized to get a slug. Furthermore, it is
-   prepended with an ISO date-stamp if none was found before."
-  (interactive)
-  (when (not (org-entry-get nil "CUSTOM_ID"))
-    (let* ((new-id ;; retrieve heading string
-            (thread-last (org-heading-components)
-             (nth 4) ;; Actual string
-             (replace-regexp-in-string "[[][0-9%/]+[]] " "") ;; Progress indicators
-             (replace-regexp-in-string "[^a-zA-Z0-9-]+" "-"))))
-      (when (not (string-match "[12][0-9][0-9][0-9]-[01][0-9]-[0123][0-9]-.+" new-id))
-        ;; only if no ISO date-stamp is found at the beginning of the new id:
-      (setq new-id (concat (format-time-string "%Y-%m-%d-") new-id)))
-      (org-set-property "CUSTOM_ID" new-id)))
-  (kill-new (org-entry-get nil "CUSTOM_ID")))
 
 (provide 'init)
