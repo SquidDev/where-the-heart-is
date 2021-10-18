@@ -21,6 +21,7 @@
 
 	# https://www.erikschierboom.com/2020/02/17/cleaning-up-local-git-branches-deleted-on-a-remote/
 	gone = !"git update && git for-each-ref --format '%(refname:short) %(upstream:track)' | awk '$2 == \"[gone]\" {print $1}' | xargs -r git branch -D"
+	recommit = "commit -eF .git/COMMIT_EDITMSG"
 [core]
 	autocrlf = input
 	pager = less -+X -FR
