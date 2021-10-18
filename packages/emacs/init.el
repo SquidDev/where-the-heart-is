@@ -37,7 +37,8 @@
 
   :init
   (save-place-mode t)
-  )
+  :custom
+  (gc-cons-threshold 20000000 "Bump from the default 800000"))
 
 (use-package editorconfig
   :config
@@ -53,33 +54,28 @@
   :config
   (global-undo-tree-mode))
 
-;; Setup ido and related works
-(use-package ido
+(use-package counsel
+  :demand t
   :config
-  (ido-mode t)
-  (ido-everywhere t)
-  ; ido uses ido-complete-space by default, which often doesn't do what I want.
-  (define-key ido-common-completion-map (kbd "SPC") 'self-insert-command)
+  (ivy-mode 1)
+  ; Use fuzzy matching and flx by default. Ideally this'd be in :custom, but I couldn't get that working.
+  (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
   :custom
-  ;; '(ido-ignore-directories '("\\`CVS/" "\\`\\.\\./" "\\`\\./"))
-  ;; (ido-create-new-buffer 'never "Don't create a file if we can't find it!")
-  (ido-enable-flex-matching t)
-  (ido-use-faces nil "We use flx-ido's custom faces instead."))
+  (ivy-use-virtual-buffers t)
+  (ivy-count-format "(%d/%d) ")
+  (ivy-magic-tilde nil "Keep ido's behaviour, not quite used to ivy's")
+  (ivy-extra-directories nil "Hide ../ and ./")
+  :bind
+  (:map ivy-minibuffer-map
+   ; Make RET descend into directories rather than opening them. Can use C-m to call ivy-done normally.
+   ("RET" . ivy-alt-done)))
 
-(use-package ido-completing-read+
-  :after ido
+(use-package amx
+  :after counsel
   :config
-  (ido-ubiquitous-mode 1))
+  (amx-mode 1))
 
-(use-package smex
-  :after ido
-  :bind (("M-x" . smex)
-         ("M-X" . smex-major-mode-commands)))
-
-(use-package flx-ido
-  :after ido
-  :config
-  (flx-ido-mode 1))
+(use-package flx)
 
 (use-package company
   :hook (after-init . global-company-mode)
@@ -241,10 +237,11 @@
   (require 'org-protocol)
   (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
   ; org-html checkboxes should be disabled by default.
-  (setf (cdr (assoc 'html org-html-checkbox-types))
-    '((on . "<input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\" />")
-      (off . "<input type=\"checkbox\" disabled=\"disabled\" />")
-      (trans . "<input type=\"checkbox\" disabled\"disabled\" />")))
+  (with-eval-after-load 'ox-html
+    (setf (cdr (assoc 'html org-html-checkbox-types))
+      '((on . "<input type=\"checkbox\" checked=\"checked\" disabled=\"disabled\" />")
+         (off . "<input type=\"checkbox\" disabled=\"disabled\" />")
+         (trans . "<input type=\"checkbox\" disabled\"disabled\" />"))))
   :custom
   (org-directory "~/Documents/org")
   (org-agenda-files '("~/Documents/org/todo.org"))
