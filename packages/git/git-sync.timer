@@ -3,7 +3,7 @@ Description=Automatically does git push and pull on a number of repos
 
 [Timer]
 OnBootSec=1min
-OnUnitActiveSec=15min
+OnUnitActiveSec=1hour
 
 [Install]
 WantedBy=timers.target

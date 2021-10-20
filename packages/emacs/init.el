@@ -38,7 +38,14 @@
   :init
   (save-place-mode t)
   :custom
-  (gc-cons-threshold 20000000 "Bump from the default 800000"))
+  ; Overwrite backup to something sensible.
+  (backup-by-copying t "Prefer copying over renaming, avoids clobbering symlinks.")
+  (backup-directory-alist '((".*" . "~/.local/share/emacs")) "Don't pollute the local directory.")
+  (auto-save-file-name-transform '((".*" "~/.local/share/emacs" t)) "Don't pollute the local directory.")
+  (delete-old-versions t "Don't prompt when deleting old backups.")
+  (version-control t "Used versioned backups.")
+
+  (gc-cons-threshold 20000000 "Bump from the default 800000. Recommended on modern systems."))
 
 (use-package editorconfig
   :config
@@ -65,6 +72,7 @@
   (ivy-count-format "(%d/%d) ")
   (ivy-magic-tilde nil "Keep ido's behaviour, not quite used to ivy's")
   (ivy-extra-directories nil "Hide ../ and ./")
+  (ivy-on-del-error-function #'ignore "Don't close minibuffer when backspacing too much")
   :bind
   (:map ivy-minibuffer-map
    ; Make RET descend into directories rather than opening them. Can use C-m to call ivy-done normally.
@@ -263,6 +271,11 @@
   :after (org)
   :hook
   (org-roam-capture-new-node . sq/org-roam--insert-timestamp)
+  :bind
+  (("C-c o f" . org-roam-node-find)
+   ("C-c o i" . org-roam-node-insert)
+   ("C-c o r" . org-roam-refile)
+   ("C-c o t" . org-roam-buffer-toggle))
   :init
   (setq org-roam-v2-ack t)
   :config
@@ -281,6 +294,16 @@
    '(("r" "ref" plain "${body}%?"
      :target (file+head "%<%Y%m%d>-${slug}.org" "#+title: ${title}\n#+filetags: %^G")
      :unnarrowed t))))
+
+(use-package org-download
+  :commands (org-download-enable org-download-yank org-download-clipboard)
+  :hook
+  (dired-mode . org-download-enable)
+  (org-mode . org-download-enable)
+  :custom
+  (org-download-image-dir "~/Documents/org/img")
+  (org-download-heading-lvl nil)
+  (org-download-timestamp "%Y%m%d-%H%M%S-"))
 
 (use-package rainbow-mode
   :bind ("C-c m r" . rainbow-mode))
@@ -315,7 +338,8 @@
 (setq frame-title-format (concat  "%b - emacs@" (system-name)))
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized)) ;; Maximize windows by default
-(add-to-list 'default-frame-alist '(inhibit-double-buffering . t)) ;; And disable double buffering.
+(add-to-list 'default-frame-alist '(undecorated . t)) ;; No title bar.
+(add-to-list 'default-frame-alist '(inhibit-double-buffering . t)) ;; And disable double buffering. No, not 100% sure why we need this.
 
 (defadvice show-paren-function (after show-matching-paren-offscreen activate)
   "If the matching paren is offscreen, show the matching line in the echo area.
