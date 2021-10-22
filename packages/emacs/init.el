@@ -233,7 +233,10 @@
   :mode "\\.lua\\'" "\\.rockspec\\'")
 
 (use-package markdown-mode
-  :mode "\\.md\\'")
+  :mode "\\.md\\'"
+  :custom
+  (markdown-asymmetric-header t)
+  (markdown-command "cmark"))
 
 (use-package reason-mode
   :mode "\\.re\\'" "\\.rei\\'")

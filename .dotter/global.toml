@@ -1,7 +1,7 @@
 [helpers]
 
 [default]
-depends = ["alacritty", "emacs", "fish", "git", "tmux"]
+depends = ["alacritty", "emacs", "fcitx", "fish", "git", "tmux"]
 
 [alacritty.files]
 "packages/alacritty" = "~/.config/alacritty"
@@ -22,6 +22,13 @@ albert_extensions = []
 "packages/emacs/custom.el" = "~/.config/emacs/custom.el"
 "packages/emacs/zeromini-theme.el" = "~/.config/emacs/zeromini-theme.el"
 "packages/emacs/emacsclient.desktop" = "~/.local/share/applications/emacsclient.desktop"
+
+[fcitx.files]
+# Force all of these to be templates, fcitx5 overrides these by default.
+"packages/fcitx/config" = { target = "~/.config/fcitx5/config", type = "template" }
+"packages/fcitx/keyboard.conf" = { target = "~/.config/fcitx5/conf/keyboard.conf", type = "template" }
+"packages/fcitx/quickphrase.conf" = { target = "~/.config/fcitx5/conf/quickphrase.conf", type = "template" }
+"packages/fcitx/QuickPhrase.mb" = { target = "~/.local/share/fcitx5/data/QuickPhrase.mb", type = "template" }
 
 [fish.files]
 "packages/fish" = "~/.config/fish"

@@ -63,8 +63,6 @@
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
  '(ispell-dictionary "en_GB")
- '(markdown-asymmetric-header t)
- '(markdown-command "kramdown")
  '(menu-bar-mode nil)
  '(next-line-add-newlines nil)
  '(ns-command-modifier 'meta)

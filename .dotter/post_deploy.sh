@@ -11,6 +11,10 @@ update-desktop-database ~/.local/share/applications
 xdg-mime default emacsclient.desktop x-scheme-handler/org-protocol
 {{/if}}
 
+{{#if dotter.packages.fcitx5}}
+fcitx5-remote -r
+{{/if}}
+
 {{#if dotter.packages.git}}
 systemctl daemon-reload --user
 systemctl enable --now --user git-sync.timer
