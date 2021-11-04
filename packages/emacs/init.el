@@ -41,7 +41,7 @@
   ; Overwrite backup to something sensible.
   (backup-by-copying t "Prefer copying over renaming, avoids clobbering symlinks.")
   (backup-directory-alist '((".*" . "~/.local/share/emacs")) "Don't pollute the local directory.")
-  (auto-save-file-name-transform '((".*" "~/.local/share/emacs" t)) "Don't pollute the local directory.")
+  (auto-save-file-name-transforms '((".*" "~/.local/share/emacs" t)) "Don't pollute the local directory.")
   (delete-old-versions t "Don't prompt when deleting old backups.")
   (version-control t "Used versioned backups.")
 
@@ -244,6 +244,9 @@
 (use-package org
   :demand t
   :mode ("\\.org\\'" . org-mode)
+  :bind
+  (:map org-mode-map
+   ("C-c o !" . org-time-stamp-inactive))
   :config
   (require 'org-protocol)
   (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
@@ -263,7 +266,9 @@
   (org-html-postamble nil)
   (org-html-style
     "<style> body { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"; background: #fff; color: #000; }</style>")
-  (org-html-checkbox-type 'html "Export checkboxes as HTML - see above."))
+  (org-html-checkbox-type 'html "Export checkboxes as HTML - see above.")
+
+  (initial-buffer-choice (lambda () (org-agenda-list 1) (get-buffer "*Org Agenda*")) "Show agenda by default"))
 
 (defun sq/org-roam--insert-timestamp ()
   (unless (org-entry-get nil "CREATED")
