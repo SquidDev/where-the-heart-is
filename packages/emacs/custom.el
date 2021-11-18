@@ -66,6 +66,7 @@
  '(menu-bar-mode nil)
  '(next-line-add-newlines nil)
  '(ns-command-modifier 'meta)
+ '(org-ditaa-jar-path "/usr/share/java/ditaa/ditaa-0.11.jar")
  '(require-final-newline t)
  '(ring-bell-function 'ignore)
  '(safe-local-variable-values

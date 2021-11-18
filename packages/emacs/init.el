@@ -246,7 +246,8 @@
   :mode ("\\.org\\'" . org-mode)
   :bind
   (:map org-mode-map
-   ("C-c o !" . org-time-stamp-inactive))
+   ("C-c o !" . org-time-stamp-inactive)
+   ("C-c o D" . org-update-all-dblocks))
   :config
   (require 'org-protocol)
   (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
@@ -264,7 +265,7 @@
   ; HTML export
   (org-html-doctype "html5")
   (org-html-postamble nil)
-  (org-html-style
+  (org-html-head
     "<style> body { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"; background: #fff; color: #000; }</style>")
   (org-html-checkbox-type 'html "Export checkboxes as HTML - see above.")
 
@@ -301,7 +302,11 @@
   (org-roam-capture-ref-templates
    '(("r" "ref" plain "${body}%?"
      :target (file+head "%<%Y%m%d>-${slug}.org" "#+title: ${title}\n#+filetags: %^G")
-     :unnarrowed t))))
+     :unnarrowed t
+     :jump-to-captured t))))
+
+(use-package org-roam-ui
+  :commands (org-roam-ui-mode org-roam-ui-open))
 
 (use-package org-download
   :commands (org-download-enable org-download-yank org-download-clipboard)
