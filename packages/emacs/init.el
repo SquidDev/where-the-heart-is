@@ -89,9 +89,11 @@
   :hook (after-init . global-company-mode)
   :custom
   (company-auto-commit t)
-  (company-auto-complete t)
   (company-idle-delay 0.3)
   (company-tooltip-align-annotations t))
+
+(use-package company-posframe
+  :hook (after-init . company-posframe-mode))
 
 (use-package evil
   :demand t
