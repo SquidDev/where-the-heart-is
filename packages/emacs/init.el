@@ -243,13 +243,19 @@
 (use-package reason-mode
   :mode "\\.re\\'" "\\.rei\\'")
 
+(defun sq/org-capture-task ()
+  (interactive)
+  (org-capture nil "t"))
+
 (use-package org
   :demand t
   :mode ("\\.org\\'" . org-mode)
   :bind
-  (:map org-mode-map
+  (("C-c o t" . sq/org-capture-task)
+   :map org-mode-map
    ("C-c o !" . org-time-stamp-inactive)
-   ("C-c o D" . org-update-all-dblocks))
+   ("C-c o D" . org-update-all-dblocks)
+   ("C-c o F" . org-footnote-action))
   :config
   (require 'org-protocol)
   (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
@@ -264,6 +270,10 @@
   (org-agenda-files '("~/Documents/org/todo.org"))
   (org-agenda-window-setup 'current-window)
   (org-tags-column -120)
+  (org-capture-templates
+   '(("t" "Task" entry (file+headline "~/Documents/org/todo.org" "Short term")
+      "* TODO %?\nDEADLINE: %t\n%i"
+      :empty-lines 1)))
   ; HTML export
   (org-html-doctype "html5")
   (org-html-postamble nil)
@@ -286,7 +296,7 @@
   (("C-c o f" . org-roam-node-find)
    ("C-c o i" . org-roam-node-insert)
    ("C-c o r" . org-roam-refile)
-   ("C-c o t" . org-roam-buffer-toggle))
+   ("C-c o b" . org-roam-buffer-toggle))
   :init
   (setq org-roam-v2-ack t)
   :config
