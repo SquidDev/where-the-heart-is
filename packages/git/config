@@ -59,6 +59,9 @@
 	smtpuser = {{ git_send_email }}
 {{/if}}
 
+[github]
+	user = SquidDev
+
 {{#if git_gpg}}
 [commit]
 	gpgsign = true

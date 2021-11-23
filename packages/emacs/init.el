@@ -38,6 +38,8 @@
   :init
   (save-place-mode t)
   :custom
+  (auth-sources '("secrets:session" "secrets:Login"))
+
   ; Overwrite backup to something sensible.
   (backup-by-copying t "Prefer copying over renaming, avoids clobbering symlinks.")
   (backup-directory-alist '((".*" . "~/.local/share/emacs")) "Don't pollute the local directory.")
@@ -103,14 +105,15 @@
   :config
   (evil-mode 1)
 
-  (dolist (mode '(term-mode
-                  calculator-mode
+  (dolist (mode '(calculator-mode
                   diff-mode
                   exwm-mode
-                  profiler-report-mode
+                  forge-topic-mode
+                  image-mode
                   neotree-mode
-                  vterm-mode
-                  image-mode))
+                  profiler-report-mode
+                  term-mode
+                  vterm-mode))
     (evil-set-initial-state mode 'emacs))
 
   ;; Change a couple of modes to use Vim keybindings
@@ -175,6 +178,11 @@
     (if magit-blame-mode
       (evil-emacs-state)
       (evil-exit-emacs-state)))))
+
+(use-package forge
+  :after magit
+  :custom
+  (forge-topic-list-limit '(60 . -5)))
 
 (use-package spaceline
   :config
