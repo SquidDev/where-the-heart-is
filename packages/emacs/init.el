@@ -344,6 +344,14 @@
 (use-package yaml-mode
   :mode "\\.yml\\'" "\\.yaml\\'")
 
+(use-package tree-sitter
+  :demand t
+  :hook
+  (after-init . global-tree-sitter-mode)
+  (tree-sitter-after-on . tree-sitter-hl-mode))
+
+(use-package tree-sitter-langs :after tree-sitter)
+
 ;; And any remaining config
 (let ((local-config (expand-file-name "local.el" user-emacs-directory)))
   (when (file-exists-p local-config) (load local-config)))
