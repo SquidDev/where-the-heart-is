@@ -1,0 +1,5 @@
+:where(:link[href^="http:"])::after {
+  content: " [http]";
+  color: red;
+  text-decoration: none;
+}
