@@ -21,6 +21,11 @@ systemctl enable --now --user git-sync.timer
 {{/if}}
 
 {{#if dotter.packages.tmux}}
+if [ ! -d ~/.config/tmux/plugins/tpm ]; then
+    mkdir -p ~/.config/tmux/plugins
+    git clone https://github.com/tmux-plugins/tpm ~/.config/tmux/plugins/tpm
+fi
+
 if tmux info &> /dev/null; then
     tmux source-file ~/.config/tmux/tmux.conf
 fi
