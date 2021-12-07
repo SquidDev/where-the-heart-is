@@ -1,7 +1,7 @@
 [helpers]
 
 [default]
-depends = ["alacritty", "emacs", "fcitx", "fish", "git", "tmux"]
+depends = ["alacritty", "emacs", "fcitx", "fish", "git", "kitty", "tmux"]
 
 [alacritty.files]
 "packages/alacritty" = "~/.config/alacritty"
@@ -44,6 +44,9 @@ albert_extensions = []
 git_includes = []
 git_gpg = false
 git_sync = []
+
+[kitty.files]
+"packages/kitty/kitty.conf" = "~/.config/kitty/kitty.conf"
 
 [tmux.files]
 "packages/tmux/tmux.conf" = "~/.config/tmux/tmux.conf"
