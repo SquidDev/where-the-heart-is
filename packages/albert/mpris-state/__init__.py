@@ -7,7 +7,7 @@ Display the currently playing song.
 from configparser import ConfigParser
 from pathlib import Path
 from typing import Optional, Dict, List
-from urllib.parse import urlparse
+from urllib.parse import urlparse, unquote
 from urllib.request import urlopen
 import dbus
 import hashlib
@@ -47,7 +47,7 @@ def get_url(url: str) -> Optional[str]:
         return None
 
     if parsed.scheme in ('file', ''):
-        return parsed.path
+        return unquote(parsed.path)
     elif parsed.scheme in ('http', 'https'):
         if url.startswith('https://open.spotify.com/image/'):
             url = 'https://i.scdn.co/image/' + url[len('https://open.spotify.com/image/'):]
@@ -68,11 +68,11 @@ def get_url(url: str) -> Optional[str]:
                 with open(path, "wb") as write:
                     while chunk := read.read(2048):
                         write.write(chunk)
-                        
+
             return path
         except Exception as e:
             critical("Error getting image " + str(e))
-            
+
             try:
                 os.remove(path)
             except:
@@ -150,11 +150,11 @@ def handleQuery(query):
             app = bus.Get(MPRIS_BUS, "Identity")
             properties = bus.GetAll(PLAYER_BUS)
             metadata = properties["Metadata"]
-            if "xesam:title" not in metadata:
+            if all(x not in metadata for x in ("xesam:title", "xesam:artist", "xesam:albumArtist")):
                 continue
 
-            title = metadata.get("xesam:title").strip()
-            artists = metadata.get("xesam:albumArtist")
+            title = metadata.get("xesam:title", "«Unknown»").strip()
+            artists = metadata.get("xesam:albumArtist") or metadata.get("xesam:artist")
             artist = artists and artists[0].strip()
 
             text = escape(title)
@@ -168,7 +168,7 @@ def handleQuery(query):
             icon = None
             if "mpris:artUrl" in metadata:
                 icon = get_url(str(metadata["mpris:artUrl"]))
-            
+
             if icon is None:
                 icon = applications.get(str(app), ':python_module')
 
