@@ -1,0 +1,10 @@
+#!/usr/bin/env sh
+set -xeu
+
+KITTY="$(ps -o pid= -C /usr/bin/kitty,kitty | head -n 1 | awk '{ print $1 }')"
+
+if [ -z "$KITTY" ]; then
+    kitty -- "$@"
+else
+    kitty @ --to "unix:@kitty-$KITTY" launch --type=tab --hold -- "$@"
+fi
