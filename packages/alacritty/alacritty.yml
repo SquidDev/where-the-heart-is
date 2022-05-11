@@ -8,6 +8,8 @@ window:
 
 font:
   size: 10.0
+  normal:
+    family: DejaVu Sans Mono
 
 {{#if alacritty_shell}}
 shell:

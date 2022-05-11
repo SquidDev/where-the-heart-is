@@ -28,6 +28,16 @@ function __sq_opam_prompt --description "Prints the current opam switch"
     set_color normal
 end
 
+function __sq_nix --description "Prints if we're in a nix environment"
+    if not set -q NIX_CONF_DIR
+        return
+    end
+
+    set_color $__sq_prompt_opam_color
+    printf ' (Nix)'
+    set_color normal
+end
+
 function fish_prompt --description 'Write out the prompt'
     set -l last_status $status
 
@@ -58,6 +68,7 @@ function fish_prompt --description 'Write out the prompt'
     set_color normal
 
     printf '%s' (__sq_opam_prompt)
+    printf '%s' (__sq_nix)
     printf '%s ' (__fish_vcs_prompt)
 
     set_color $fish_color_dot

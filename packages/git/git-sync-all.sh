@@ -6,7 +6,7 @@ sync() {
     cd "$1"
     # Run pre-commit just to make sure everything is formatted
     git ls-files --others --exclude-standard --cached | xargs -r pre-commit run --files > /dev/null || true
-    git-sync
+    $HOME/.local/bin/git-sync
 }
 
 {{#each git_sync}}

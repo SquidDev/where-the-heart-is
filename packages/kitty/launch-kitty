@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -xeu
 
-KITTY="$(ps -o pid= -C /usr/bin/kitty,kitty | head -n 1 | awk '{ print $1 }')"
+KITTY="$(pgrep kitty)"
 
 if [ -z "$KITTY" ]; then
     kitty -- "$@"
