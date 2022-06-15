@@ -1,5 +1,3 @@
-[helpers]
-
 [default]
 depends = ["alacritty", "emacs", "fcitx", "fish", "git", "kitty", "tmux"]
 

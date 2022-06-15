@@ -61,7 +61,10 @@
 
 (use-package undo-tree
   :config
-  (global-undo-tree-mode))
+  (global-undo-tree-mode)
+  :custom
+  (undo-tree-history-directory-alist
+   '(("." . "~/.local/share/emacs")) "Don't pollute the local directory."))
 
 (use-package counsel
   :demand t
@@ -311,8 +314,6 @@
   (unless (file-directory-p org-roam-directory) (make-directory org-roam-directory))
   (org-roam-db-autosync-mode)
   (require 'org-roam-protocol)
-  ; Allow finding roam ids everywhere, not just in the roam directory.
-  (add-hook 'org-open-at-point-functions #'org-roam-open-id-at-point)
   :custom
   (org-roam-directory "~/Documents/org/roam")
   (org-roam-capture-templates
