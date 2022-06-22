@@ -46,6 +46,12 @@ function fish_prompt --description 'Write out the prompt'
             set suffix 'ᐅ'
     end
 
+    # Hostname
+    if set -q SSH_CONNECTION
+      set_color $__sq_prompt_host_color
+      printf '%s ' (hostname)
+    end
+
     # PWD
     set_color $fish_color_cwd
     echo -n (prompt_pwd)

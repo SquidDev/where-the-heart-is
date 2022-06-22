@@ -75,6 +75,7 @@ set __fish_git_prompt_color_untrackedfiles    (_hex "#d7ff00")
 set __fish_git_prompt_color_upstream          (_hex "#ff00d7")
 
 set __sq_prompt_opam_color                    (_hex "#f18903")
+set __sq_prompt_host_color                    (_hex "#f18903")
 
 # Path
 set fish_user_paths $HOME/.local/bin /var/lib/snapd/snap/bin $HOME/.local/share/elan/bin/
