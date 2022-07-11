@@ -41,6 +41,7 @@ albert_extensions = []
 [git.variables]
 git_includes = []
 git_gpg = false
+git_lfs = false
 git_sync = []
 
 [kitty.files]

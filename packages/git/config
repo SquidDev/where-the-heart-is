@@ -51,6 +51,10 @@
 	rebase = true
 [fetch]
 	parallel = 0
+
+[github]
+	user = SquidDev
+
 {{#if git_send_email}}
 [sendemail]
 	smtpencryption = tls
@@ -59,12 +63,17 @@
 	smtpuser = {{ git_send_email }}
 {{/if}}
 
-[github]
-	user = SquidDev
-
 {{#if git_gpg}}
 [commit]
 	gpgsign = true
+{{/if}}
+
+{{#if git_lfs}}
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
 {{/if}}
 
 {{#if git_includes}}
