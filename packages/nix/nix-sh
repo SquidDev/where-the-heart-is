@@ -1,0 +1,53 @@
+#!/usr/bin/env python
+import os
+import os.path
+import subprocess
+import sys
+
+nix_root = os.path.expanduser("~/.local/share/nix")
+
+def run_chroot(command):
+    full_command = [
+        "bwrap",
+        "--bind",
+        os.path.join(nix_root, "nix"),
+        "/nix",
+        "--bind",
+        os.path.join(nix_root, "opt"),
+        "/opt",
+        "--dev-bind",
+        "/dev",
+        "/dev",
+        "--proc", "/proc",
+        "--tmpfs", "/tmp"
+    ]
+    for child in os.listdir("/"):
+        if child in ("dev", "opt", "proc", "tmp"):
+            continue
+        full_command.extend(["--bind", f"/{child}", f"/{child}"])
+
+    full_command.extend(command)
+    ok = subprocess.call(
+        full_command,
+        env={
+            **os.environ,
+            "NIX_CONF_DIR": "/nix/etc/nix",
+        },
+    )
+    if ok != 0:
+        sys.exit(1)
+
+
+if not os.path.exists(nix_root):
+    req = input("Nix root does not exist. Create? [Y/n] ").strip().lower()
+    if req and req != "y":
+        sys.exit(1)
+
+    os.makedirs(os.path.join(nix_root, "nix"))
+    os.makedirs(os.path.join(nix_root, "opt"))
+
+    run_chroot(["bash", "-c", "curl -L https://nixos.org/nix/install | bash"])
+
+run_chroot(
+    ["bash", "-c", ". $HOME/.nix-profile/etc/profile.d/nix.sh && fish", *sys.argv[1:]]
+)

@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-set -x
+set -xu
 
 {{#if dotter.packages.albert}}
 albert restart

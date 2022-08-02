@@ -1,5 +1,5 @@
 [default]
-depends = ["alacritty", "emacs", "fcitx", "fish", "git", "kitty", "tmux"]
+depends = ["alacritty", "emacs", "fcitx", "fish", "git", "kitty", "nix", "tmux"]
 
 [alacritty.files]
 "packages/alacritty" = "~/.config/alacritty"
@@ -47,9 +47,13 @@ git_sync = []
 [kitty.files]
 "packages/kitty/kitty.conf" = "~/.config/kitty/kitty.conf"
 "packages/kitty/tab_bar.py" = "~/.config/kitty/tab_bar.py"
-"packages/kitty/server-imgs" = "~/.config/kitty/server-imgs"
+"packages/kitty/server-imgs" = { target = "~/.config/kitty/server-imgs", type = "symbolic" }
+"packages/kitty/rebalance-windows.py" = "~/.config/kitty/rebalance_windows.py"
 "packages/kitty/launch-kitty" = "~/.local/bin/launch-kitty"
 
+[nix.files]
+"packages/nix/nix-sh" = "~/.local/bin/nix-sh"
+"packages/nix/nix.conf" = "~/.config/nix/nix.conf"
 
 [tmux.files]
 "packages/tmux/tmux.conf" = "~/.config/tmux/tmux.conf"
