@@ -25,7 +25,7 @@
 [core]
 	autocrlf = input
 	pager = less -+X -FR
-	sshCommand = ssh -o ControlMaster=auto -o ControlPath=~/.ssh/sockets/%r@%h-%p -o ControlPersist=600
+	sshCommand = /usr/bin/ssh -o ControlMaster=auto -o ControlPath=~/.ssh/sockets/%r@%h-%p -o ControlPersist=600
 [color]
 	ui = auto
 [color "diff"]

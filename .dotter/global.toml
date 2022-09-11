@@ -33,6 +33,7 @@ albert_extensions = []
 
 [git.files]
 "packages/git/config" = "~/.config/git/config"
+"packages/git/git-branches" = "~/.local/bin/git-branches"
 "packages/git/git-sync" = "~/.local/bin/git-sync"
 "packages/git/git-sync.timer" = "~/.config/systemd/user/git-sync.timer"
 "packages/git/git-sync.service" = "~/.config/systemd/user/git-sync.service"
