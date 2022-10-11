@@ -1,6 +1,7 @@
-{config, ...}: {
+{config, pkgs, ...}: {
     programs.kitty = {
         enable = true;
+        package = pkgs.emptyDirectory;
         settings = {
             enable_audio_bell = false;
 

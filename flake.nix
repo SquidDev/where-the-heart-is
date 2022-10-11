@@ -23,6 +23,10 @@
       };
     in rec {
       homeConfigurations.work = mkConfig "work";
-      apps."${system}".bootstrap-work = { type = "app"; program = "${homeConfigurations.work.activationPackage}/activate"; };
+      homeConfigurations.home = mkConfig "home";
+      apps."${system}" = {
+        bootstrap-work = { type = "app"; program = "${homeConfigurations.work.activationPackage}/activate"; };
+        bootstrap-home = { type = "app"; program = "${homeConfigurations.home.activationPackage}/activate"; };
+      };
     };
 }
