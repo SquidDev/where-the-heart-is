@@ -12,6 +12,8 @@
     # Don't install the man/manpath binary, so we just use the system one. Alternative option here is to set the package
     # to emptyDirectory, but is simpler :).
     programs.man.enable = false;
+
+    home.packages = [pkgs.pandoc];
   };
 
   options.where-the-heart-is = {

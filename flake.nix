@@ -17,7 +17,6 @@
         inherit pkgs;
 
         modules = [
-          # ./options.nix
           ./profiles/${profile}.nix
         ];
       };
