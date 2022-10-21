@@ -7,20 +7,27 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    emacs-overlay.url = "github:nix-community/emacs-overlay";
   };
 
-  outputs = { nixpkgs, home-manager, ... }:
+  outputs = { self, nixpkgs, home-manager, emacs-overlay }:
     let
       system = "x86_64-linux";
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs { inherit system; config.allowUnfree = true; };
       mkConfig = profile: home-manager.lib.homeManagerConfiguration {
         inherit pkgs;
 
         modules = [
           ./profiles/${profile}.nix
         ];
+
+        extraSpecialArgs = {
+          inherit emacs-overlay;
+        };
       };
     in rec {
+      inherit pkgs;
+
       homeConfigurations.work = mkConfig "work";
       homeConfigurations.home = mkConfig "home";
       apps."${system}" = {

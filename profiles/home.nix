@@ -5,7 +5,8 @@
 
   imports = [
     ./_common.nix
+    ../packages/emacs
     ../packages/kitty
-    ../packages/java
+    ../packages/vscode.nix
   ];
 }

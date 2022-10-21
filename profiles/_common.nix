@@ -24,4 +24,10 @@
       description = "Whether to display window decorations.";
     };
   };
+
+  imports = [
+    ../packages/fish
+    ../packages/git
+    ../packages/nix.nix
+  ];
 }
