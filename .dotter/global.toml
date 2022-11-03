@@ -1,14 +1,7 @@
 [default]
-depends = ["alacritty", "emacs", "fcitx", "fish", "git", "kitty", "nix", "tmux"]
-
-[alacritty.files]
-"packages/alacritty" = "~/.config/alacritty"
-
-[alacritty.variables]
-alacritty_shell = ""
+depends = ["emacs", "fcitx", "fish", "git", "kitty", "nix"]
 
 [albert.files]
-"packages/albert/albert.conf" = "~/.config/albert/albert.conf"
 "packages/albert/mpris-state" = "~/.local/share/albert/org.albert.extension.python/modules/mpris-state"
 "packages/albert/unicode_emoji2" = "~/.local/share/albert/org.albert.extension.python/modules/unicode_emoji2"
 
@@ -19,7 +12,6 @@ albert_extensions = []
 "packages/emacs/init.el" = "~/.config/emacs/init.el"
 "packages/emacs/custom.el" = "~/.config/emacs/custom.el"
 "packages/emacs/zeromini-theme.el" = "~/.config/emacs/zeromini-theme.el"
-"packages/emacs/emacsclient.desktop" = "~/.local/share/applications/emacsclient.desktop"
 
 [fcitx.files]
 # Force all of these to be templates, fcitx5 overrides these by default.

@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 set -xeu
 
-KITTY="$(pgrep kitty)"
+KITTY="$(pgrep -o kitty)"
 
 if [ -z "$KITTY" ]; then
     kitty -- "$@"

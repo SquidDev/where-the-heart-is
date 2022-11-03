@@ -46,37 +46,6 @@ set fish_pager_color_completion  ""
 set fish_pager_color_description (_hex "#ddbd78")
 set fish_pager_color_progress    --background=(_hex "#38394c") (_hex "#61afef")
 
-# General git configuation
-set __fish_git_prompt_show_informative_status 1
-set __fish_git_prompt_showuntrackedfiles      0
-set __fish_git_prompt_showupstream            informative
-
-# Git characters
-set __fish_git_prompt_char_cleanstate         "✔"
-set __fish_git_prompt_char_conflictedstate    "✖"
-set __fish_git_prompt_char_dirtystate         "✹"
-set __fish_git_prompt_char_stagedstate        "✚"
-
-set __fish_git_prompt_char_stateseparator     " "
-
-set __fish_git_prompt_char_untrackedfiles     "✭"
-set __fish_git_prompt_char_upstream_ahead     "↑"
-set __fish_git_prompt_char_upstream_behind    "↓"
-set __fish_git_prompt_char_upstream_prefix    ""
-
-# Git colours
-set __fish_git_prompt_color_cleanstate        (_hex "#87ff00")
-set __fish_git_prompt_color_dirtystate        (_hex "#d75f00")
-set __fish_git_prompt_color_invalidstate      (_hex "#d70000")
-set __fish_git_prompt_color_stagedstate       (_hex "#5fff00")
-
-set __fish_git_prompt_color_branch            (_hex "#61afef")
-set __fish_git_prompt_color_untrackedfiles    (_hex "#d7ff00")
-set __fish_git_prompt_color_upstream          (_hex "#ff00d7")
-
-set __sq_prompt_opam_color                    (_hex "#f18903")
-set __sq_prompt_host_color                    (_hex "#f18903")
-
 # Path
 set fish_user_paths $HOME/.local/bin /var/lib/snapd/snap/bin $HOME/.local/share/elan/bin/
 

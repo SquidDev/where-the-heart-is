@@ -18,6 +18,7 @@
         inherit pkgs;
 
         modules = [
+          ./modules
           ./profiles/${profile}.nix
         ];
 

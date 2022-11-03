@@ -7,13 +7,20 @@
 
     home.language.base = "en_GB.UTF-8";
 
+    # Sets up all the XDG_ variables to have our nix profile on the path.
+    targets.genericLinux.enable = true;
+
     programs.home-manager.enable = true;
 
     # Don't install the man/manpath binary, so we just use the system one. Alternative option here is to set the package
     # to emptyDirectory, but is simpler :).
     programs.man.enable = false;
 
-    home.packages = [pkgs.pandoc];
+    # Some common programs we always want.
+    home.packages = [
+      pkgs.graphviz
+      pkgs.pandoc
+    ];
   };
 
   options.where-the-heart-is = {

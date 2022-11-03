@@ -7,7 +7,7 @@
   services.emacs.enable = true;
 
   xdg.desktopEntries.emacsclient = {
-    name = "Emacs (Nix Client)";
+    name = "Emacs (Client)";
     genericName = "Text Editor";
     comment = "Edit text";
     mimeType = [
@@ -18,7 +18,9 @@
       # Org Mode
       "x-scheme-handler/org-protocol"
     ];
-    exec = ''${pkgs.emacsPgtkNativeComp}/bin/emacsclient --create-frame %U'';
+    # We use this massively cursed string to launch a new emacs instance (--create-frame) if launched directly, and try
+    # to reuse an existing one if opening a file.
+    exec = ''sh -c "if [ -n \\"\\$*\\" ]; then exec ${pkgs.emacsPgtkNativeComp}/bin/emacsclient --alternate-editor= --display=\\"\\$DISPLAY\\" \\"\\$@\\"; else exec ${pkgs.emacsPgtkNativeComp}/bin/emacsclient --alternate-editor= --create-frame; fi" placeholder %U'';
     icon = "emacs";
     type = "Application";
     terminal = false;
@@ -30,4 +32,9 @@
       Keywords = "Text;Editor;";
     };
   };
+
+  # We don't want to take complete control over the mime file, so manually add it.
+  home.activation.emacs = ''
+    xdg-mime default emacsclient.desktop x-scheme-handler/org-protocol
+  '';
 }
