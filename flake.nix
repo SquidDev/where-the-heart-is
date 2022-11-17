@@ -29,6 +29,12 @@
     in rec {
       inherit pkgs;
 
+      devShells."${system}".default = pkgs.mkShell {
+        buildInputs = [
+          home-manager.packages."${system}".default
+        ];
+      };
+
       homeConfigurations.work = mkConfig "work";
       homeConfigurations.home = mkConfig "home";
       apps."${system}" = {

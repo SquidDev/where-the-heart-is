@@ -32,8 +32,8 @@
       credential.helper = "store";
 
       core.autocrlf = "input";
-      core.pager = "less -+X -FR";
-	    core.sshCommand = "/usr/bin/ssh -o ControlMaster=auto -o ControlPath=~/.ssh/sockets/%r@%h-%p -o ControlPersist=600";
+      # core.pager = "less -+X -FR";
+      core.sshCommand = "/usr/bin/ssh -o ControlMaster=auto -o ControlPath=~/.ssh/sockets/%r@%h-%p -o ControlPersist=600";
 
       color.ui = "auto";
 
@@ -62,10 +62,18 @@
 
       github.user = "SquidDev";
     };
+
+    delta.enable = true;
+    extraConfig.delta = {
+      hunk-header-decoration-style = "underline";
+      hunk-header-line-number-style = "blue bold";
+      pager = "less -+X -FR";
+    };
   };
 
   home.packages = [
-    pkgs.git-sync
     pkgs.gh
+    pkgs.git-absorb
+    pkgs.git-sync
   ];
 }

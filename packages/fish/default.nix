@@ -53,9 +53,11 @@
 
         ahead      = "[↑$count](fg:#ff00d7)";
         behind     = "[↓$count](fg:#ff00d7)";
+        diverged   = "[↑$ahead_count↓$behind_count](fg:#ff00d7)";
         conflicted = "[✖$count](fg:#d70000)";
         deleted    = "[✘$count](fg:#d70000)";
         modified   = "[✹$count](fg:#d75f00)";
+        renamed    = "[»$count](purple)";
         staged     = "[✚$count](fg:#5fff00)";
         untracked  = "[✭$count](fg:#d7ff00)";
       };
