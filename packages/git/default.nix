@@ -69,6 +69,8 @@
       hunk-header-line-number-style = "blue bold";
       pager = "less -+X -FR";
     };
+
+    lfs.enable = true;
   };
 
   home.packages = [
