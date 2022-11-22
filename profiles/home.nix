@@ -2,7 +2,6 @@
   home.username = "squid";
   home.packages = [
     pkgs.spotify
-    pkgs.wabt
   ];
 
   where-the-heart-is.window-decorations = false;

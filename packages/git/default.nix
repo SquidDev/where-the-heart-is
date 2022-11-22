@@ -26,6 +26,11 @@
       { path = "~/.config/git/extra"; }
     ];
 
+    ignores = [
+      "/.direnv"
+      "/scratch"
+    ];
+
     extraConfig = {
       init.defaultBranch = "main";
       push.default = "simple";
