@@ -5,6 +5,7 @@
 
   imports = [
     ./_common.nix
+    ../packages/emacs
     ../packages/kitty
   ];
 }

@@ -28,6 +28,7 @@
 
     ignores = [
       "/.direnv"
+      "/.envrc" # Undecided, but 90% of the time I don't want to check this in.
       "/scratch"
     ];
 
