@@ -35,11 +35,13 @@
         ];
       };
 
-      homeConfigurations.work = mkConfig "work";
       homeConfigurations.home = mkConfig "home";
+      homeConfigurations.remote = mkConfig "remote";
+      homeConfigurations.work = mkConfig "work";
       apps."${system}" = {
-        bootstrap-work = { type = "app"; program = "${homeConfigurations.work.activationPackage}/activate"; };
         bootstrap-home = { type = "app"; program = "${homeConfigurations.home.activationPackage}/activate"; };
+        bootstrap-remote = { type = "app"; program = "${homeConfigurations.remote.activationPackage}/activate"; };
+        bootstrap-work = { type = "app"; program = "${homeConfigurations.work.activationPackage}/activate"; };
       };
     };
 }
