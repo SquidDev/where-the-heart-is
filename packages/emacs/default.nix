@@ -1,7 +1,11 @@
 { pkgs, ... }: {
   programs.emacs = {
     enable = true;
-    package = pkgs.emacsPgtkNativeComp;
+    package = pkgs.emacsWithPackagesFromUsePackage {
+      config = ./init.el;
+      package = pkgs.emacsPgtk;
+      alwaysEnsure = true;
+    };
   };
 
   services.emacs.enable = true;
@@ -20,7 +24,7 @@
     ];
     # We use this massively cursed string to launch a new emacs instance (--create-frame) if launched directly, and try
     # to reuse an existing one if opening a file.
-    exec = ''sh -c "if [ -n \\"\\$*\\" ]; then exec ${pkgs.emacsPgtkNativeComp}/bin/emacsclient --alternate-editor= --display=\\"\\$DISPLAY\\" \\"\\$@\\"; else exec ${pkgs.emacsPgtkNativeComp}/bin/emacsclient --alternate-editor= --create-frame; fi" placeholder %U'';
+    exec = ''${pkgs.emacsPgtkNativeComp}/bin/emacsclient --alternate-editor= -r %U'';
     icon = "emacs";
     type = "Application";
     terminal = false;

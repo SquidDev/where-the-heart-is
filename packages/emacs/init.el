@@ -3,12 +3,6 @@
 ;; Useful hooks for startup failures.
 (when nil (setq debug-on-error t) (setq debug-on-quit t))
 
-;; Setup package.el and get everything else running.
-(require 'package)
-(add-to-list 'package-archives '("melpa" . "http://melpa.org/packages/"))
-(package-initialize)
-(unless package-archive-contents (package-refresh-contents))
-
 ;; Load our custom file as soon as possible. This ensures our theme other
 ;; appearance options are set up straight away.
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -18,10 +12,7 @@
 
 (eval-when-compile
   (unless (package-installed-p 'use-package)
-    (package-install 'use-package))
-
-  (require 'use-package-ensure)
-  (setq use-package-always-ensure t))
+    (package-install 'use-package)))
 
 (use-package emacs
   :hook
@@ -344,14 +335,6 @@
 
 (use-package yaml-mode
   :mode "\\.yml\\'" "\\.yaml\\'")
-
-(use-package tree-sitter
-  :demand t
-  :hook
-  (after-init . global-tree-sitter-mode)
-  (tree-sitter-after-on . tree-sitter-hl-mode))
-
-(use-package tree-sitter-langs :after tree-sitter)
 
 ;; And any remaining config
 (let ((local-config (expand-file-name "local.el" user-emacs-directory)))
