@@ -1,5 +1,5 @@
 [default]
-depends = ["emacs", "fcitx", "fish", "git", "kitty", "nix"]
+depends = ["emacs", "fcitx", "git", "kitty"]
 
 [emacs.files]
 "packages/emacs/init.el" = "~/.config/emacs/init.el"
@@ -13,11 +13,7 @@ depends = ["emacs", "fcitx", "fish", "git", "kitty", "nix"]
 "packages/fcitx/quickphrase.conf" = { target = "~/.config/fcitx5/conf/quickphrase.conf", type = "template" }
 "packages/fcitx/QuickPhrase.mb" = { target = "~/.local/share/fcitx5/data/QuickPhrase.mb", type = "template" }
 
-[fish.files]
-"packages/fish" = "~/.config/fish"
-
 [git.files]
-"packages/git/git-sync" = "~/.local/bin/git-sync"
 "packages/git/git-sync.timer" = "~/.config/systemd/user/git-sync.timer"
 "packages/git/git-sync.service" = "~/.config/systemd/user/git-sync.service"
 "packages/git/git-sync-all.sh" = "~/.local/share/git/git-sync-all.sh"
@@ -32,10 +28,6 @@ git_sync = []
 "packages/kitty/tab_bar.py" = "~/.config/kitty/tab_bar.py"
 "packages/kitty/server-imgs" = { target = "~/.config/kitty/server-imgs", type = "symbolic" }
 "packages/kitty/launch-kitty" = "~/.local/bin/launch-kitty"
-
-[nix.files]
-"packages/nix/nix-sh" = "~/.local/bin/nix-sh"
-"packages/nix/nix.conf" = "~/.config/nix/nix.conf"
 
 [tmux.files]
 "packages/tmux/tmux.conf" = "~/.config/tmux/tmux.conf"

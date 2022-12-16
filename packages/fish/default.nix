@@ -6,6 +6,8 @@
       description = "Write out the title";
       body = "printf 'terminal: %s (%s)' (status current-command) (pwd)";
     };
+
+    shellInit = builtins.readFile ./init.fish;
   };
 
   programs.starship = {

@@ -47,7 +47,7 @@ set fish_pager_color_description (_hex "#ddbd78")
 set fish_pager_color_progress    --background=(_hex "#38394c") (_hex "#61afef")
 
 # Path
-set fish_user_paths $HOME/.local/bin /var/lib/snapd/snap/bin $HOME/.local/share/elan/bin/
+set fish_user_paths $HOME/.local/bin
 
 # Configuration
 set -gx EDITOR "vim"
