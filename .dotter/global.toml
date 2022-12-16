@@ -1,13 +1,6 @@
 [default]
 depends = ["emacs", "fcitx", "fish", "git", "kitty", "nix"]
 
-[albert.files]
-"packages/albert/mpris-state" = "~/.local/share/albert/org.albert.extension.python/modules/mpris-state"
-"packages/albert/unicode_emoji2" = "~/.local/share/albert/org.albert.extension.python/modules/unicode_emoji2"
-
-[albert.variables]
-albert_extensions = []
-
 [emacs.files]
 "packages/emacs/init.el" = "~/.config/emacs/init.el"
 "packages/emacs/custom.el" = "~/.config/emacs/custom.el"
@@ -24,8 +17,6 @@ albert_extensions = []
 "packages/fish" = "~/.config/fish"
 
 [git.files]
-"packages/git/config" = "~/.config/git/config"
-"packages/git/git-branches" = "~/.local/bin/git-branches"
 "packages/git/git-sync" = "~/.local/bin/git-sync"
 "packages/git/git-sync.timer" = "~/.config/systemd/user/git-sync.timer"
 "packages/git/git-sync.service" = "~/.config/systemd/user/git-sync.service"

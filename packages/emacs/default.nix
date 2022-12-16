@@ -24,7 +24,7 @@
     ];
     # We use this massively cursed string to launch a new emacs instance (--create-frame) if launched directly, and try
     # to reuse an existing one if opening a file.
-    exec = ''${pkgs.emacsPgtkNativeComp}/bin/emacsclient --alternate-editor= -r %U'';
+    exec = ''${pkgs.emacsPgtk}/bin/emacsclient --alternate-editor= -r %U'';
     icon = "emacs";
     type = "Application";
     terminal = false;

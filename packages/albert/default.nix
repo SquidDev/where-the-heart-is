@@ -1,7 +1,8 @@
 { lib, pkgs, config, ... }: {
   programs.albert.enable = true;
 
-  # Nix albert has transparency issues.
+  # Nix albert has transparency issues, so stub out the package and require us
+  # to install it manually.
   programs.albert.package = pkgs.emptyDirectory;
 
   programs.albert.config = {
@@ -49,5 +50,15 @@
       showCentered = true;
       theme = "Arc Dark Grey";
     };
+  };
+
+  xdg.dataFile."albert/org.albert.extension.python/modules/mpris-state" = {
+    recursive = true;
+    source = ./mpris-state;
+  };
+
+  xdg.dataFile."albert/org.albert.extension.python/modules/unicode_emoji2" = {
+    recursive = true;
+    source = ./unicode_emoji2;
   };
 }

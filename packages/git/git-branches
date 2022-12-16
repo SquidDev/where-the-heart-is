@@ -7,11 +7,15 @@ sep="	"
     branches=$(git for-each-ref --format='%(refname)' refs/heads/ | sed 's|refs/heads/||')
     for branch in $branches; do
         desc=$(git config branch.$branch.description | head -n1)
+        if [ "$desc" = "" ]; then
+            desc=$(git log --color=always --pretty="%C(dim white)%s%C(reset)$sep%C(blue)%cr%C(reset)" -1 $branch)
+        fi
+
         if [ $branch == $current ]; then
             branch="*$sep\033[0;32m$branch\033[0m"
         else
             branch="$sep$branch"
         fi
-        echo -e "$branch$sep\033[0;36m$desc\033[0m\n"
+        echo -e "$branch$sep$desc\n"
     done
 } | column -t -s "$sep" --output-separator " "

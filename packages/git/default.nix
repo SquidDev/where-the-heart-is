@@ -84,4 +84,9 @@
     pkgs.git-absorb
     pkgs.git-sync
   ];
+
+  home.file.".local/bin/git-branches" = {
+    source = ./git-branches;
+    executable = true;
+  };
 }
