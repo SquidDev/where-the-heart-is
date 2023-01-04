@@ -47,7 +47,7 @@ set fish_pager_color_description (_hex "#ddbd78")
 set fish_pager_color_progress    --background=(_hex "#38394c") (_hex "#61afef")
 
 # Path
-set fish_user_paths $HOME/.local/bin
+fish_add_path --global $HOME/.local/bin /nix/var/nix/profiles/default/bin
 
 # Configuration
 set -gx EDITOR "vim"
