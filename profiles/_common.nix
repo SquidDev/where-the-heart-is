@@ -20,6 +20,7 @@
     home.packages = [
       pkgs.graphviz
       pkgs.pandoc
+      pkgs.shellcheck
     ];
   };
 
