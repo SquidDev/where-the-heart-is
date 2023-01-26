@@ -231,6 +231,10 @@
   :custom
   (whitespace-style '(face trailing tabs spaces empty indentation space-mark tab-mark)))
 
+(use-package edit-indirect
+  :bind
+  (("C-x n i" . edit-indirect-region)))
+
 ;; Language specific modes
 
 (use-package lua-mode

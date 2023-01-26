@@ -31,9 +31,7 @@
         "$nix_shell"
         "$character"
       ];
-      right_format = lib.concatStrings [
-        "$time"
-      ];
+      right_format = "";
 
       character = {
         success_symbol="[ᐅ](fg:#5fd75f)";

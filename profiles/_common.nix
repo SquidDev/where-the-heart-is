@@ -18,6 +18,7 @@
 
     # Some common programs we always want.
     home.packages = [
+      pkgs.btop
       pkgs.graphviz
       pkgs.pandoc
       pkgs.shellcheck

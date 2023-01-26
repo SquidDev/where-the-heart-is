@@ -1,6 +1,8 @@
 {pkgs, ...}: {
   home.username = "squid";
   home.packages = [
+    pkgs.advancecomp
+    pkgs.bloaty
     pkgs.spotify
   ];
 
