@@ -18,10 +18,11 @@
 
     # Some common programs we always want.
     home.packages = [
-      pkgs.btop
+      pkgs.btop        # https://github.com/aristocratos/btop
       pkgs.graphviz
       pkgs.pandoc
-      pkgs.shellcheck
+      pkgs.shellcheck  # https://github.com/koalaman/shellcheck
+      pkgs.typos       # https://github.com/crate-ci/typos/
     ];
   };
 
