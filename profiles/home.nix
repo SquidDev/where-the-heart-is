@@ -4,6 +4,7 @@
     pkgs.advancecomp # https://github.com/amadvance/advancecomp
     pkgs.bloaty      # https://github.com/google/bloaty
     pkgs.hotspot     # https://github.com/KDAB/hotspot
+    pkgs.komikku     # https://valos.gitlab.io/Komikku/
     pkgs.spotify
   ];
 

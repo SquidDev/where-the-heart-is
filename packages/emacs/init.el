@@ -237,6 +237,9 @@
 
 ;; Language specific modes
 
+(use-package haskell-mode
+  :mode "\\.hs\\'")
+
 (use-package lua-mode
   :mode "\\.lua\\'" "\\.rockspec\\'")
 
