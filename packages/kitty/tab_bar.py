@@ -2,7 +2,7 @@ import os
 from dataclasses import dataclass
 from hashlib import sha512
 
-from kittens.ssh.main import get_connection_data
+from kittens.ssh.utils import get_connection_data
 from kitty.constants import config_dir
 from kitty.fast_data_types import Screen, get_boss
 from kitty.tab_bar import DrawData, ExtraData, TabBarData, as_rgb, draw_tab_with_powerline

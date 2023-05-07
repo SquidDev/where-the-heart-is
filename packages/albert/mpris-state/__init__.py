@@ -4,23 +4,24 @@
 Display the currently playing song.
 """
 
-from configparser import ConfigParser
-from pathlib import Path
-from typing import Optional, Dict, List
-from urllib.parse import urlparse, unquote
-from urllib.request import urlopen
-import dbus
 import hashlib
 import math
 import os
 import os.path
+from configparser import ConfigParser
+from pathlib import Path
+from typing import Dict, List, Optional
+from urllib.parse import unquote, urlparse
+from urllib.request import urlopen
 
-from albert import *
+import dbus
+from albert import Action, Item, QueryHandler, cacheLocation, critical, info, warning
 
-
-__title__ = "mpris status"
-__version__ = "0.4.0"
-__authors__ = "Jonathan Coates"
+md_iid = "0.5"
+md_version = "1.0"
+md_id = "mpris_status"
+md_name = "mpris status"
+md_description = "Show the status of mpris players"
 
 
 PROPERTY_BUS = "org.freedesktop.DBus.Properties"
@@ -29,14 +30,10 @@ MPRIS_BUS = "org.mpris.MediaPlayer2"
 
 DATA_DIR: str = os.getenv("XDG_DATA_DIRS", "/usr/share:/usr/share/local")
 HOME_DIR: str = os.getenv("XDG_HOME_DIR", os.path.expanduser("~/.local/share"))
-DATA_DIRS: List[str] = [x for x in DATA_DIR.split(':') + HOME_DIR.split(':') if x != ""]
+DATA_DIRS: List[str] = [x for x in DATA_DIR.split(":") + HOME_DIR.split(":") if x != ""]
 
 CACHE_PATH: str = os.path.join(cacheLocation(), __name__)
 EXTENSIONS: List[str] = [".jpeg", ".png"]
-
-
-session: dbus.SessionBus = None
-applications: Dict[str, str] = {}
 
 
 def get_url(url: str) -> Optional[str]:
@@ -46,11 +43,11 @@ def get_url(url: str) -> Optional[str]:
     except ValueError:
         return None
 
-    if parsed.scheme in ('file', ''):
+    if parsed.scheme in ("file", ""):
         return unquote(parsed.path)
-    elif parsed.scheme in ('http', 'https'):
-        if url.startswith('https://open.spotify.com/image/'):
-            url = 'https://i.scdn.co/image/' + url[len('https://open.spotify.com/image/'):]
+    elif parsed.scheme in ("http", "https"):
+        if url.startswith("https://open.spotify.com/image/"):
+            url = "https://i.scdn.co/image/" + url[len("https://open.spotify.com/image/") :]
 
         name = hashlib.sha1(url.encode("utf-8")).hexdigest()
         path = os.path.join(CACHE_PATH, name) + Path(parsed.path).suffix
@@ -83,36 +80,6 @@ def get_url(url: str) -> Optional[str]:
         return None
 
 
-def initialize() -> None:
-    global session
-    session = dbus.SessionBus()
-
-    # We build up a map of Application Name -> Icon, so we can give a nice icon.
-    # This isn't foolproof by any means, shouldn't have any false-positives at
-    # least.
-    global applications
-    for path in DATA_DIRS:
-        for child in Path(path, "applications").glob("**/*.desktop"):
-            config = ConfigParser(strict=False)
-            config.read(child)
-            main_config = config['Desktop Entry']
-
-            if 'Icon' in main_config and 'Name' in main_config:
-                icon = iconLookup(main_config['Icon'])
-                if icon:
-                    applications[main_config['Name']] = icon
-
-
-def get_bus(name: str, interface: str) -> Optional[dbus.Interface]:
-    """Get the dbus properties interface"""
-    try:
-        bus = session.get_object(
-            "org.mpris.MediaPlayer2." + name, "/org/mpris/MediaPlayer2")
-        return dbus.Interface(bus, interface)
-    except dbus.exceptions.DBusException:
-        return None
-
-
 def format_time(time: float) -> str:
     time /= 1_000_000
 
@@ -125,61 +92,104 @@ def escape(msg: str) -> str:
     return msg.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&rt;")
 
 
-def play_pause(name: str):
-    def run() -> None:
-        bus = get_bus(name, PLAYER_BUS)
-        if bus is not None:
-            bus.PlayPause()
-    return run
+class Plugin(QueryHandler):
+    session: dbus.SessionBus
+    applications: Dict[str, str]
 
-def handleQuery(query):
-    if query.string != "":
-        return
+    def id(self):
+        return md_id
 
-    items = []
+    def name(self):
+        return md_name
 
-    dbus_meta = dbus.Interface(session.get_object("org.freedesktop.DBus", "/org/freedesktop/DBus"), "org.freedesktop.DBus")
-    bus_name: str
-    for bus_name in dbus_meta.ListNames():
-        if bus_name.startswith(MPRIS_BUS + "."):
-            bus_name = bus_name[len(MPRIS_BUS) + 1:]
-            bus = get_bus(bus_name, PROPERTY_BUS)
-            if bus is None:
-                continue
+    def description(self):
+        return md_description
 
-            app = bus.Get(MPRIS_BUS, "Identity")
-            properties = bus.GetAll(PLAYER_BUS)
-            metadata = properties["Metadata"]
-            if all(x not in metadata for x in ("xesam:title", "xesam:artist", "xesam:albumArtist")):
-                continue
+    # def defaultTrigger(self) -> str:
+    #     return ""
 
-            title = metadata.get("xesam:title", "«Unknown»").strip()
-            artists = metadata.get("xesam:albumArtist") or metadata.get("xesam:artist")
-            artist = artists and artists[0].strip()
+    def initialize(self) -> None:
+        self.session = dbus.SessionBus()
 
-            text = escape(title)
+        # We build up a map of Application Name -> Icon, so we can give a nice icon.
+        # This isn't foolproof by any means, shouldn't have any false-positives at
+        # least.
+        self.applications = {}
+        for path in DATA_DIRS:
+            for child in Path(path, "applications").glob("**/*.desktop"):
+                config = ConfigParser(strict=False)
+                config.read(child)
+                main_config = config["Desktop Entry"]
 
-            position = properties.get("Position", 0)
-            if position != 0:
-                text += f" {format_time(position)} / {format_time(metadata['mpris:length'])}"
-            if artist:
-                text += f" ({escape(artist)})"
+                if "Icon" in main_config and "Name" in main_config:
+                    self.applications[main_config["Name"]] = "xdg:" + main_config["Icon"]
 
-            icon = None
-            if "mpris:artUrl" in metadata:
-                icon = get_url(str(metadata["mpris:artUrl"]))
+    def _get_bus(self, name: str, interface: str) -> Optional[dbus.Interface]:
+        """Get the dbus properties interface"""
+        try:
+            bus = self.session.get_object("org.mpris.MediaPlayer2." + name, "/org/mpris/MediaPlayer2")
+            return dbus.Interface(bus, interface)
+        except dbus.exceptions.DBusException:
+            return None
 
-            if icon is None:
-                icon = applications.get(str(app), ':python_module')
+    def _play_pause(self, name: str):
+        def run() -> None:
+            bus = self._get_bus(name, PLAYER_BUS)
+            if bus is not None:
+                bus.PlayPause()
 
-            items.append(Item(
-                id="%s.%s" % (__name__, app),
-                icon=icon,
-                text=str(app),
-                subtext=text,
-                actions=[
-                    FuncAction(text="Play/Pause", callable=play_pause(bus_name)),
-                ],
-            ))
+        return run
 
-    return items
+    def handleQuery(self, query) -> None:
+        if query.string != "":
+            return
+
+        items = []
+
+        dbus_meta = dbus.Interface(
+            self.session.get_object("org.freedesktop.DBus", "/org/freedesktop/DBus"), "org.freedesktop.DBus"
+        )
+        bus_name: str
+        for bus_name in dbus_meta.ListNames():
+            if bus_name.startswith(MPRIS_BUS + "."):
+                bus_name = bus_name[len(MPRIS_BUS) + 1 :]
+                bus = self._get_bus(bus_name, PROPERTY_BUS)
+                if bus is None:
+                    continue
+
+                app = bus.Get(MPRIS_BUS, "Identity")
+                properties = bus.GetAll(PLAYER_BUS)
+                metadata = properties["Metadata"]
+                if all(x not in metadata for x in ("xesam:title", "xesam:artist", "xesam:albumArtist")):
+                    continue
+
+                title = metadata.get("xesam:title", "«Unknown»").strip()
+                artists = metadata.get("xesam:albumArtist") or metadata.get("xesam:artist")
+                artist = artists and artists[0].strip()
+
+                text = escape(title)
+
+                position = properties.get("Position", 0)
+                if position != 0:
+                    text += f" {format_time(position)} / {format_time(metadata['mpris:length'])}"
+                if artist:
+                    text += f" ({escape(artist)})"
+
+                icon = None
+                if "mpris:artUrl" in metadata:
+                    icon = get_url(str(metadata["mpris:artUrl"]))
+
+                if icon is None:
+                    icon = self.applications.get(str(app), ":python_module")
+
+                query.add(
+                    Item(
+                        id="%s.%s" % (__name__, app),
+                        icon=[icon],
+                        text=str(app),
+                        subtext=text,
+                        actions=[
+                            Action(id="play_pause", text="Play/Pause", callable=self._play_pause(bus_name)),
+                        ],
+                    )
+                )
