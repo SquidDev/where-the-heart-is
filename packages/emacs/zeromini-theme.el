@@ -320,6 +320,7 @@
    `(org-hide ((t (:foreground ,background))))
    `(org-todo ((t (:foreground ,red :background ,background-red :weight bold))))
    `(org-done ((t (:foreground ,green :background ,background-green :weight bold))))
+   `(org-modern-done ((t (:inherit org-modern-label :foreground ,green :background ,background-green))))
    `(org-date ((t (:background ,background-lighter))))
    `(org-scheduled-previously ((t (:foreground ,red))))
    `(org-scheduled ((t (:foreground ,default))))

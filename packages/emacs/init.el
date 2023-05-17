@@ -278,7 +278,8 @@
   (org-directory "~/Documents/org")
   (org-agenda-files '("~/Documents/org/todo.org"))
   (org-agenda-window-setup 'current-window)
-  (org-tags-column -120)
+  (org-tags-column 0)
+  (org-ellipsis "…")
   (org-capture-templates
    '(("t" "Task" entry (file+headline "~/Documents/org/todo.org" "Short term")
       "* TODO %?\nDEADLINE: %t\n%i"
@@ -336,6 +337,12 @@
   (org-download-image-dir "~/Documents/org/img")
   (org-download-heading-lvl nil)
   (org-download-timestamp "%Y%m%d-%H%M%S-"))
+
+(use-package org-modern
+  :commands (org-modern-mode org-modern-agenda)
+  :hook
+  (org-mode . org-modern-mode)
+  (org-agenda-finalize . org-modern-agenda))
 
 (use-package rainbow-mode
   :bind ("C-c m r" . rainbow-mode))
