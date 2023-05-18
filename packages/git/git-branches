@@ -1,29 +1,35 @@
 #!/usr/bin/env bash
 set -u
 
+current=$(git rev-parse --abbrev-ref HEAD)
 sep="	"
-{
-    current=$(git rev-parse --abbrev-ref HEAD)
-    branches=$(git for-each-ref --format='%(refname)' refs/heads/ | sed 's|refs/heads/||')
-    for branch in $branches; do
-        # Get the description or latest commit.
-        desc=$(git config branch."$branch".description | head -n1)
-        if [ "$desc" = "" ]; then
-            desc=$(git log --color=always --pretty="%C(dim white)%s%C(reset)" -1 "$branch")
-        fi
 
-        # Get the latest commit
-        date=$(git log --color=always --pretty="%C(blue)%cr%C(reset)" -1 "$branch")
+fmt='
+branch=%(refname:lstrip=2)
 
-        if [ "$branch" == "$current" ]; then
-            # Highlight the active branch
-            branch="*$sep\033[0;32m$branch\033[0m"
-        else if [[ -n "$(git config branch."$branch".remote)" ]]; then
-            # Otherwise highlight branches which have an upstream commit.
-            branch="\033[1;35m⏹\033[0m$sep$branch"
-        else
-            branch="$sep$branch"
-        fi fi
-        echo -e "$branch$sep$desc$sep$date\n"
-    done
-} | column -t -s "$sep" --output-separator " "
+# Highlight branches which have a remote/upstream.
+if [ -n %(upstream) ]; then
+    remote="\033[1;35m⏹\033[0m"
+else
+    remote=""
+fi
+
+# Get the description or commit summary.
+desc=$(git config branch."$branch".description | head -n1)
+if [ -z "$desc" ]; then
+    desc="\033[2;37m"%(contents:subject)"\033[0m"
+fi
+
+date=%(committerdate:relative)
+
+# Highlight the active branch.
+if [ "$branch" == "$current" ]; then
+    branch="\033[32m$branch\033[0m"
+elif [ -n %(worktreepath) ]; then
+    branch="\033[34m$branch\033[0m"
+fi
+
+echo -e "$remote$sep$branch$sep$desc$sep\033[34m$date\033[0m"
+'
+
+eval "$(git for-each-ref --shell --format="$fmt" refs/heads/)" | column -t -s "$sep" --output-separator " "
