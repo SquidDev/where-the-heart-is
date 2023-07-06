@@ -18,6 +18,7 @@
 
     # Some common programs we always want.
     home.packages = [
+      pkgs.bat         # https://github.com/sharkdp/bat
       pkgs.btop        # https://github.com/aristocratos/btop
       pkgs.graphviz
       pkgs.pandoc
