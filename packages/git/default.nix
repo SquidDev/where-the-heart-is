@@ -83,10 +83,13 @@
     pkgs.gh
     pkgs.git-absorb
     pkgs.git-sync
+    (pkgs.stdenv.mkDerivation {
+      name = "git-branches";
+      src = ./git-branches;
+      unpackPhase = ":";
+      installPhase = ''
+        install -Dm755 $src $out/bin/git-branches
+      '';
+    })
   ];
-
-  home.file.".local/bin/git-branches" = {
-    source = ./git-branches;
-    executable = true;
-  };
 }

@@ -3,7 +3,7 @@
     enable = true;
     package = pkgs.emacsWithPackagesFromUsePackage {
       config = ./init.el;
-      package = pkgs.emacsPgtk;
+      package = pkgs.emacs-pgtk;
       alwaysEnsure = true;
     };
   };
@@ -24,7 +24,7 @@
     ];
     # We use this massively cursed string to launch a new emacs instance (--create-frame) if launched directly, and try
     # to reuse an existing one if opening a file.
-    exec = ''${pkgs.emacsPgtk}/bin/emacsclient --alternate-editor= -r %U'';
+    exec = ''${pkgs.emacs-pgtk}/bin/emacsclient --alternate-editor= -r %U'';
     icon = "emacs";
     type = "Application";
     terminal = false;

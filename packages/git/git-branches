@@ -9,7 +9,7 @@ branch=%(refname:lstrip=2)
 
 # Highlight branches which have a remote/upstream.
 if [ -n %(upstream) ]; then
-    remote="\033[1;35m⏹\033[0m"
+    remote="\033[1;35m■\033[0m"
 else
     remote=""
 fi
