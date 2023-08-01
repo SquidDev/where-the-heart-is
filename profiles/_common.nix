@@ -23,6 +23,7 @@
       pkgs.graphviz
       pkgs.pandoc
       pkgs.shellcheck  # https://github.com/koalaman/shellcheck
+      pkgs.tree
       pkgs.typos       # https://github.com/crate-ci/typos/
     ];
   };
