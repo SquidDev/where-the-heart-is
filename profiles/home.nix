@@ -14,6 +14,8 @@
 
   where-the-heart-is.window-decorations = false;
 
+  services.syncthing.enable = true;
+
   imports = [
     ./_common.nix
     ../packages/albert
