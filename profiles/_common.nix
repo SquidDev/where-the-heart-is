@@ -23,6 +23,7 @@
       pkgs.graphviz
       pkgs.pandoc
       pkgs.shellcheck  # https://github.com/koalaman/shellcheck
+      pkgs.tokei       # https://github.com/XAMPPRocky/tokei
       pkgs.tree
       pkgs.typos       # https://github.com/crate-ci/typos/
     ];
@@ -35,11 +36,18 @@
       example = false;
       description = "Whether to display window decorations.";
     };
+
+    system-packages = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      example = true;
+      description = "Use system packages (those in /usr/bin) rather than Nix-provided one.";
+    };
   };
 
   imports = [
     ../packages/fish
     ../packages/git
-    ../packages/nix.nix
+    ../modules
   ];
 }

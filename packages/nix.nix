@@ -1,4 +1,4 @@
-{ pkgs, config, emacs-overlay, ... }: {
+{ pkgs, config, inputs, ... }: {
   nix.package = pkgs.nix;
   nix.settings = {
     experimental-features = ["nix-command" "flakes" "repl-flake"];
@@ -11,7 +11,6 @@
 
     # So this is fairly useless (you need to mirror to the global nix config),
     # but good to have as a reference!
-    trusted-users = config.home.username;
     substituters = [
       "https://cache.nixos.org"
       "https://nix-community.cachix.org"
@@ -24,8 +23,11 @@
     ];
   };
 
+  # "nix run nixpkgs#xxx" uses version of nixpkgs instead.
+  nix.registry.nixpkgs.flake = inputs.nixpkgs;
+
   nixpkgs.config.allowUnfree = true;
   nixpkgs.overlays = [
-    emacs-overlay.overlay
+    inputs.emacs-overlay.overlay
   ];
 }

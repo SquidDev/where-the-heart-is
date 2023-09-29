@@ -1,9 +1,9 @@
-{ lib, pkgs, config, ... }: {
+{ config, lib, pkgs, ... }: {
   programs.albert.enable = true;
 
   # Nix albert has transparency issues, so stub out the package and require us
   # to install it manually.
-  programs.albert.package = pkgs.emptyDirectory;
+  programs.albert.package = lib.mkIf config.where-the-heart-is.system-packages pkgs.emptyDirectory;
 
   programs.albert.config = {
     General = {

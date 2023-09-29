@@ -27,5 +27,6 @@ in {
   config = lib.mkIf cfg.enable {
     home.packages = [cfg.package];
     xdg.configFile."albert/albert.conf".text = lib.generators.toINI {} cfg.config;
+    xdg.configFile."albert.conf".text = lib.generators.toINI {} cfg.config;
   };
 }

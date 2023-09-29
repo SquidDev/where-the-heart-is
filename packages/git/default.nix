@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ config, lib, pkgs, ... }: {
   programs.git = {
     userName = "Jonathan Coates";
 
@@ -39,7 +39,9 @@
 
       core.autocrlf = "input";
       # core.pager = "less -+X -FR";
-      core.sshCommand = "/usr/bin/ssh -o ControlMaster=auto -o ControlPath=~/.ssh/sockets/%r@%h-%p -o ControlPersist=600";
+      core.sshCommand =
+        let ssh = if config.where-the-heart-is.system-packages then "/usr" else "${pkgs.ssh}"; in
+        "${ssh}/bin/ssh -o ControlMaster=auto -o ControlPath=~/.ssh/sockets/%r@%h-%p -o ControlPersist=600";
 
       color.ui = "auto";
 
