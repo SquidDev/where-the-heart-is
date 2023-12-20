@@ -48,6 +48,5 @@
   imports = [
     ../packages/fish
     ../packages/git
-    ../modules
   ];
 }

@@ -1,9 +1,9 @@
-{ pkgs, ... }: {
+{ config, pkgs, ... }: {
   programs.emacs = {
     enable = true;
     package = pkgs.emacsWithPackagesFromUsePackage {
       config = ./init.el;
-      package = pkgs.emacs-pgtk;
+      package = pkgs.emacs29-pgtk;
       alwaysEnsure = true;
     };
   };
@@ -24,7 +24,7 @@
     ];
     # We use this massively cursed string to launch a new emacs instance (--create-frame) if launched directly, and try
     # to reuse an existing one if opening a file.
-    exec = ''${pkgs.emacs-pgtk}/bin/emacsclient --alternate-editor= -r %U'';
+    exec = ''${config.home.homeDirectory}/.nix-profile/bin/emacsclient --alternate-editor= -r %U'';
     icon = "emacs";
     type = "Application";
     terminal = false;

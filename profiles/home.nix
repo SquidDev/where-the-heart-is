@@ -19,7 +19,6 @@
 
   imports = [
     ./_common.nix
-    ../packages/albert
     ../packages/emacs
     ../packages/gnome.nix
     ../packages/kitty

@@ -2,10 +2,6 @@
 
 set -xu
 
-{{#if dotter.packages.albert}}
-albert restart
-{{/if}}
-
 {{#if dotter.packages.emacs}}
 update-desktop-database ~/.local/share/applications
 xdg-mime default emacsclient.desktop x-scheme-handler/org-protocol
