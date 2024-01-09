@@ -1,5 +1,7 @@
 @-moz-document domain("github.com") {
-  textarea {
+  textarea, .CommentBox-input {
     font-family: monospace;
+    background-attachment: local;
+    background-image: linear-gradient(to right, transparent 46em, black calc(46em + 1px), transparent calc(46em + 1px));
   }
 }
