@@ -2,7 +2,15 @@
 let
   extensions = [
     pkgs.gnomeExtensions.no-overview
-    pkgs.gnomeExtensions.paperwm
+    (pkgs.gnomeExtensions.paperwm.overrideAttrs {
+      # Use https://github.com/paperwm/PaperWM/pull/799
+      src = pkgs.fetchFromGitHub {
+        owner = "paperwm";
+        repo = "PaperWM";
+        rev = "5552216b2e11178470b0deb7027f7fcbafc5006d";
+        hash = "sha256-VCfFTciDuYqmsh+EjUqu5wi0UAOis7CqV377+7hvINg=";
+      };
+    })
     pkgs.gnomeExtensions.vitals
   ];
 in {
