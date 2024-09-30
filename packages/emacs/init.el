@@ -152,12 +152,12 @@
 
 (use-package orgalist
   :commands orgalist-mode
-  :hook (git-commit-mode . orgalist-mode))
+  :hook (git-commit-setup . orgalist-mode))
 
 (use-package git-commit
   :hook
   ((git-commit-setup . git-commit-turn-on-flyspell)
-   (git-commit-mode . (lambda ()
+   (git-commit-setup . (lambda ()
      (setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] "
            paragraph-separate "$"
            fill-column 72)))))
@@ -349,6 +349,8 @@
 
 (use-package yaml-mode
   :mode "\\.yml\\'" "\\.yaml\\'")
+
+(use-package lsp-mode)
 
 ;; And any remaining config
 (let ((local-config (expand-file-name "local.el" user-emacs-directory)))

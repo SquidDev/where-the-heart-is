@@ -88,6 +88,7 @@
 
       # Shell integration
       "kitty_mod+g" = "show_last_command_output";
+      "kitty_mod+h" = "show_scrollback";
       "kitty_mod+a" = "scroll_to_prompt -1";
       "kitty_mod+x" = "scroll_to_prompt 1";
 

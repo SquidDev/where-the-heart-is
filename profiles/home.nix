@@ -22,6 +22,7 @@
     ../packages/emacs
     ../packages/gnome.nix
     ../packages/kitty
+    ../packages/move-screenshots
     ../packages/vscode.nix
   ];
 

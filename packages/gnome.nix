@@ -7,8 +7,8 @@ let
       src = pkgs.fetchFromGitHub {
         owner = "paperwm";
         repo = "PaperWM";
-        rev = "5552216b2e11178470b0deb7027f7fcbafc5006d";
-        hash = "sha256-VCfFTciDuYqmsh+EjUqu5wi0UAOis7CqV377+7hvINg=";
+        rev = "v47.0.0";
+        hash = "sha256-4twTVW4iF2bTM+ESKHzLjULUigJG+I+twfHe6qjiwCc=";
       };
     })
     pkgs.gnomeExtensions.vitals

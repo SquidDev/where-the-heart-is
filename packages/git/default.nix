@@ -58,7 +58,7 @@
       color.diff-highlight.newNormal = "green bold";
       color.diff-highlight.newHighlight = "green bold 22";
 
-	    color.status.untracked = "cyan";
+      color.status.untracked = "cyan";
 
       diff.compactionHeuristic = true;
 
