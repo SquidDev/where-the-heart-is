@@ -101,18 +101,12 @@
 
   (dolist (mode '(calculator-mode
                   diff-mode
-                  exwm-mode
                   forge-topic-mode
                   image-mode
-                  neotree-mode
                   profiler-report-mode
                   term-mode
                   vterm-mode))
     (evil-set-initial-state mode 'emacs))
-
-  ;; Change a couple of modes to use Vim keybindings
-  (dolist (mode '(git-commit-mode))
-    (evil-set-initial-state mode 'normal))
 
   ;; Weird key bindings that don't fit anywhere else
   (evil-define-key 'normal 'view-mode "q" 'View-quit)
@@ -154,24 +148,21 @@
   :commands orgalist-mode
   :hook (git-commit-setup . orgalist-mode))
 
-(use-package git-commit
-  :hook
-  ((git-commit-setup . git-commit-turn-on-flyspell)
-   (git-commit-setup . (lambda ()
-     (setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] "
-           paragraph-separate "$"
-           fill-column 72)))))
-
 (use-package magit
   :custom
   (magit-revision-show-gravatars t)
   :hook
   ;; Switch to Emacs mode when entering blame (and revert when leaving): means
   ;; we can actually use all the key-bindings.
-  (magit-blame-mode . (lambda ()
-    (if magit-blame-mode
-      (evil-emacs-state)
-      (evil-exit-emacs-state)))))
+  ((magit-blame-mode . (lambda ()
+     (if magit-blame-mode
+       (evil-emacs-state)
+       (evil-exit-emacs-state))))
+   (git-commit-setup . git-commit-turn-on-flyspell)
+   (git-commit-setup . (lambda ()
+     (setq paragraph-start "\f\\|[ \t]*$\\|[ \t]*[-+*] "
+           paragraph-separate "$"
+           fill-column 72)))))
 
 (use-package forge
   :after magit

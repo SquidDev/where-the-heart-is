@@ -33,6 +33,10 @@
       "/scratch"
     ];
 
+    attributes = [
+      "*.nbt diff=nbt"
+    ];
+
     extraConfig = {
       init.defaultBranch = "main";
       push.default = "simple";
@@ -61,6 +65,10 @@
       color.status.untracked = "cyan";
 
       diff.compactionHeuristic = true;
+
+      # Use https://github.com/vberlier/nbtlib to diff .nbt files
+      diff.nbt.textconv = "${pkgs.python3Packages.nbtlib}/bin/nbt --pretty -r";
+      diff.nbt.cachetextconv = true;
 
       pager.status = false;
       pager.branch = false;

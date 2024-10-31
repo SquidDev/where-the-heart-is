@@ -1,7 +1,7 @@
 { pkgs, config, inputs, ... }: {
   nix.package = pkgs.nix;
   nix.settings = {
-    experimental-features = ["nix-command" "flakes" "repl-flake"];
+    experimental-features = ["nix-command" "flakes"]; #  "repl-flake"];
     extra-platforms = ["aarch64-linux" "arm-linux"];
 
     max-jobs = 4;
