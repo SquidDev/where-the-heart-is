@@ -25,7 +25,6 @@
       pkgs.shellcheck  # https://github.com/koalaman/shellcheck
       pkgs.tokei       # https://github.com/XAMPPRocky/tokei
       pkgs.tree
-      pkgs.typos       # https://github.com/crate-ci/typos/
     ];
   };
 

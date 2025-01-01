@@ -2,7 +2,7 @@
   description = "Home Manager configuration of Jonathan Coates";
 
   inputs = {
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -26,7 +26,6 @@
           inherit inputs;
         };
       };
-
     in rec {
       devShells."${system}".default = pkgs.mkShell {
         buildInputs = [
@@ -43,6 +42,5 @@
       homeConfigurations.home = mkConfig "home";
       homeConfigurations.remote = mkConfig "remote";
       homeConfigurations.work = mkConfig "work";
-
     };
 }
