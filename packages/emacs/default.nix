@@ -3,7 +3,7 @@
     enable = true;
     package = pkgs.emacsWithPackagesFromUsePackage {
       config = ./init.el;
-      package = pkgs.emacs29-pgtk;
+      package = pkgs.emacs-pgtk;
       alwaysEnsure = true;
     };
   };

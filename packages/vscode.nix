@@ -2,7 +2,7 @@
   programs.vscode = {
     enable = true;
 
-    keybindings = [
+    profiles.default.keybindings = [
       # Ctrl(+Shift)+Tab switches between tabs in order, rather than most
       # recently used.
       { key = "ctrl+shift+tab"; command = "workbench.action.previousEditor"; }
