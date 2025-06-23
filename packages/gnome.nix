@@ -1,16 +1,10 @@
 { config, lib, pkgs, ... }:
 let
   extensions = [
+    pkgs.gnomeExtensions.appindicator
+    pkgs.gnomeExtensions.kimpanel
     pkgs.gnomeExtensions.no-overview
-    (pkgs.gnomeExtensions.paperwm.overrideAttrs {
-      # Use https://github.com/paperwm/PaperWM/pull/799
-      src = pkgs.fetchFromGitHub {
-        owner = "paperwm";
-        repo = "PaperWM";
-        rev = "v47.0.0";
-        hash = "sha256-4twTVW4iF2bTM+ESKHzLjULUigJG+I+twfHe6qjiwCc=";
-      };
-    })
+    pkgs.gnomeExtensions.paperwm
     pkgs.gnomeExtensions.vitals
   ];
 in {

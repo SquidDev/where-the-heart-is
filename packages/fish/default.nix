@@ -49,7 +49,7 @@
       };
 
       git_status = {
-        format = "( $conflicted$staged$renamed$modified$untracked$ahead_behind)";
+        format = "( $conflicted$staged$deleted$renamed$modified$untracked$ahead_behind)";
 
         ahead      = "[↑$count](fg:#ff00d7)";
         behind     = "[↓$count](fg:#ff00d7)";
@@ -60,6 +60,9 @@
         renamed    = "[»$count](purple)";
         staged     = "[✚$count](fg:#5fff00)";
         untracked  = "[✭$count](fg:#d7ff00)";
+
+        # gitoxide has some odd bugs which I can't track down. Just use git for now.
+        use_git_executable = true;
       };
 
       hostname.style = "fg:#f18903";
