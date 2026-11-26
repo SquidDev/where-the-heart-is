@@ -1,9 +1,7 @@
 { config, lib, pkgs, ... }: {
   programs.git = {
-    userName = "Jonathan Coates";
-
     enable = true;
-    aliases = {
+    settings.alias = {
       giff = "diff HEAD";
       fixup = "commit --amend --no-edit --date=now";
       update = "fetch --all --prune --multiple";
@@ -37,7 +35,11 @@
       "*.nbt diff=nbt"
     ];
 
-    extraConfig = {
+    signing.format = null;
+
+    settings = {
+      user.name = "Jonathan Coates";
+
       init.defaultBranch = "main";
       push.default = "simple";
       credential.helper = "store";
@@ -78,16 +80,20 @@
       fetch.parallel = 0;
 
       github.user = "SquidDev";
-    };
 
-    delta.enable = true;
-    extraConfig.delta = {
-      hunk-header-decoration-style = "underline";
-      hunk-header-line-number-style = "blue bold";
-      pager = "less -+X -FR";
+      delta = {
+        hunk-header-decoration-style = "underline";
+        hunk-header-line-number-style = "blue bold";
+        pager = "less -+X -FR";
+      };
     };
 
     lfs.enable = true;
+  };
+
+  programs.delta = {
+    enable = true;
+    enableGitIntegration = true;
   };
 
   home.packages = [

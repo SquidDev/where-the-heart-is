@@ -20,10 +20,8 @@
     home.packages = [
       pkgs.bat         # https://github.com/sharkdp/bat
       pkgs.btop        # https://github.com/aristocratos/btop
-      pkgs.graphviz
       pkgs.pandoc
       pkgs.shellcheck  # https://github.com/koalaman/shellcheck
-      pkgs.tokei       # https://github.com/XAMPPRocky/tokei
       pkgs.tree
     ];
   };

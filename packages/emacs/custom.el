@@ -1,3 +1,5 @@
+;; -*- lexical-binding: t; -*-
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -74,8 +76,6 @@
        (org-tag-column . 80)
        (frozen-string-literal . true)
        (encoding . utf-8)))
- '(save-place-file (concat user-emacs-directory ".saved-places"))
- '(savehist-mode t)
  '(scroll-bar-mode nil)
  '(show-paren-mode t)
  '(tab-width 4)

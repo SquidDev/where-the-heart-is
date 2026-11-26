@@ -15,6 +15,7 @@
     (package-install 'use-package)))
 
 (use-package emacs
+  :ensure nil
   :hook
   (;; Switch to the default group when launching ibuffer
    (ibuffer . (lambda() (ibuffer-switch-to-saved-filter-groups "Default"))))
@@ -26,8 +27,6 @@
    ("C-c C-r" . eval-region)
    ("C-c C-l" . eval-buffer))
 
-  :init
-  (save-place-mode t)
   :custom
   (auth-sources '("secrets:session" "secrets:Login"))
 
@@ -40,7 +39,62 @@
 
   (gc-cons-threshold 20000000 "Bump from the default 800000. Recommended on modern systems."))
 
+(use-package saveplace
+  :ensure nil
+  :init
+  (save-place-mode t))
+
+(use-package savehist
+  :ensure nil
+  :init
+  (savehist-mode))
+
+; Vertico (https://github.com/minad/vertico) adds vertical completion to the
+; minibuffer. The built-in icomplete-vertical does all of what we actually need
+; here, but has a noticeable lag that vertico doesn't.
+(use-package vertico
+  :custom
+  (vertico-cycle t); Cycle from top to bottom in completion
+  :init
+  (vertico-mode))
+
+(use-package vertico-directory
+  :after vertico
+  :ensure nil
+  ;; More convenient directory navigation commands
+  :bind (:map vertico-map
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
+              ("M-DEL" . vertico-directory-delete-word)))
+
+; Additional minibuffer configuration
+(use-package minibuffer
+  :ensure nil
+  :custom
+  ;; Hide commands in M-x which do not work in the current mode.
+  (read-extended-command-predicate #'command-completion-default-include-p)
+  ;; Do not allow the cursor in the minibuffer prompt
+  (minibuffer-prompt-properties '(read-only t intangible t cursor-intangible t face minibuffer-prompt))
+  ; Enable fuzzy finding
+  (completion-styles '(partial-completion flex initials))
+  (completion-pcm-leading-wildcard t)
+  ; Ignore case everywhere
+  (completion-ignore-case t)
+  (read-buffer-completion-ignore-case t)
+  (read-file-name-completion-ignore-case t))
+
+(use-package rust-ts-mode
+  :mode "\\.rs\\'"
+  :hook
+  (rust-ts-mode-hook . eglot-ensure))
+
+;; Rich annotations in the minibuffer
+(use-package marginalia
+  :init
+  (marginalia-mode))
+
 (use-package editorconfig
+  :ensure nil
   :config
   (editorconfig-mode 1))
 
@@ -56,40 +110,6 @@
   :custom
   (undo-tree-history-directory-alist
    '(("." . "~/.local/share/emacs")) "Don't pollute the local directory."))
-
-(use-package counsel
-  :demand t
-  :config
-  (ivy-mode 1)
-  ; Use fuzzy matching and flx by default. Ideally this'd be in :custom, but I couldn't get that working.
-  (setq ivy-re-builders-alist '((t . ivy--regex-fuzzy)))
-  :custom
-  (ivy-use-virtual-buffers t)
-  (ivy-count-format "(%d/%d) ")
-  (ivy-magic-tilde nil "Keep ido's behaviour, not quite used to ivy's")
-  (ivy-extra-directories nil "Hide ../ and ./")
-  (ivy-on-del-error-function #'ignore "Don't close minibuffer when backspacing too much")
-  :bind
-  (:map ivy-minibuffer-map
-   ; Make RET descend into directories rather than opening them. Can use C-m to call ivy-done normally.
-   ("RET" . ivy-alt-done)))
-
-(use-package amx
-  :after counsel
-  :config
-  (amx-mode 1))
-
-(use-package flx)
-
-(use-package company
-  :hook (after-init . global-company-mode)
-  :custom
-  (company-auto-commit t)
-  (company-idle-delay 0.3)
-  (company-tooltip-align-annotations t))
-
-(use-package company-posframe
-  :hook (after-init . company-posframe-mode))
 
 (use-package evil
   :demand t
@@ -203,10 +223,8 @@
          ("C-c C-p" . nil)
          ("C-c p" . projectile-command-map)))
 
-(use-package ripgrep
-  :commands ripgrep-regexp)
-
 (use-package flyspell
+  :ensure nil
   :commands flyspell-mode
   :hook
   ((prog-mode . flyspell-prog-mode)
@@ -215,6 +233,7 @@
   :custom (flyspell-large-region 0))
 
 (use-package whitespace
+  :ensure nil
   :hook
   ;; Whitespace on all code and text
   ((prog-mode . whitespace-mode)
@@ -227,25 +246,6 @@
   (("C-x n i" . edit-indirect-region)))
 
 ;; Language specific modes
-
-(use-package haskell-mode
-  :mode "\\.hs\\'")
-
-(use-package lua-mode
-  :mode "\\.lua\\'" "\\.rockspec\\'")
-
-(use-package markdown-mode
-  :mode "\\.md\\'"
-  :custom
-  (markdown-asymmetric-header t)
-  (markdown-command "cmark"))
-
-(use-package reason-mode
-  :mode "\\.re\\'" "\\.rei\\'")
-
-(defun sq/org-capture-task ()
-  (interactive)
-  (org-capture nil "t"))
 
 (use-package org
   :demand t
@@ -280,54 +280,7 @@
   (org-html-postamble nil)
   (org-html-head
     "<style> body { font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, Oxygen, Ubuntu, Cantarell, \"Fira Sans\", \"Droid Sans\", \"Helvetica Neue\", Arial, sans-serif, \"Apple Color Emoji\", \"Segoe UI Emoji\", \"Segoe UI Symbol\"; background: #fff; color: #000; }</style>")
-  (org-html-checkbox-type 'html "Export checkboxes as HTML - see above.")
-
-  (initial-buffer-choice (lambda () (org-agenda-list 1) (get-buffer "*Org Agenda*")) "Show agenda by default"))
-
-(defun sq/org-roam--insert-timestamp ()
-  (unless (org-entry-get nil "CREATED")
-   (org-entry-put nil "CREATED" (format-time-string "[%Y-%m-%d %a %H:%M]"))))
-
-(use-package org-roam
-  :demand t
-  :after (org)
-  :hook
-  (org-roam-capture-new-node . sq/org-roam--insert-timestamp)
-  :bind
-  (("C-c o f" . org-roam-node-find)
-   ("C-c o i" . org-roam-node-insert)
-   ("C-c o r" . org-roam-refile)
-   ("C-c o b" . org-roam-buffer-toggle))
-  :init
-  (setq org-roam-v2-ack t)
-  :config
-  (unless (file-directory-p org-roam-directory) (make-directory org-roam-directory))
-  (org-roam-db-autosync-mode)
-  (require 'org-roam-protocol)
-  :custom
-  (org-roam-directory "~/Documents/org/roam")
-  (org-roam-capture-templates
-   '(("d" "default" plain "%?"
-     :target (file+head "%<%Y%m%d>-${slug}.org" "#+title: ${title}\n#+filetags: %^G")
-     :unnarrowed t)))
-  (org-roam-capture-ref-templates
-   '(("r" "ref" plain "${body}%?"
-     :target (file+head "%<%Y%m%d>-${slug}.org" "#+title: ${title}\n#+filetags: %^G")
-     :unnarrowed t
-     :jump-to-captured t))))
-
-(use-package org-roam-ui
-  :commands (org-roam-ui-mode org-roam-ui-open))
-
-(use-package org-download
-  :commands (org-download-enable org-download-yank org-download-clipboard)
-  :hook
-  (dired-mode . org-download-enable)
-  (org-mode . org-download-enable)
-  :custom
-  (org-download-image-dir "~/Documents/org/img")
-  (org-download-heading-lvl nil)
-  (org-download-timestamp "%Y%m%d-%H%M%S-"))
+  (org-html-checkbox-type 'html "Export checkboxes as HTML - see above."))
 
 (use-package org-modern
   :commands (org-modern-mode org-modern-agenda)
@@ -337,11 +290,6 @@
 
 (use-package rainbow-mode
   :bind ("C-c m r" . rainbow-mode))
-
-(use-package yaml-mode
-  :mode "\\.yml\\'" "\\.yaml\\'")
-
-(use-package lsp-mode)
 
 ;; And any remaining config
 (let ((local-config (expand-file-name "local.el" user-emacs-directory)))

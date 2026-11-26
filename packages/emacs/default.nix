@@ -3,14 +3,14 @@
     enable = true;
     package = pkgs.emacsWithPackagesFromUsePackage {
       config = ./init.el;
-      package = pkgs.emacs-pgtk;
+      package = pkgs.emacs31-pgtk;
       alwaysEnsure = true;
     };
   };
 
   services.emacs.enable = true;
 
-  xdg.desktopEntries.emacsclient = {
+  xdg.desktopEntries.emacs = {
     name = "Emacs (Client)";
     genericName = "Text Editor";
     comment = "Edit text";
